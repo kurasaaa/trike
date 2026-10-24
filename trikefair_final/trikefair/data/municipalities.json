@@ -1,0 +1,31 @@
+{
+  "_note": "The five municipalities of the Province of Guimaras. Centre coordinates are the 'municipal center' points published by PhilAtlas (philatlas.com/visayas/r06/guimaras/<municipality>.html). They mark the town proper, not a surveyed terminal location.",
+  "province": "Guimaras",
+  "municipalities": [
+    {
+      "id": "buenavista",
+      "name": "Buenavista",
+      "center": { "lat": 10.6970, "lng": 122.6479, "source": "PhilAtlas municipal center" }
+    },
+    {
+      "id": "jordan",
+      "name": "Jordan",
+      "center": { "lat": 10.6611, "lng": 122.5909, "source": "PhilAtlas municipal center" }
+    },
+    {
+      "id": "nueva_valencia",
+      "name": "Nueva Valencia",
+      "center": { "lat": 10.5265, "lng": 122.5396, "source": "PhilAtlas municipal center" }
+    },
+    {
+      "id": "san_lorenzo",
+      "name": "San Lorenzo",
+      "center": { "lat": 10.5913, "lng": 122.7024, "source": "PhilAtlas municipal center" }
+    },
+    {
+      "id": "sibunag",
+      "name": "Sibunag",
+      "center": { "lat": 10.5028, "lng": 122.6304, "source": "PhilAtlas municipal center" }
+    }
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "_note": "DEMO VEHICLES. Not real units. Their positions are SIMULATED by moving them back and forth along the listed route nodes; they are never mixed with locations reported by real devices.",
+  "vehicles": [
+    { "vehicleId": "DEMO-TRIKE-001", "municipality": "buenavista",     "terminalId": "terminal_buenavista_poblacion",     "path": ["terminal_buenavista_poblacion", "d2"], "periodSeconds": 240 },
+    { "vehicleId": "DEMO-TRIKE-002", "municipality": "buenavista",     "terminalId": "terminal_buenavista_wharf",         "path": ["d4", "terminal_buenavista_poblacion"], "periodSeconds": 300 },
+    { "vehicleId": "DEMO-TRIKE-003", "municipality": "jordan",         "terminalId": "terminal_jordan_poblacion",         "path": ["center_jordan", "d8"], "periodSeconds": 280 },
+    { "vehicleId": "DEMO-TRIKE-004", "municipality": "nueva_valencia", "terminalId": "terminal_nueva_valencia_poblacion", "path": ["center_nueva_valencia", "center_sibunag"], "periodSeconds": 420 },
+    { "vehicleId": "DEMO-TRIKE-005", "municipality": "san_lorenzo",    "terminalId": "terminal_san_lorenzo_poblacion",    "path": ["center_san_lorenzo", "terminal_buenavista_poblacion"], "periodSeconds": 460 },
+    { "vehicleId": "DEMO-TRIKE-006", "municipality": "sibunag",        "terminalId": "terminal_sibunag_poblacion",        "path": ["center_sibunag", "center_san_lorenzo"], "periodSeconds": 440 }
+  ]
+}

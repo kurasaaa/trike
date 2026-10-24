@@ -1,0 +1,30 @@
+# Render Blueprint for the PANAW server (https://render.com/docs/blueprint-spec).
+#
+# Render -> New -> Blueprint -> pick this GitHub repo. Values marked
+# `sync: false` are secrets: Render asks for them in the dashboard and they
+# are never stored in this file or in git.
+#
+# Data lives in Neon PostgreSQL (free tier, does not expire) because Render's
+# disk is wiped on every deploy. Listing photos are stored in the same
+# database, so no separate photo storage is needed.
+
+services:
+  - type: web
+    name: panaw-api
+    runtime: node
+    rootDir: trikefair_final/trikefair
+    plan: free              # sleeps after 15 min idle; the first request then takes about a minute
+    region: singapore       # closest Render region to the Philippines
+    buildCommand: npm ci --omit=dev
+    startCommand: node server.js
+    healthCheckPath: /api/health
+    autoDeploy: true        # every push to the default branch redeploys
+    envVars:
+      - key: NODE_VERSION
+        value: "22"
+      - key: DATABASE_URL     # Neon connection string, ends with ?sslmode=require
+        sync: false
+      - key: DRIVER_PINS      # e.g. BTODA-0142:4821,BTODA-0087:1937,BTODA-0219:5302 (give each driver only their own PIN)
+        sync: false
+      - key: ADMIN_KEY        # monitor password; Render generates a random one, shown in the dashboard
+        generateValue: true

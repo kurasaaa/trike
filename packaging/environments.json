@@ -1,0 +1,6 @@
+{
+  "_comment": "Server used by the online APK (npm run apk:online). Set apiOrigin to the URL Render shows for your service, or pass --api <url> to scripts/build-www.js.",
+  "online": {
+    "apiOrigin": "https://panaw-api.onrender.com"
+  }
+}

@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- The navy token from the web app's styles.css -->
+    <color name="systemBarsBackground">#0A3543</color>
+    <color name="splashBackground">#0A3543</color>
+</resources>

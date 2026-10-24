@@ -1,0 +1,8 @@
+{
+  "_note": "Only the tricycle has route and fare data. The other modes are listed so the data model can carry them later; no routes or fares exist for them and none are invented.",
+  "modes": [
+    { "id": "tricycle", "label": "Tricycle", "status": "active" },
+    { "id": "jeepney",  "label": "Jeepney",  "status": "future", "note": "No route or fare data yet" },
+    { "id": "multicab", "label": "Multicab", "status": "future", "note": "No route or fare data yet" }
+  ]
+}

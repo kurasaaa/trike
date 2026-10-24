@@ -1,0 +1,11 @@
+{
+  "appId": "com.panaw.app",
+  "appName": "PANAW",
+  "webDir": "www",
+  "plugins": {
+    "SystemBars": {
+      "insetsHandling": "native",
+      "style": "DARK"
+    }
+  }
+}

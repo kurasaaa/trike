@@ -1,0 +1,141 @@
+{
+  "lgu": "Buenavista, Guimaras",
+  "ordinance": "Municipal Ordinance No. ____ (PLACEHOLDER — replace with the actual Sangguniang Bayan ordinance)",
+  "terminal": "New Poblacion TODA Terminal, Buenavista, Guimaras",
+  "terminalCoords": {
+    "lat": 10.6974,
+    "lng": 122.6472
+  },
+  "_rateNote": "Structure follows the commonly published Iloilo/Guimaras tricycle rate: P15 for the first 2 km plus P1 per succeeding km, per passenger, with a higher whole-unit rate for special trips. VERIFY against the Buenavista SB ordinance before citing these figures as authoritative.",
+  "baseFare": 15,
+  "baseKm": 2,
+  "perKmRate": 1,
+  "specialBaseFare": 25,
+  "specialPerKmRate": 2,
+  "fareStep": 0.25,
+  "discountRate": 0.2,
+  "_nightNote": "Default OFF. No night surcharge is assumed to be authorized in Buenavista. Turn this on from the Rules screen only if the SB ordinance actually provides for one.",
+  "nightSurchargeEnabled": false,
+  "nightSurchargeRate": 0.15,
+  "nightStart": 22,
+  "nightEnd": 4,
+  "simulateNight": false,
+  "deviationToleranceKm": 0.35,
+  "confirmWindowSeconds": 8,
+  "_distanceNote": "Road distances estimated from surveyed coordinates with a 1.3 road factor. Replace with odometer or actual route measurements before using in the study.",
+  "destinations": [
+    {
+      "id": "d1",
+      "name": "Guimaras State University — Salvador Campus",
+      "km": 0.6,
+      "lat": 10.698781,
+      "lng": 122.6511688
+    },
+    {
+      "id": "d2",
+      "name": "Buenavista New Terminal Market",
+      "km": 1.9,
+      "lat": 10.6993323,
+      "lng": 122.6605618
+    },
+    {
+      "id": "d3",
+      "name": "Buenavista Emergency Hospital",
+      "km": 2,
+      "lat": 10.6966143,
+      "lng": 122.6610449
+    },
+    {
+      "id": "d4",
+      "name": "MacArthur Wharf, Sto. Rosario",
+      "km": 4.6,
+      "lat": 10.687903,
+      "lng": 122.6163195
+    },
+    {
+      "id": "d5",
+      "name": "Daliran Cave",
+      "km": 4.6,
+      "lat": 10.6764131,
+      "lng": 122.6227715
+    },
+    {
+      "id": "d6",
+      "name": "Brgy. Getulio",
+      "km": 6.7,
+      "lat": 10.7423139,
+      "lng": 122.6588267
+    },
+    {
+      "id": "d7",
+      "name": "Roca Encantada",
+      "km": 8,
+      "lat": 10.7427229,
+      "lng": 122.6793036
+    },
+    {
+      "id": "d8",
+      "name": "GSU Mosqueda Campus, Jordan",
+      "km": 13.6,
+      "lat": 10.6187816,
+      "lng": 122.5940928
+    }
+  ],
+  "pickupPoints": [
+    "New Poblacion TODA Terminal",
+    "Buenavista New Terminal Market",
+    "MacArthur Wharf, Sto. Rosario",
+    "GSU Salvador Campus Gate"
+  ],
+  "drivers": [
+    {
+      "id": "BTODA-0142",
+      "name": "Rogelio \"Bobong\" Gaje",
+      "unit": "Honda TMX 155",
+      "rating": 4.9,
+      "trips": 812,
+      "eta": 4,
+      "seats": 4
+    },
+    {
+      "id": "BTODA-0087",
+      "name": "Merlyn Nadales",
+      "unit": "Rusi CG 125",
+      "rating": 4.8,
+      "trips": 604,
+      "eta": 6,
+      "seats": 4
+    },
+    {
+      "id": "BTODA-0219",
+      "name": "Junrey Sumagaysay",
+      "unit": "Kawasaki Barako 175",
+      "rating": 4.7,
+      "trips": 431,
+      "eta": 9,
+      "seats": 3
+    }
+  ],
+  "discountTypes": [
+    {
+      "id": "none",
+      "label": "No discount",
+      "basis": "—"
+    },
+    {
+      "id": "student",
+      "label": "Student (school ID)",
+      "basis": "LGU ordinance"
+    },
+    {
+      "id": "senior",
+      "label": "Senior Citizen",
+      "basis": "RA 9994"
+    },
+    {
+      "id": "pwd",
+      "label": "Person with Disability",
+      "basis": "RA 10754"
+    }
+  ]
+}

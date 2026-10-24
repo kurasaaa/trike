@@ -1,0 +1,208 @@
+{
+  "_note": "d1–d8 are the original TRIKEFAIR destinations, moved here from rules.json with their ids, names and coordinates unchanged. Records with dataStatus 'reference' are municipal centres (PhilAtlas). Records with nodeId null have no verified coordinates, so no route can be computed to them. Places marked 'osm' have coordinates from OpenStreetMap (see routes.json node 'source').",
+  "destinations": [
+    {
+      "id": "d1",
+      "name": "Guimaras State University — Salvador Campus",
+      "municipality": "buenavista",
+      "nodeId": "d1",
+      "dataStatus": "existing"
+    },
+    {
+      "id": "d2",
+      "name": "Buenavista New Terminal Market",
+      "municipality": "buenavista",
+      "nodeId": "d2",
+      "dataStatus": "existing"
+    },
+    {
+      "id": "d3",
+      "name": "Buenavista Emergency Hospital",
+      "municipality": "buenavista",
+      "nodeId": "d3",
+      "dataStatus": "existing"
+    },
+    {
+      "id": "d4",
+      "name": "MacArthur Wharf, Sto. Rosario",
+      "municipality": "buenavista",
+      "nodeId": "d4",
+      "dataStatus": "existing"
+    },
+    {
+      "id": "d5",
+      "name": "Daliran Cave",
+      "municipality": "buenavista",
+      "nodeId": "d5",
+      "dataStatus": "existing"
+    },
+    {
+      "id": "d6",
+      "name": "Brgy. Getulio",
+      "municipality": "buenavista",
+      "nodeId": "d6",
+      "dataStatus": "existing"
+    },
+    {
+      "id": "d7",
+      "name": "Roca Encantada",
+      "municipality": "buenavista",
+      "nodeId": "d7",
+      "dataStatus": "existing"
+    },
+    {
+      "id": "d8",
+      "name": "GSU Mosqueda Campus, Jordan",
+      "municipality": "jordan",
+      "nodeId": "d8",
+      "dataStatus": "existing"
+    },
+    {
+      "id": "dest_buenavista_poblacion",
+      "name": "Buenavista Poblacion (New Poblacion terminal area)",
+      "municipality": "buenavista",
+      "nodeId": "terminal_buenavista_poblacion",
+      "dataStatus": "existing"
+    },
+    {
+      "id": "dest_jordan_center",
+      "name": "Jordan town proper (municipal center)",
+      "municipality": "jordan",
+      "nodeId": "center_jordan",
+      "dataStatus": "reference"
+    },
+    {
+      "id": "dest_nueva_valencia_center",
+      "name": "Nueva Valencia town proper (municipal center)",
+      "municipality": "nueva_valencia",
+      "nodeId": "center_nueva_valencia",
+      "dataStatus": "reference"
+    },
+    {
+      "id": "dest_san_lorenzo_center",
+      "name": "San Lorenzo town proper (municipal center)",
+      "municipality": "san_lorenzo",
+      "nodeId": "center_san_lorenzo",
+      "dataStatus": "reference"
+    },
+    {
+      "id": "dest_sibunag_center",
+      "name": "Sibunag town proper (municipal center)",
+      "municipality": "sibunag",
+      "nodeId": "center_sibunag",
+      "dataStatus": "reference"
+    },
+    {
+      "id": "dest_guisi_lighthouse",
+      "name": "Guisi Lighthouse, Brgy. Dolores",
+      "municipality": "nueva_valencia",
+      "nodeId": "osm_guisi_lighthouse",
+      "dataStatus": "osm",
+      "category": "Heritage"
+    },
+    {
+      "id": "dest_san_lorenzo_wind_farm",
+      "name": "San Lorenzo Wind Farm",
+      "municipality": "san_lorenzo",
+      "nodeId": "osm_wind_farm",
+      "dataStatus": "osm",
+      "category": "Landmarks"
+    },
+    {
+      "id": "dest_navalas_church",
+      "name": "San Isidro Labrador Parish Church, Navalas",
+      "municipality": "buenavista",
+      "nodeId": "osm_navalas_church",
+      "dataStatus": "osm",
+      "category": "Heritage"
+    },
+    {
+      "id": "dest_jordan_wharf",
+      "name": "Jordan Wharf",
+      "municipality": "jordan",
+      "nodeId": "osm_jordan_wharf",
+      "dataStatus": "osm",
+      "category": "Ports"
+    },
+    {
+      "id": "dest_jordan_public_market",
+      "name": "Jordan Public Market",
+      "municipality": "jordan",
+      "nodeId": "osm_jordan_public_market",
+      "dataStatus": "osm",
+      "category": "Essentials"
+    },
+    {
+      "id": "dest_balaan_bukid",
+      "name": "Balaan Bukid Shrine",
+      "municipality": "jordan",
+      "nodeId": "osm_balaan_bukid",
+      "dataStatus": "osm",
+      "category": "Heritage"
+    },
+    {
+      "id": "dest_provincial_capitol",
+      "name": "Guimaras Provincial Capitol",
+      "municipality": "jordan",
+      "nodeId": "osm_provincial_capitol",
+      "dataStatus": "osm",
+      "category": "Landmarks"
+    },
+    {
+      "id": "dest_provincial_hospital",
+      "name": "Dr. Catalino Gallego Nava Provincial Hospital",
+      "municipality": "jordan",
+      "nodeId": "osm_provincial_hospital",
+      "dataStatus": "osm",
+      "category": "Essentials"
+    },
+    {
+      "id": "dest_mango_research",
+      "name": "National Mango Research Center",
+      "municipality": "jordan",
+      "nodeId": "osm_mango_research",
+      "dataStatus": "osm",
+      "category": "Landmarks"
+    },
+    {
+      "id": "dest_trappist_abbey",
+      "name": "Our Lady of the Philippines Trappist Abbey",
+      "municipality": "jordan",
+      "nodeId": "osm_trappist_abbey",
+      "dataStatus": "osm",
+      "category": "Heritage"
+    },
+    {
+      "id": "dest_tatlong_pulo",
+      "name": "Tatlong Pulo Beach, Sinapsapan",
+      "municipality": "jordan",
+      "nodeId": "osm_tatlong_pulo",
+      "dataStatus": "osm",
+      "category": "Beaches"
+    },
+    {
+      "id": "dest_raymen_beach",
+      "name": "Raymen Beach Resort, Alubihod",
+      "municipality": "nueva_valencia",
+      "nodeId": "osm_raymen_beach",
+      "dataStatus": "osm",
+      "category": "Beaches"
+    },
+    {
+      "id": "dest_sl_church",
+      "name": "Immaculada Conception Parish Church, San Lorenzo",
+      "municipality": "san_lorenzo",
+      "nodeId": "osm_sl_church",
+      "dataStatus": "osm",
+      "category": "Heritage"
+    },
+    {
+      "id": "dest_sebaste_port",
+      "name": "Sebaste Port, Sibunag",
+      "municipality": "sibunag",
+      "nodeId": "osm_sebaste_port",
+      "dataStatus": "osm",
+      "category": "Ports"
+    }
+  ]
+}

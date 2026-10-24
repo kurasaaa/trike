@@ -1,0 +1,30 @@
+# --- secrets: never commit ---
+.env
+.env.*
+*.keystore
+*.jks
+keystore.properties
+
+# --- dependencies / build output ---
+node_modules/
+www/
+android/app/build/
+android/build/
+android/.gradle/
+android/local.properties
+android/app/src/main/assets/public/
+android/.idea/
+*.apk
+*.aab
+*.zip
+
+# --- local runtime data (trips, locations, listings from real users) ---
+trikefair_final/trikefair/data/db.json
+trikefair_final/trikefair/data/db.json.tmp
+
+# --- OS / editor ---
+.DS_Store
+Thumbs.db
+desktop.ini
+.vscode/
+*.log

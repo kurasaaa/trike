@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PANAW — Guimaras Transport Monitor</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+<div id="app-frame" class="wide">
+  <div class="topbar">
+    <div class="brand-row">
+      <div class="brand-mark">PN</div>
+      <div>
+        <div class="brand-name">Guimaras Transport Monitor</div>
+        <div class="brand-tag">PANAW administration · municipalities, terminals, routes, vehicles, trips</div>
+      </div>
+    </div>
+    <div class="mode-pill"><span class="dot amber-dot"></span> <span id="backend-pill">Connecting…</span></div>
+  </div>
+
+  <div class="screen-scroll" style="padding-bottom:30px;">
+    <div class="monitor-grid">
+      <div>
+        <div class="card">
+          <div class="card-title">Data mode</div>
+          <div id="data-mode"></div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">Network map</div>
+          <div class="netmap" id="map"></div>
+          <div id="map-legend"></div>
+          <div class="netmap-legend" style="margin-top:4px;">
+            <span><svg width="10" height="10"><circle cx="5" cy="5" r="3.6" class="nm-vehicle"/></svg>Reporting vehicle</span>
+            <span><svg width="10" height="10"><circle cx="5" cy="5" r="3.6" class="nm-vehicle demo"/></svg>DEMO VEHICLE (simulated)</span>
+            <span><svg width="10" height="10"><rect x="1" y="1" width="8" height="8" rx="1.5" class="nm-node terminal"/></svg>Terminal</span>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">Route segments</div>
+          <div class="stepper-hint" style="margin:-6px 0 6px;">Admin control. Switching a segment off makes the route engine choose the next-best path, or report that no route is available.</div>
+          <div id="segments"></div>
+        </div>
+      </div>
+
+      <div>
+        <div class="card">
+          <div class="card-title">Vehicles by municipality</div>
+          <table class="count-table" id="counts"></table>
+          <div class="stepper-hint" id="counts-note"></div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">Vehicles</div>
+          <div id="vehicles"></div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">Terminals</div>
+          <div id="terminals"></div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">Trip records</div>
+          <div id="trips"></div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">Place listings</div>
+          <div id="listings"></div>
+          <div class="stepper-hint">Posted by owners from the passenger app and shown as "not verified". Remove a listing that is wrong, offensive or not in Guimaras.</div>
+        </div>
+      </div>
+    </div>
+    <div class="footer-links"><a href="/">Passenger app</a> · <a href="/driver">Driver console</a></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="/lib/network.js"></script>
+<script src="/netmap.js"></script>
+<script>
+'use strict';
+/* ============================================================================
+   GUIMARAS TRANSPORT MONITOR — admin view
+   Shows what the system actually holds and says where each item came from:
+   positions reported by real devices are kept apart from DEMO VEHICLES, and
+   nothing is called live or centralized unless it is.
+   ========================================================================== */
+const $ = id => document.getElementById(id);
+const peso = n => '₱' + Number(n).toFixed(2);
+const esc = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const rowPlain = (k,v) => `<div class="bd-row"><span class="k">${k}</span><span class="v plain">${v}</span></div>`;
+const STALE_MS = 60000;
+
+let net = null, vehicles = [], serverOffset = 0, records = [], online = true;
+
+function toast(msg){
+  const t = $('toast'); t.textContent = msg; t.classList.add('show');
+  clearTimeout(window._tt); window._tt = setTimeout(()=>t.classList.remove('show'), 2600);
+}
+// Online, admin actions need the server's ADMIN_KEY. Asked once, kept in this browser.
+const adminKey = () => { try { return localStorage.getItem('panaw_admin_key') || ''; } catch { return ''; } };
+async function api(path, body, retried){
+  const res = await fetch(path, {
+    method: body ? 'POST' : 'GET',
+    headers: {'Content-Type':'application/json', 'X-Admin-Key': adminKey()},
+    body: body ? JSON.stringify(body) : undefined
+  });
+  const data = await res.json().catch(()=>({}));
+  if (res.status === 401 && path.startsWith('/api/admin/') && !retried) {
+    const k = prompt('Admin key for this PANAW server');
+    if (k) { try { localStorage.setItem('panaw_admin_key', k.trim()); } catch {} return api(path, body, true); }
+  }
+  if(!res.ok) throw new Error(data.error || 'Request failed');
+  return data;
+}
+const muni = id => (net.municipalities.find(m => m.id === id) || { name: id || '—' }).name;
+const termName = id => (net.terminals.find(t => t.id === id) || { name: id || '—' }).name;
+function ago(ms){
+  const s = Math.max(0, Math.round(ms / 1000));
+  return s < 60 ? `${s} s ago` : s < 3600 ? `${Math.round(s / 60)} min ago` : `${Math.round(s / 3600)} h ago`;
+}
+
+(async function boot(){
+  try { net = await api('/api/network'); }
+  catch { $('data-mode').innerHTML = '<div class="empty-state"><div class="t">Network data unavailable</div><div class="s">The PANAW server could not be reached.</div></div>'; return; }
+  renderStatic();
+  await refresh();
+  setInterval(refresh, 3000);
+  setInterval(renderLive, 1000);
+  refreshListings();
+  setInterval(refreshListings, 30000);   // listings carry photos: poll slowly
+})();
+
+let listings = [];
+async function refreshListings(){
+  try { listings = (await api('/api/places')).places; } catch { return; }
+  $('listings').innerHTML = listings.length ? listings.map(p => `<div class="vehicle-item">
+      <div class="top"><span class="id">${esc(p.name)}</span><button class="btn btn-danger btn-sm" style="width:auto" data-rmplace="${esc(p.id)}">Remove</button></div>
+      <div class="meta">${esc(p.category)} · ${esc(muni(p.municipality))} · ${p.lat.toFixed(5)}, ${p.lng.toFixed(5)} · ${(p.photos || []).length} photo(s) · posted ${new Date(p.createdAt).toLocaleString('en-PH')}</div>
+      ${p.description ? `<div class="meta">${esc(p.description)}</div>` : ''}</div>`).join('')
+    : '<div class="stepper-hint">No listings yet.</div>';
+}
+document.addEventListener('click', async e => {
+  const b = e.target.closest('[data-rmplace]'); if (!b) return;
+  if (!confirm('Remove this listing for everyone?')) return;
+  try { await api(`/api/admin/places/${encodeURIComponent(b.dataset.rmplace)}/remove`, {}); toast('Listing removed'); refreshListings(); }
+  catch (err) { toast(err.message); }
+});
+
+async function refresh(){
+  try {
+    const [v, r] = await Promise.all([api('/api/vehicles'), api('/api/trip-records?limit=20')]);
+    vehicles = v.vehicles; records = r; online = true;
+    serverOffset = new Date(v.serverTime).getTime() - Date.now();
+  } catch { online = false; }
+  renderLive();
+  renderTrips();
+}
+
+/* ------------------------------------------------------------ static parts */
+function renderStatic(){
+  const b = net.backend, local = b.mode === 'local';
+  $('backend-pill').textContent = b.label;
+  const rep = net.validation;
+  $('data-mode').innerHTML =
+    rowPlain('Data mode', `<span class="data-tag demo">DATA MODE: ${esc(net.dataMode)}</span>`) +
+    rowPlain('Backend', `<span class="data-tag ${local ? 'demo' : 'info'}">${esc(b.label)}</span>`) +
+    `<div class="stepper-hint">${esc(b.detail)}${local ? ' Vehicle positions shown here come only from this phone.' : ''}</div>` +
+    rowPlain('Coverage', `${net.municipalities.length} municipalities · ${net.terminals.length} terminals · ${net.destinations.length} destinations · ${net.edges.length} segments`) +
+    rowPlain('Data check', rep.ok ? `<span class="data-tag existing">No errors</span>` : `<span class="data-tag todo">${rep.errors.length} error(s)</span>`) +
+    (rep.errors.length ? `<ul class="report-list err">${rep.errors.map(e => `<li>${esc(e)}</li>`).join('')}</ul>` : '') +
+    (rep.warnings.length ? `<details style="margin-top:6px;"><summary class="stepper-hint" style="cursor:pointer;">${rep.warnings.length} warning(s) — data still to verify</summary>
+      <ul class="report-list">${rep.warnings.map(w => `<li>${esc(w)}</li>`).join('')}</ul></details>` : '') +
+    `<div class="stepper-hint">Route optimization picks the lowest-cost path through the stored network. No real-time traffic data is used.</div>`;
+
+  $('map-legend').innerHTML = TrikeMap.LEGEND;
+  renderSegments();
+  renderTerminals();
+}
+
+function renderSegments(){
+  const name = id => (net.nodes.find(n => n.id === id) || { name: id }).name;
+  $('segments').innerHTML = net.edges.map(e => `
+    <div class="seg-row">
+      <div>
+        <div class="t">${esc(name(e.from))} ↔ ${esc(name(e.to))}</div>
+        <div class="s">${e.distance_km} km · ~${e.estimated_minutes} min · ${esc(e.route_type || 'road')}
+          <span class="data-tag ${e.dataStatus === 'demo' ? 'demo' : 'existing'}">${e.dataStatus === 'demo' ? 'Demo' : 'Project data'}</span></div>
+      </div>
+      <label class="switch"><input type="checkbox" data-edge="${e.id}" ${e.available ? 'checked' : ''} aria-label="Segment available"><span class="track"><span class="thumb"></span></span></label>
+    </div>`).join('');
+  $('segments').querySelectorAll('[data-edge]').forEach(el => el.onchange = async () => {
+    try {
+      net = { ...net, ...(await api('/api/admin/network', { edgeId: el.dataset.edge, available: el.checked })) };
+      toast(el.checked ? 'Segment available again.' : 'Segment marked unavailable. Routes will avoid it.');
+      renderSegments(); renderLive();
+    } catch (e) { el.checked = !el.checked; toast(e.message); }
+  });
+}
+
+function renderTerminals(){
+  $('terminals').innerHTML = net.municipalities.map(m => {
+    const ts = net.terminals.filter(t => t.municipality === m.id);
+    return `<div class="divider-label" style="margin:10px 0 6px;">${esc(m.name)}</div>` + (ts.length ? ts.map(t => {
+      const rule = net.fareRules.find(r => r.id === t.fareRuleId) || {};
+      return `<div class="seg-row"><div>
+        <div class="t">${esc(t.name)}</div>
+        <div class="s">${(t.destinationIds || []).length} destinations ·
+          ${t.latitude == null ? '<span class="data-tag todo">Coordinates required</span>' : `${t.latitude.toFixed(4)}, ${t.longitude.toFixed(4)}`}
+          <span class="data-tag ${t.dataStatus === 'demo' ? 'demo' : 'existing'}">${t.dataStatus === 'demo' ? 'Demo terminal' : 'Project data'}</span>
+          <span class="data-tag ${rule.source === 'rules.json' ? 'info' : 'demo'}">${esc(rule.status || '')}</span></div>
+      </div></div>`;
+    }).join('') : '<div class="stepper-hint">No terminal configured.</div>');
+  }).join('');
+}
+
+/* ------------------------------------------------------------- live parts */
+function demoPositions(){
+  const now = Date.now();
+  return (net.demoVehicles || []).map(v => TrikeNetwork.simulateDemoVehicle(v, net, now)).filter(Boolean);
+}
+function renderLive(){
+  if (!net) return;
+  const now = Date.now() + serverOffset;
+  const real = vehicles.map(v => {
+    const age = now - new Date(v.timestamp).getTime();
+    return { ...v, age, reporting: v.status !== 'offline' && age < STALE_MS };
+  });
+  const demo = demoPositions();
+
+  // counts
+  $('counts').innerHTML = `<tr><th>Municipality</th><th style="text-align:right;">Reporting</th><th style="text-align:right;">Demo vehicles</th></tr>` +
+    net.municipalities.map(m => `<tr><td>${esc(m.name)}</td>
+      <td class="n">${real.filter(v => v.reporting && v.municipality === m.id).length}</td>
+      <td class="n">${demo.filter(v => v.municipality === m.id).length}</td></tr>`).join('') +
+    `<tr><td><strong>Total</strong></td><td class="n">${real.filter(v => v.reporting).length}</td><td class="n">${demo.length}</td></tr>`;
+  $('counts-note').textContent = (online ? '' : 'CENTRAL SYNC OFFLINE — showing the last positions received. ') +
+    '"Reporting" counts units that sent a position in the last minute. Demo vehicles are simulated and never counted as real.';
+
+  // map
+  $('map').innerHTML = TrikeMap.render(net, {
+    labels: 'all', height: 380,
+    vehicles: real.filter(v => v.status !== 'offline').map(v => ({ ...v, label: v.vehicleId }))
+      .concat(demo.map(v => ({ ...v, label: v.vehicleId })))
+  });
+
+  // list
+  const realHTML = real.length ? real.map(v => {
+    const badge = v.status === 'offline' ? '<span class="badge badge-navy">OFFLINE</span>'
+                : v.reporting ? '<span class="badge badge-green">ACTIVE</span>'
+                : '<span class="badge badge-amber">LAST KNOWN</span>';
+    return `<div class="vehicle-item"><div class="top"><span class="id">${esc(v.vehicleId)}</span>${badge}</div>
+      <div class="meta">${esc(v.driverName)} · ${esc(muni(v.municipality))} · ${esc(v.terminalName || termName(v.terminalId))}<br>
+        ${v.status === 'on_trip' ? 'On a trip · ' : v.status === 'available' ? 'Available · ' : ''}${v.latitude.toFixed(5)}, ${v.longitude.toFixed(5)} ·
+        ${v.source === 'simulated' ? '<span class="data-tag demo">Simulated position</span>' : '<span class="data-tag info">Device GPS</span>'}<br>
+        Updated ${ago(v.age)}</div></div>`;
+  }).join('') : '<div class="stepper-hint" style="margin-bottom:8px;">No vehicle has reported a location. Start “Location sharing” in the driver console.</div>';
+  const demoHTML = demo.map(v => `<div class="vehicle-item demo"><div class="top"><span class="id">${esc(v.vehicleId)}</span><span class="data-tag demo">DEMO VEHICLE</span></div>
+      <div class="meta">${esc(muni(v.municipality))} · ${esc(termName(v.terminalId))}<br>
+        SIMULATED · ${v.status} · ${v.latitude.toFixed(5)}, ${v.longitude.toFixed(5)}</div></div>`).join('');
+  $('vehicles').innerHTML = `<div class="divider-label" style="margin:0 0 8px;">Reported by devices</div>${realHTML}<div class="divider-label">Demo vehicles</div>${demoHTML}`;
+}
+
+function renderTrips(){
+  if (!net) return;
+  $('trips').innerHTML = records.length ? `<table class="count-table">
+    <tr><th>Trip</th><th>Route</th><th style="text-align:right;">Fare</th></tr>
+    ${records.map(r => `<tr><td><span style="font-family:var(--font-mono); font-size:11px;">${esc(r.tripId)}</span><br><span class="stepper-hint">${esc(r.status)} · ${new Date(r.timestamp).toLocaleString('en-PH')}</span></td>
+      <td>${esc(r.terminal || '—')} → ${esc(r.destination)}<br><span class="stepper-hint">${esc(r.municipality || '—')} · ${r.distance} km${r.estimatedTime != null ? ` · ~${r.estimatedTime} min` : ''} · ${esc(r.transportMode)}</span></td>
+      <td class="n">${peso(r.fare)}</td></tr>`).join('')}</table>`
+    : '<div class="stepper-hint">No trips recorded yet.</div>';
+}
+</script>
+</body>
+</html>

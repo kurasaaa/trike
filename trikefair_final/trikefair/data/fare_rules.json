@@ -1,0 +1,30 @@
+{
+  "_note": "Fare rule sets, assigned to terminals by fareRuleId. 'trikefair_buenavista' is the original TRIKEFAIR matrix and reads its rates from rules.json unchanged. 'demo_sample' copies the same rate structure for terminals with no ordinance on file and is labelled DEMO / SAMPLE RATE everywhere it appears. Neither is an official Guimaras fare.",
+  "fareRules": [
+    {
+      "id": "trikefair_buenavista",
+      "label": "PANAW provisional matrix",
+      "status": "PROVISIONAL",
+      "statusNote": "Existing project data. Not yet verified against the Buenavista SB ordinance.",
+      "source": "rules.json"
+    },
+    {
+      "id": "demo_sample",
+      "label": "DEMO / SAMPLE RATE",
+      "status": "DEMO / SAMPLE RATE",
+      "statusNote": "No ordinance on file for this terminal. Sample values for demonstration only.",
+      "lgu": null,
+      "ordinance": "DEMO / SAMPLE RATE — no ordinance on file",
+      "rates": {
+        "baseFare": 15,
+        "baseKm": 2,
+        "perKmRate": 1,
+        "specialBaseFare": 25,
+        "specialPerKmRate": 2,
+        "fareStep": 0.25,
+        "discountRate": 0.2,
+        "nightSurchargeRate": 0.15
+      }
+    }
+  ]
+}

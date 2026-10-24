@@ -1,0 +1,687 @@
+{
+  "_note": "The route network as a graph. Nodes are places, edges are road segments. dataStatus 'existing' = original TRIKEFAIR distances (rules.json). dataStatus 'demo' = DEMONSTRATION segments: straight-line distance between the two stored points x roadFactor, the same estimation method the original project used. Demo segments are not surveyed and do not prove a road exists. TODO: VERIFY LOCAL ROUTE DATA.",
+  "settings": {
+    "roadFactor": 1.3,
+    "assumedSpeedKph": 20,
+    "_speedNote": "estimated_minutes = distance_km / assumedSpeedKph. A demonstration assumption, not measured travel time.",
+    "costWeights": {
+      "distance": 1,
+      "time": 0
+    },
+    "_costNote": "routeCost = distance x distanceWeight + minutes x timeWeight. Distance-only by default. No live traffic data is used.",
+    "_osmNote": "dataStatus 'osm': place coordinates from OpenStreetMap (Nominatim) and road distances from OSRM, retrieved 2026-10-24. Verifiable public data, not a field survey. 'existing' segments are the original TRIKEFAIR matrix and are unchanged."
+  },
+  "nodes": [
+    {
+      "id": "terminal_buenavista_poblacion",
+      "name": "New Poblacion TODA Terminal",
+      "type": "terminal",
+      "municipality": "buenavista",
+      "lat": 10.6974,
+      "lng": 122.6472,
+      "source": "existing project data (rules.json terminalCoords)"
+    },
+    {
+      "id": "d1",
+      "name": "Guimaras State University — Salvador Campus",
+      "type": "destination",
+      "municipality": "buenavista",
+      "lat": 10.698781,
+      "lng": 122.6511688,
+      "source": "existing project data"
+    },
+    {
+      "id": "d2",
+      "name": "Buenavista New Terminal Market",
+      "type": "destination",
+      "municipality": "buenavista",
+      "lat": 10.6993323,
+      "lng": 122.6605618,
+      "source": "existing project data"
+    },
+    {
+      "id": "d3",
+      "name": "Buenavista Emergency Hospital",
+      "type": "destination",
+      "municipality": "buenavista",
+      "lat": 10.6966143,
+      "lng": 122.6610449,
+      "source": "existing project data"
+    },
+    {
+      "id": "d4",
+      "name": "MacArthur Wharf, Sto. Rosario",
+      "type": "destination",
+      "municipality": "buenavista",
+      "lat": 10.687903,
+      "lng": 122.6163195,
+      "source": "existing project data"
+    },
+    {
+      "id": "d5",
+      "name": "Daliran Cave",
+      "type": "destination",
+      "municipality": "buenavista",
+      "lat": 10.6764131,
+      "lng": 122.6227715,
+      "source": "existing project data"
+    },
+    {
+      "id": "d6",
+      "name": "Brgy. Getulio",
+      "type": "destination",
+      "municipality": "buenavista",
+      "lat": 10.7423139,
+      "lng": 122.6588267,
+      "source": "existing project data"
+    },
+    {
+      "id": "d7",
+      "name": "Roca Encantada",
+      "type": "destination",
+      "municipality": "buenavista",
+      "lat": 10.7427229,
+      "lng": 122.6793036,
+      "source": "existing project data"
+    },
+    {
+      "id": "d8",
+      "name": "GSU Mosqueda Campus, Jordan",
+      "type": "destination",
+      "municipality": "jordan",
+      "lat": 10.6187816,
+      "lng": 122.5940928,
+      "source": "existing project data"
+    },
+    {
+      "id": "center_jordan",
+      "name": "Jordan town proper",
+      "type": "municipality_center",
+      "municipality": "jordan",
+      "lat": 10.6611,
+      "lng": 122.5909,
+      "source": "PhilAtlas municipal center"
+    },
+    {
+      "id": "center_nueva_valencia",
+      "name": "Nueva Valencia town proper",
+      "type": "municipality_center",
+      "municipality": "nueva_valencia",
+      "lat": 10.5265,
+      "lng": 122.5396,
+      "source": "PhilAtlas municipal center"
+    },
+    {
+      "id": "center_san_lorenzo",
+      "name": "San Lorenzo town proper",
+      "type": "municipality_center",
+      "municipality": "san_lorenzo",
+      "lat": 10.5913,
+      "lng": 122.7024,
+      "source": "PhilAtlas municipal center"
+    },
+    {
+      "id": "center_sibunag",
+      "name": "Sibunag town proper",
+      "type": "municipality_center",
+      "municipality": "sibunag",
+      "lat": 10.5028,
+      "lng": 122.6304,
+      "source": "PhilAtlas municipal center"
+    },
+    {
+      "id": "osm_navalas_church",
+      "name": "San Isidro Labrador Parish Church, Navalas",
+      "type": "destination",
+      "municipality": "buenavista",
+      "lat": 10.7326701,
+      "lng": 122.6829817,
+      "category": "Heritage",
+      "source": "OpenStreetMap way/630826918 (via Nominatim, retrieved 2026-10-24, ODbL)"
+    },
+    {
+      "id": "osm_jordan_wharf",
+      "name": "Jordan Wharf",
+      "type": "destination",
+      "municipality": "jordan",
+      "lat": 10.6673918,
+      "lng": 122.588523,
+      "category": "Ports",
+      "source": "OpenStreetMap node/1783202960 (via Nominatim, retrieved 2026-10-24, ODbL)"
+    },
+    {
+      "id": "osm_jordan_public_market",
+      "name": "Jordan Public Market",
+      "type": "destination",
+      "municipality": "jordan",
+      "lat": 10.6658653,
+      "lng": 122.5905013,
+      "category": "Essentials",
+      "source": "OpenStreetMap way/680296016 (via Nominatim, retrieved 2026-10-24, ODbL)"
+    },
+    {
+      "id": "osm_balaan_bukid",
+      "name": "Balaan Bukid Shrine",
+      "type": "destination",
+      "municipality": "jordan",
+      "lat": 10.6635958,
+      "lng": 122.5666773,
+      "category": "Heritage",
+      "source": "OpenStreetMap node/12478362895 (via Nominatim, retrieved 2026-10-24, ODbL)"
+    },
+    {
+      "id": "osm_provincial_capitol",
+      "name": "Guimaras Provincial Capitol",
+      "type": "destination",
+      "municipality": "jordan",
+      "lat": 10.5993803,
+      "lng": 122.5890087,
+      "category": "Landmarks",
+      "source": "OpenStreetMap way/248153305 (via Nominatim, retrieved 2026-10-24, ODbL)"
+    },
+    {
+      "id": "osm_provincial_hospital",
+      "name": "Dr. Catalino Gallego Nava Provincial Hospital",
+      "type": "destination",
+      "municipality": "jordan",
+      "lat": 10.5974594,
+      "lng": 122.5894712,
+      "category": "Essentials",
+      "source": "OpenStreetMap way/308684511 (via Nominatim, retrieved 2026-10-24, ODbL)"
+    },
+    {
+      "id": "osm_mango_research",
+      "name": "National Mango Research Center",
+      "type": "destination",
+      "municipality": "jordan",
+      "lat": 10.5851912,
+      "lng": 122.580349,
+      "category": "Landmarks",
+      "source": "OpenStreetMap way/680248949 (via Nominatim, retrieved 2026-10-24, ODbL)"
+    },
+    {
+      "id": "osm_trappist_abbey",
+      "name": "Our Lady of the Philippines Trappist Abbey",
+      "type": "destination",
+      "municipality": "jordan",
+      "lat": 10.5809712,
+      "lng": 122.5760602,
+      "category": "Heritage",
+      "source": "OpenStreetMap way/1150627059 (via Nominatim, retrieved 2026-10-24, ODbL)"
+    },
+    {
+      "id": "osm_tatlong_pulo",
+      "name": "Tatlong Pulo Beach, Sinapsapan",
+      "type": "destination",
+      "municipality": "jordan",
+      "lat": 10.5808189,
+      "lng": 122.5118343,
+      "category": "Beaches",
+      "source": "OpenStreetMap relation/13997432 (via Nominatim, retrieved 2026-10-24, ODbL)"
+    },
+    {
+      "id": "osm_raymen_beach",
+      "name": "Raymen Beach Resort, Alubihod",
+      "type": "destination",
+      "municipality": "nueva_valencia",
+      "lat": 10.5340748,
+      "lng": 122.5173707,
+      "category": "Beaches",
+      "source": "OpenStreetMap node/4210878550 (via Nominatim, retrieved 2026-10-24, ODbL)"
+    },
+    {
+      "id": "osm_guisi_lighthouse",
+      "name": "Guisi Lighthouse, Brgy. Dolores",
+      "type": "destination",
+      "municipality": "nueva_valencia",
+      "lat": 10.4813655,
+      "lng": 122.4744901,
+      "category": "Heritage",
+      "source": "OpenStreetMap node/4578632793 (via Nominatim, retrieved 2026-10-24, ODbL)"
+    },
+    {
+      "id": "osm_wind_farm",
+      "name": "San Lorenzo Wind Farm",
+      "type": "destination",
+      "municipality": "san_lorenzo",
+      "lat": 10.590097,
+      "lng": 122.6930074,
+      "category": "Landmarks",
+      "source": "OpenStreetMap node/6367439757 (via Nominatim, retrieved 2026-10-24, ODbL)"
+    },
+    {
+      "id": "osm_sl_church",
+      "name": "Immaculada Conception Parish Church, San Lorenzo",
+      "type": "destination",
+      "municipality": "san_lorenzo",
+      "lat": 10.6128923,
+      "lng": 122.7139353,
+      "category": "Heritage",
+      "source": "OpenStreetMap way/247278624 (via Nominatim, retrieved 2026-10-24, ODbL)"
+    },
+    {
+      "id": "osm_sebaste_port",
+      "name": "Sebaste Port, Sibunag",
+      "type": "destination",
+      "municipality": "sibunag",
+      "lat": 10.4964463,
+      "lng": 122.6758128,
+      "category": "Ports",
+      "source": "OpenStreetMap way/483126757 (via Nominatim, retrieved 2026-10-24, ODbL)"
+    }
+  ],
+  "edges": [
+    {
+      "id": "e_bv_d1",
+      "from": "terminal_buenavista_poblacion",
+      "to": "d1",
+      "distance_km": 0.6,
+      "estimated_minutes": 2,
+      "route_type": "municipal road",
+      "transport_modes": [
+        "tricycle"
+      ],
+      "bidirectional": true,
+      "available": true,
+      "dataStatus": "existing"
+    },
+    {
+      "id": "e_bv_d2",
+      "from": "terminal_buenavista_poblacion",
+      "to": "d2",
+      "distance_km": 1.9,
+      "estimated_minutes": 6,
+      "route_type": "municipal road",
+      "transport_modes": [
+        "tricycle"
+      ],
+      "bidirectional": true,
+      "available": true,
+      "dataStatus": "existing"
+    },
+    {
+      "id": "e_bv_d3",
+      "from": "terminal_buenavista_poblacion",
+      "to": "d3",
+      "distance_km": 2,
+      "estimated_minutes": 6,
+      "route_type": "municipal road",
+      "transport_modes": [
+        "tricycle"
+      ],
+      "bidirectional": true,
+      "available": true,
+      "dataStatus": "existing"
+    },
+    {
+      "id": "e_bv_d4",
+      "from": "terminal_buenavista_poblacion",
+      "to": "d4",
+      "distance_km": 4.6,
+      "estimated_minutes": 14,
+      "route_type": "municipal road",
+      "transport_modes": [
+        "tricycle"
+      ],
+      "bidirectional": true,
+      "available": true,
+      "dataStatus": "existing"
+    },
+    {
+      "id": "e_bv_d5",
+      "from": "terminal_buenavista_poblacion",
+      "to": "d5",
+      "distance_km": 4.6,
+      "estimated_minutes": 14,
+      "route_type": "municipal road",
+      "transport_modes": [
+        "tricycle"
+      ],
+      "bidirectional": true,
+      "available": true,
+      "dataStatus": "existing"
+    },
+    {
+      "id": "e_bv_d6",
+      "from": "terminal_buenavista_poblacion",
+      "to": "d6",
+      "distance_km": 6.7,
+      "estimated_minutes": 20,
+      "route_type": "municipal road",
+      "transport_modes": [
+        "tricycle"
+      ],
+      "bidirectional": true,
+      "available": true,
+      "dataStatus": "existing"
+    },
+    {
+      "id": "e_bv_d7",
+      "from": "terminal_buenavista_poblacion",
+      "to": "d7",
+      "distance_km": 8,
+      "estimated_minutes": 24,
+      "route_type": "municipal road",
+      "transport_modes": [
+        "tricycle"
+      ],
+      "bidirectional": true,
+      "available": true,
+      "dataStatus": "existing"
+    },
+    {
+      "id": "e_bv_d8",
+      "from": "terminal_buenavista_poblacion",
+      "to": "d8",
+      "distance_km": 13.6,
+      "estimated_minutes": 41,
+      "route_type": "inter-municipal road",
+      "transport_modes": [
+        "tricycle"
+      ],
+      "bidirectional": true,
+      "available": true,
+      "dataStatus": "existing"
+    },
+    {
+      "id": "e_bv_jordan",
+      "from": "terminal_buenavista_poblacion",
+      "to": "center_jordan",
+      "distance_km": 10.8,
+      "estimated_minutes": 32,
+      "route_type": "inter-municipal road",
+      "transport_modes": [
+        "tricycle"
+      ],
+      "bidirectional": true,
+      "available": true,
+      "dataStatus": "osm",
+      "source": "OSRM road distance over OpenStreetMap (router.project-osrm.org, retrieved 2026-10-24). Minutes use the assumed tricycle speed."
+    },
+    {
+      "id": "e_jordan_nv",
+      "from": "center_jordan",
+      "to": "center_nueva_valencia",
+      "distance_km": 21.3,
+      "estimated_minutes": 64,
+      "route_type": "inter-municipal road",
+      "transport_modes": [
+        "tricycle"
+      ],
+      "bidirectional": true,
+      "available": true,
+      "dataStatus": "osm",
+      "source": "OSRM road distance over OpenStreetMap (router.project-osrm.org, retrieved 2026-10-24). Minutes use the assumed tricycle speed."
+    },
+    {
+      "id": "e_nv_sibunag",
+      "from": "center_nueva_valencia",
+      "to": "center_sibunag",
+      "distance_km": 14.1,
+      "estimated_minutes": 42,
+      "route_type": "inter-municipal road",
+      "transport_modes": [
+        "tricycle"
+      ],
+      "bidirectional": true,
+      "available": true,
+      "dataStatus": "osm",
+      "source": "OSRM road distance over OpenStreetMap (router.project-osrm.org, retrieved 2026-10-24). Minutes use the assumed tricycle speed."
+    },
+    {
+      "id": "e_sibunag_sl",
+      "from": "center_sibunag",
+      "to": "center_san_lorenzo",
+      "distance_km": 18,
+      "estimated_minutes": 54,
+      "route_type": "inter-municipal road",
+      "transport_modes": [
+        "tricycle"
+      ],
+      "bidirectional": true,
+      "available": true,
+      "dataStatus": "osm",
+      "source": "OSRM road distance over OpenStreetMap (router.project-osrm.org, retrieved 2026-10-24). Minutes use the assumed tricycle speed."
+    },
+    {
+      "id": "e_sl_bv",
+      "from": "center_san_lorenzo",
+      "to": "terminal_buenavista_poblacion",
+      "distance_km": 21.2,
+      "estimated_minutes": 64,
+      "route_type": "inter-municipal road",
+      "transport_modes": [
+        "tricycle"
+      ],
+      "bidirectional": true,
+      "available": true,
+      "dataStatus": "osm",
+      "source": "OSRM road distance over OpenStreetMap (router.project-osrm.org, retrieved 2026-10-24). Minutes use the assumed tricycle speed."
+    },
+    {
+      "id": "e_jordan_d8",
+      "from": "center_jordan",
+      "to": "d8",
+      "distance_km": 6.1,
+      "estimated_minutes": 18,
+      "route_type": "municipal road",
+      "transport_modes": [
+        "tricycle"
+      ],
+      "bidirectional": true,
+      "available": true,
+      "dataStatus": "osm",
+      "source": "OSRM road distance over OpenStreetMap (router.project-osrm.org, retrieved 2026-10-24). Minutes use the assumed tricycle speed."
+    },
+    {
+      "id": "e_navalas_church",
+      "from": "d7",
+      "to": "osm_navalas_church",
+      "distance_km": 1.4,
+      "estimated_minutes": 4,
+      "route_type": "municipal road",
+      "transport_modes": [
+        "tricycle"
+      ],
+      "bidirectional": true,
+      "available": true,
+      "dataStatus": "osm",
+      "source": "OSRM road distance over OpenStreetMap (router.project-osrm.org, retrieved 2026-10-24). Minutes use the assumed tricycle speed."
+    },
+    {
+      "id": "e_jordan_wharf",
+      "from": "center_jordan",
+      "to": "osm_jordan_wharf",
+      "distance_km": 0.9,
+      "estimated_minutes": 3,
+      "route_type": "municipal road",
+      "transport_modes": [
+        "tricycle"
+      ],
+      "bidirectional": true,
+      "available": true,
+      "dataStatus": "osm",
+      "source": "OSRM road distance over OpenStreetMap (router.project-osrm.org, retrieved 2026-10-24). Minutes use the assumed tricycle speed."
+    },
+    {
+      "id": "e_jordan_public_market",
+      "from": "osm_jordan_wharf",
+      "to": "osm_jordan_public_market",
+      "distance_km": 0.3,
+      "estimated_minutes": 1,
+      "route_type": "municipal road",
+      "transport_modes": [
+        "tricycle"
+      ],
+      "bidirectional": true,
+      "available": true,
+      "dataStatus": "osm",
+      "source": "OSRM road distance over OpenStreetMap (router.project-osrm.org, retrieved 2026-10-24). Minutes use the assumed tricycle speed."
+    },
+    {
+      "id": "e_balaan_bukid",
+      "from": "osm_jordan_wharf",
+      "to": "osm_balaan_bukid",
+      "distance_km": 3.9,
+      "estimated_minutes": 12,
+      "route_type": "municipal road",
+      "transport_modes": [
+        "tricycle"
+      ],
+      "bidirectional": true,
+      "available": true,
+      "dataStatus": "osm",
+      "source": "OSRM road distance over OpenStreetMap (router.project-osrm.org, retrieved 2026-10-24). Minutes use the assumed tricycle speed."
+    },
+    {
+      "id": "e_provincial_capitol",
+      "from": "d8",
+      "to": "osm_provincial_capitol",
+      "distance_km": 2.4,
+      "estimated_minutes": 7,
+      "route_type": "municipal road",
+      "transport_modes": [
+        "tricycle"
+      ],
+      "bidirectional": true,
+      "available": true,
+      "dataStatus": "osm",
+      "source": "OSRM road distance over OpenStreetMap (router.project-osrm.org, retrieved 2026-10-24). Minutes use the assumed tricycle speed."
+    },
+    {
+      "id": "e_provincial_hospital",
+      "from": "osm_provincial_capitol",
+      "to": "osm_provincial_hospital",
+      "distance_km": 0.9,
+      "estimated_minutes": 3,
+      "route_type": "municipal road",
+      "transport_modes": [
+        "tricycle"
+      ],
+      "bidirectional": true,
+      "available": true,
+      "dataStatus": "osm",
+      "source": "OSRM road distance over OpenStreetMap (router.project-osrm.org, retrieved 2026-10-24). Minutes use the assumed tricycle speed."
+    },
+    {
+      "id": "e_mango_research",
+      "from": "osm_provincial_hospital",
+      "to": "osm_mango_research",
+      "distance_km": 2,
+      "estimated_minutes": 6,
+      "route_type": "municipal road",
+      "transport_modes": [
+        "tricycle"
+      ],
+      "bidirectional": true,
+      "available": true,
+      "dataStatus": "osm",
+      "source": "OSRM road distance over OpenStreetMap (router.project-osrm.org, retrieved 2026-10-24). Minutes use the assumed tricycle speed."
+    },
+    {
+      "id": "e_trappist_abbey",
+      "from": "osm_mango_research",
+      "to": "osm_trappist_abbey",
+      "distance_km": 0.8,
+      "estimated_minutes": 2,
+      "route_type": "municipal road",
+      "transport_modes": [
+        "tricycle"
+      ],
+      "bidirectional": true,
+      "available": true,
+      "dataStatus": "osm",
+      "source": "OSRM road distance over OpenStreetMap (router.project-osrm.org, retrieved 2026-10-24). Minutes use the assumed tricycle speed."
+    },
+    {
+      "id": "e_tatlong_pulo",
+      "from": "osm_mango_research",
+      "to": "osm_tatlong_pulo",
+      "distance_km": 11.8,
+      "estimated_minutes": 35,
+      "route_type": "municipal road",
+      "transport_modes": [
+        "tricycle"
+      ],
+      "bidirectional": true,
+      "available": true,
+      "dataStatus": "osm",
+      "source": "OSRM road distance over OpenStreetMap (router.project-osrm.org, retrieved 2026-10-24). Minutes use the assumed tricycle speed."
+    },
+    {
+      "id": "e_raymen_beach",
+      "from": "center_nueva_valencia",
+      "to": "osm_raymen_beach",
+      "distance_km": 3.1,
+      "estimated_minutes": 9,
+      "route_type": "municipal road",
+      "transport_modes": [
+        "tricycle"
+      ],
+      "bidirectional": true,
+      "available": true,
+      "dataStatus": "osm",
+      "source": "OSRM road distance over OpenStreetMap (router.project-osrm.org, retrieved 2026-10-24). Minutes use the assumed tricycle speed."
+    },
+    {
+      "id": "e_guisi_lighthouse",
+      "from": "osm_raymen_beach",
+      "to": "osm_guisi_lighthouse",
+      "distance_km": 11,
+      "estimated_minutes": 33,
+      "route_type": "municipal road",
+      "transport_modes": [
+        "tricycle"
+      ],
+      "bidirectional": true,
+      "available": true,
+      "dataStatus": "osm",
+      "source": "OSRM road distance over OpenStreetMap (router.project-osrm.org, retrieved 2026-10-24). Minutes use the assumed tricycle speed."
+    },
+    {
+      "id": "e_wind_farm",
+      "from": "center_san_lorenzo",
+      "to": "osm_wind_farm",
+      "distance_km": 2,
+      "estimated_minutes": 6,
+      "route_type": "municipal road",
+      "transport_modes": [
+        "tricycle"
+      ],
+      "bidirectional": true,
+      "available": true,
+      "dataStatus": "osm",
+      "source": "OSRM road distance over OpenStreetMap (router.project-osrm.org, retrieved 2026-10-24). Minutes use the assumed tricycle speed."
+    },
+    {
+      "id": "e_sl_church",
+      "from": "center_san_lorenzo",
+      "to": "osm_sl_church",
+      "distance_km": 2.8,
+      "estimated_minutes": 8,
+      "route_type": "municipal road",
+      "transport_modes": [
+        "tricycle"
+      ],
+      "bidirectional": true,
+      "available": true,
+      "dataStatus": "osm",
+      "source": "OSRM road distance over OpenStreetMap (router.project-osrm.org, retrieved 2026-10-24). Minutes use the assumed tricycle speed."
+    },
+    {
+      "id": "e_sebaste_port",
+      "from": "center_sibunag",
+      "to": "osm_sebaste_port",
+      "distance_km": 7.3,
+      "estimated_minutes": 22,
+      "route_type": "municipal road",
+      "transport_modes": [
+        "tricycle"
+      ],
+      "bidirectional": true,
+      "available": true,
+      "dataStatus": "osm",
+      "source": "OSRM road distance over OpenStreetMap (router.project-osrm.org, retrieved 2026-10-24). Minutes use the assumed tricycle speed."
+    }
+  ]
+}

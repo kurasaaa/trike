@@ -1,0 +1,866 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PANAW Prototype</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+/*@STYLES@*/
+
+/* ===== prototype-only components (panel recommendations), built from the same tokens ===== */
+.chips{display:flex; gap:6px; flex-wrap:wrap;}
+.chip{font-size:12px; font-weight:600; padding:7px 11px; border-radius:20px; background:var(--white);
+  border:1.5px solid var(--line); color:var(--navy); cursor:pointer; font-family:var(--font-body);}
+.chip.on{background:var(--navy); color:var(--white); border-color:var(--navy);}
+.chip:disabled{opacity:.5; cursor:not-allowed;}
+.hscroll{display:flex; gap:6px; overflow-x:auto; padding-bottom:4px; margin-bottom:12px;}
+.hscroll::-webkit-scrollbar{height:0;}
+.hscroll .chip{white-space:nowrap;}
+.photo{height:120px; border-radius:14px; position:relative; display:flex; align-items:flex-end; padding:8px;
+  color:var(--white); font-size:10.5px; font-weight:600; background:linear-gradient(135deg,#BFE4E1,#7FC8C2 60%,#3E9FA0);}
+.photo.tall{height:190px;}
+.photo .src{background:rgba(8,40,48,.55); padding:3px 8px; border-radius:8px;}
+.photo .muni{position:absolute; top:8px; left:8px; background:var(--white); color:var(--navy); padding:3px 8px; border-radius:20px; font-size:10px;}
+.photo .dots{position:absolute; bottom:10px; right:10px; display:flex; gap:4px;}
+.photo .dots i{width:6px; height:6px; border-radius:50%; background:rgba(255,255,255,.5);}
+.photo .dots i.on{background:var(--white);}
+.photo .arrow{position:absolute; top:50%; transform:translateY(-50%); width:30px; height:30px; border-radius:50%;
+  border:none; background:rgba(8,40,48,.45); color:#fff; cursor:pointer; font-size:16px;}
+.photo .arrow.l{left:8px;} .photo .arrow.r{right:8px;}
+.ph-0{background:linear-gradient(135deg,#BFE4E1,#7FC8C2 60%,#3E9FA0);}
+.ph-1{background:linear-gradient(135deg,#F5D9A8,#E0A65A 60%,#B9772C);}
+.ph-2{background:linear-gradient(135deg,#CFE0F5,#8DB2E0 60%,#4E7DB9);}
+.ph-3{background:linear-gradient(135deg,#DDEFD3,#A3D18C 60%,#5E9E46);}
+.place-card{cursor:pointer;}
+.place-card h4{margin:9px 0 2px; font-family:var(--font-display); font-size:14.5px; color:var(--navy);}
+.place-card .meta{font-size:11.5px; color:var(--ink-soft);}
+.who-card{display:flex; gap:12px; align-items:center; cursor:pointer; text-align:left; width:100%;
+  font-family:var(--font-body);}
+.who-card .big{font-size:30px; width:54px; height:54px; border-radius:16px; background:var(--sky-2);
+  display:flex; align-items:center; justify-content:center; flex-shrink:0;}
+.who-card .t{font-family:var(--font-display); font-weight:700; font-size:15.5px; color:var(--navy);}
+.who-card .s{font-size:12px; color:var(--ink-soft); margin-top:2px;}
+.stop-row{display:flex; gap:8px; align-items:center; margin-bottom:8px;}
+.stop-row .n{width:26px; height:26px; border-radius:50%; background:var(--teal); color:#fff; font-size:12px;
+  font-weight:700; display:flex; align-items:center; justify-content:center; flex-shrink:0;}
+.stop-row select{flex:1; min-width:0;}
+.icon-btn{width:34px; height:34px; border-radius:10px; border:1.5px solid var(--line); background:var(--sky);
+  color:var(--ink-soft); cursor:pointer; flex-shrink:0;}
+.icon-btn:hover{color:var(--red); background:var(--red-soft);}
+.opt{border:1.5px solid var(--line); border-radius:14px; padding:11px; margin-bottom:8px; cursor:pointer; background:var(--white);}
+.opt.on{border-color:var(--teal); background:var(--sky-2); box-shadow:0 0 0 3px var(--teal-glow);}
+.opt .top{display:flex; justify-content:space-between; align-items:center; gap:8px;}
+.opt .top b{color:var(--navy); font-family:var(--font-display); font-size:13.5px;}
+.opt .path{font-size:11.5px; color:var(--ink-soft); margin-top:4px; line-height:1.45;}
+.mode-row{display:flex; align-items:center; gap:10px; padding:10px; border:1.5px solid var(--line);
+  border-radius:14px; margin-bottom:8px; background:var(--white); cursor:pointer; width:100%; text-align:left; font-family:var(--font-body);}
+.mode-row.on{border-color:var(--teal); background:var(--sky-2);}
+.mode-row.off{opacity:.6;}
+.mode-row .ic{font-size:21px; width:38px; height:38px; display:flex; align-items:center; justify-content:center;
+  background:var(--sky-2); border-radius:11px; flex-shrink:0;}
+.mode-row .txt{flex:1; font-size:12px; color:var(--ink-soft);}
+.mode-row .txt b{display:block; color:var(--navy); font-size:13.5px;}
+.menu-item{display:flex; align-items:center; gap:12px; padding:12px 2px; border-bottom:1px solid var(--line);
+  cursor:pointer; background:none; border-left:none; border-right:none; border-top:none; width:100%; text-align:left; font-family:var(--font-body);}
+.menu-item:last-child{border-bottom:none;}
+.menu-item .ic{font-size:19px; width:38px; height:38px; border-radius:11px; background:var(--sky-2);
+  display:flex; align-items:center; justify-content:center; flex-shrink:0;}
+.menu-item .t{font-weight:700; color:var(--navy); font-size:13.5px;}
+.menu-item .s{font-size:11.5px; color:var(--ink-soft); margin-top:1px;}
+.menu-item .go{margin-left:auto; color:var(--ink-soft);}
+.leg-head{display:flex; justify-content:space-between; align-items:center; gap:8px; margin:4px 0 2px;}
+.leg-head b{font-size:12.5px; color:var(--navy);}
+.leg-head .badge, .opt .badge{white-space:nowrap; flex-shrink:0;}
+.cite{border-left:3px solid var(--teal); background:var(--sky); padding:9px 11px; border-radius:0 10px 10px 0;
+  font-size:12px; line-height:1.5; color:var(--navy);}
+.check{font-size:12.5px; display:flex; gap:8px; padding:4px 0; color:var(--ink);}
+.cmp{width:100%; border-collapse:collapse; font-size:11.5px;}
+.cmp th{background:var(--sky-2); color:var(--navy); font-size:10px; text-transform:uppercase; padding:7px 6px; text-align:left;}
+.cmp td{padding:8px 6px; border-bottom:1px solid var(--line); vertical-align:top;}
+.cmp td:first-child{font-weight:600; color:var(--navy);}
+.yes{color:var(--green); font-weight:700;} .no{color:var(--ink-soft);} .part{color:#9a6b12; font-weight:700;}
+.policy{width:100%; border-collapse:collapse; font-size:11.5px;}
+.policy th,.policy td{padding:7px 4px; border-bottom:1px solid var(--line); text-align:center;}
+.policy th:first-child,.policy td:first-child{text-align:left;}
+.policy th{font-size:10px; color:var(--ink-soft); text-transform:uppercase;}
+</style>
+</head>
+<body>
+<div id="app-frame">
+<div id="screens">
+
+  <!-- ======================= WELCOME (rec #9) ======================= -->
+  <section class="screen" id="screen-welcome">
+    <div class="topbar">
+      <div class="brand-row"><div class="brand-mark">PN</div>
+        <div><div class="brand-name">PANAW</div><div class="brand-tag">Progressive Advanced Network for Automated Wayfinding · Guimaras</div></div></div>
+      <div class="mode-pill"><span class="dot amber-dot"></span> DESIGN PROTOTYPE · DATA MODE: DEMONSTRATION</div>
+    </div>
+    <div class="screen-scroll">
+      <div class="card"><div class="card-title">Maayong pag-abot! Welcome to Guimaras</div>
+        <div class="stepper-hint" style="margin:0">Check the fair tricycle fare before you ride. The fares, routes and terminals are stored on your phone, so this works without signal.</div></div>
+      <div class="card"><button class="who-card" style="border:none;background:none;padding:0" data-who="tourist">
+        <span class="big">🧳</span><span><span class="t">I'm visiting Guimaras</span><span class="s" style="display:block">Start from beaches, caves and landmarks, and see how to get there.</span></span></button></div>
+      <div class="card"><button class="who-card" style="border:none;background:none;padding:0" data-who="local">
+        <span class="big">🏠</span><span><span class="t">I live here</span><span class="s" style="display:block">Go straight to terminal, destination and fare.</span></span></button></div>
+      <div class="disclaimer">⚠️ <span>This is a design prototype. The Buenavista rule is the existing project matrix. Rates for other terminals are DEMO / SAMPLE RATES, not official fares.</span></div>
+    </div>
+  </section>
+
+  <!-- ======================= EXPLORE (rec #9 #10 #13) ======================= -->
+  <section class="screen" id="screen-explore">
+    <div class="topbar">
+      <div class="brand-row"><div class="brand-mark">PN</div>
+        <div><div class="brand-name">Explore Guimaras</div><div class="brand-tag">Places you can reach by tricycle</div></div></div>
+      <div class="mode-pill"><span class="dot"></span> <span id="net-pill">Offline-ready · stored route data</span></div>
+    </div>
+    <div class="screen-scroll">
+      <input type="text" id="explore-search" placeholder="🔍  Search places…" style="margin-bottom:10px">
+      <div class="hscroll" id="explore-cats"></div>
+      <div class="hscroll" id="explore-munis"></div>
+      <div id="explore-list"></div>
+    </div>
+  </section>
+
+  <!-- ======================= PLACE DETAIL (rec #10 #13) ======================= -->
+  <section class="screen" id="screen-place">
+    <div class="topbar"><div class="topbar-inline"><button class="back-btn" data-back>‹</button>
+      <div><div class="screen-title" id="place-title">Place</div><div class="screen-subtitle" id="place-sub"></div></div></div></div>
+    <div class="screen-scroll" id="place-body"></div>
+  </section>
+
+  <!-- ======================= TRIP (existing home + recs #6 #7 #14) ======================= -->
+  <section class="screen" id="screen-trip">
+    <div class="topbar">
+      <div class="brand-row"><div class="brand-mark">PN</div>
+        <div><div class="brand-name">PANAW</div><div class="brand-tag">Guimaras Local Transport System</div></div></div>
+      <div class="mode-pill"><span class="dot"></span> <span>Terminal Ride Mode · local computation</span></div>
+    </div>
+    <div class="screen-scroll">
+      <div class="card"><div class="card-title">Vehicle</div><div class="chips" id="mode-chips"></div>
+        <div class="stepper-hint" id="mode-hint"></div></div>
+
+      <div class="card"><div class="card-title">Origin</div>
+        <div class="origin-grid">
+          <div><label class="field-label" for="muni">Municipality</label><select id="muni"></select></div>
+          <div><label class="field-label" for="term">Terminal</label><select id="term"></select></div>
+        </div>
+        <div class="terminal-box"><div class="ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8M12 16v4"/></svg></div>
+          <div><div class="txt-label">Current terminal</div><div class="txt-main" id="term-name"></div><div class="terminal-meta" id="term-meta"></div></div></div>
+        <button class="btn btn-secondary btn-sm" style="margin-top:10px" id="pickup-btn">📍 Find nearest pick-up point</button>
+        <div id="pickup-out"></div>
+      </div>
+
+      <div class="card"><div class="card-title">Destinations <span class="badge badge-navy" id="stop-count" style="margin-left:auto"></span></div>
+        <div id="stops"></div>
+        <button class="btn btn-secondary btn-sm" id="add-stop">＋ Add another stop</button>
+        <div class="switch-row" style="margin-top:12px">
+          <div class="label-block"><div class="t">Suggest best stop order</div><div class="s">Reorders your stops to the shortest total distance on the stored network.</div></div>
+          <label class="switch"><input type="checkbox" id="best-order"><span class="track"><span class="thumb"></span></span></label>
+        </div>
+      </div>
+
+      <div class="card"><div class="card-title">Hire type</div>
+        <select id="hire"><option value="regular">Regular hire: shared ride, fare per passenger</option><option value="special">Special trip: you hire the whole unit</option></select></div>
+
+      <div class="card"><div class="card-title">Passengers</div>
+        <div class="stepper"><button id="pax-m">−</button><div class="count" id="pax">1</div><button id="pax-p">+</button></div>
+        <label class="field-label" style="margin-top:12px" for="disc">Discount</label>
+        <select id="disc"><option value="none">None</option><option value="student">Student</option><option value="senior">Senior citizen</option><option value="pwd">PWD</option></select>
+        <div class="stepper" style="margin-top:10px"><button id="dp-m">−</button><div class="count" id="dpax">0</div><button id="dp-p">+</button></div>
+        <div class="stepper-hint">Discounted passengers. The 20% comes off each qualified passenger's own fare (RA 9994, RA 10754).</div></div>
+
+      <button class="btn btn-primary" id="find-btn">Find route & fare</button>
+    </div>
+  </section>
+
+  <!-- ======================= PICK ME UP (fastest online trike to your spot) ======================= -->
+  <section class="screen" id="screen-pickup">
+    <div class="topbar">
+      <div class="brand-row"><div class="brand-mark">PN</div>
+        <div><div class="brand-name">Pick me up</div><div class="brand-tag">The nearest online trike comes to you, not to the terminal</div></div></div>
+      <div class="mode-pill"><span class="dot amber-dot"></span> DEMO VEHICLES · simulated positions · no live traffic</div>
+    </div>
+    <div class="screen-scroll" id="pu-body"></div>
+  </section>
+
+  <!-- ======================= RESULT ======================= -->
+  <section class="screen" id="screen-result">
+    <div class="topbar"><div class="topbar-inline"><button class="back-btn" data-back>‹</button>
+      <div><div class="screen-title">Route & fare</div><div class="screen-subtitle" id="res-sub"></div></div></div></div>
+    <div class="screen-scroll" id="res-body"></div>
+  </section>
+
+  <!-- ======================= HISTORY ======================= -->
+  <section class="screen" id="screen-history">
+    <div class="topbar"><div class="screen-title">Trip history</div><div class="screen-subtitle">Saved on this phone · not uploaded</div></div>
+    <div class="screen-scroll" id="hist-body"></div>
+  </section>
+
+  <!-- ======================= MORE ======================= -->
+  <section class="screen" id="screen-more">
+    <div class="topbar"><div class="screen-title">More</div><div class="screen-subtitle">Policy, associations, offline, and about PANAW</div></div>
+    <div class="screen-scroll">
+      <div class="card">
+        <button class="menu-item" data-go="screen-policy"><span class="ic">🏛️</span><span><span class="t" style="display:block">Fare basis & local policy</span><span class="s">Ordinances, and vehicle types per municipality</span></span><span class="go">›</span></button>
+        <button class="menu-item" data-go="screen-assoc"><span class="ic">🤝</span><span><span class="t" style="display:block">Transport associations</span><span class="s">TODAs and operators per terminal</span></span><span class="go">›</span></button>
+        <button class="menu-item" data-go="screen-tourism"><span class="ic">🧭</span><span><span class="t" style="display:block">Tourism offices</span><span class="s">Info and photo partners</span></span><span class="go">›</span></button>
+        <button class="menu-item" data-go="screen-offline"><span class="ic">📦</span><span><span class="t" style="display:block">Offline</span><span class="s">What works without signal</span></span><span class="go">›</span></button>
+        <button class="menu-item" data-go="screen-about"><span class="ic">ℹ️</span><span><span class="t" style="display:block">Why PANAW?</span><span class="s">Compared with Google Maps and Waze</span></span><span class="go">›</span></button>
+        <button class="menu-item" id="switch-who"><span class="ic">🔁</span><span><span class="t" style="display:block">Switch tourist / local</span><span class="s" id="who-now"></span></span><span class="go">›</span></button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ======================= POLICY (rec #1 #7) ======================= -->
+  <section class="screen" id="screen-policy">
+    <div class="topbar"><div class="topbar-inline"><button class="back-btn" data-back>‹</button>
+      <div><div class="screen-title">Fare basis & policy</div><div class="screen-subtitle">Where each fare comes from</div></div></div></div>
+    <div class="screen-scroll" id="policy-body"></div>
+  </section>
+
+  <!-- ======================= ASSOCIATIONS (rec #8 #12) ======================= -->
+  <section class="screen" id="screen-assoc">
+    <div class="topbar"><div class="topbar-inline"><button class="back-btn" data-back>‹</button>
+      <div><div class="screen-title">Transport associations</div><div class="screen-subtitle">Who runs each terminal</div></div></div></div>
+    <div class="screen-scroll"><div class="hscroll" id="assoc-munis"></div><div id="assoc-body"></div></div>
+  </section>
+
+  <!-- ======================= TOURISM (rec #10) ======================= -->
+  <section class="screen" id="screen-tourism">
+    <div class="topbar"><div class="topbar-inline"><button class="back-btn" data-back>‹</button>
+      <div><div class="screen-title">Tourism offices</div><div class="screen-subtitle">Partners for destination info and photos</div></div></div></div>
+    <div class="screen-scroll" id="tourism-body"></div>
+  </section>
+
+  <!-- ======================= OFFLINE (rec #11) ======================= -->
+  <section class="screen" id="screen-offline">
+    <div class="topbar"><div class="topbar-inline"><button class="back-btn" data-back>‹</button>
+      <div><div class="screen-title">Offline</div><div class="screen-subtitle" id="off-sub"></div></div></div></div>
+    <div class="screen-scroll" id="offline-body"></div>
+  </section>
+
+  <!-- ======================= ABOUT (rec #4 #5) ======================= -->
+  <section class="screen" id="screen-about">
+    <div class="topbar"><div class="topbar-inline"><button class="back-btn" data-back>‹</button>
+      <div><div class="screen-title">Why PANAW?</div><div class="screen-subtitle">What it adds next to navigation apps</div></div></div></div>
+    <div class="screen-scroll">
+      <div class="card"><div class="card-title">At a glance</div>
+        <table class="cmp">
+          <tr><th>Feature</th><th>PANAW</th><th>Google Maps</th><th>Waze</th></tr>
+          <tr><td>Tricycle fare estimate</td><td class="yes">Yes</td><td class="no">No</td><td class="no">No</td></tr>
+          <tr><td>Fare breakdown & discounts</td><td class="yes">Yes</td><td class="no">No</td><td class="no">No</td></tr>
+          <tr><td>Fare linked to LGU ordinance</td><td class="yes">Yes</td><td class="no">No</td><td class="no">No</td></tr>
+          <tr><td>TODA terminals & associations</td><td class="yes">Yes</td><td class="part">Places only</td><td class="no">No</td></tr>
+          <tr><td>Fare works offline</td><td class="yes">Yes</td><td class="part">Maps only</td><td class="no">No</td></tr>
+          <tr><td>Multi-stop trip</td><td class="yes">Fare per leg</td><td class="yes">Directions</td><td class="part">Verify</td></tr>
+          <tr><td>Live traffic</td><td class="no">No</td><td class="yes">Yes</td><td class="yes">Yes</td></tr>
+          <tr><td>Turn-by-turn navigation</td><td class="no">No</td><td class="yes">Yes</td><td class="yes">Yes</td></tr>
+        </table>
+        <div class="stepper-hint">Check these against the current versions of each app before citing them.</div></div>
+      <div class="card"><div class="card-title">💸 Fare transparency</div><div class="stepper-hint" style="margin:0">Navigation apps show the way. PANAW shows what the tricycle should cost and how that fare was computed.</div></div>
+      <div class="card"><div class="card-title">🏛️ Ordinance-based</div><div class="stepper-hint" style="margin:0">Each fare names its source: the municipal ordinance or the association's matrix.</div></div>
+      <div class="card"><div class="card-title">📶 Offline by design</div><div class="stepper-hint" style="margin:0">The fare engine and route network run on the phone, with no signal needed.</div></div>
+      <div class="card"><div class="card-title">🤝 Local partners</div><div class="stepper-hint" style="margin:0">TODAs and tourism offices supply the data. PANAW does not replace navigation apps. It fills the local gap they leave.</div></div>
+    </div>
+  </section>
+
+</div>
+
+<div class="bottomnav" id="nav">
+  <button class="nav-item" data-target="screen-explore">🧭<span>Explore</span></button>
+  <button class="nav-item" data-target="screen-trip">🛺<span>Trip</span></button>
+  <button class="nav-item" data-target="screen-pickup">🙋<span>Pick-up</span></button>
+  <button class="nav-item" data-target="screen-history">🧾<span>History</span></button>
+  <button class="nav-item" data-target="screen-more">☰<span>More</span></button>
+</div>
+
+<div class="modal-overlay" id="gps-modal"><div class="modal-sheet"><div class="modal-handle"></div>
+  <div class="modal-title">Location access <button class="modal-close" data-close>✕</button></div>
+  <div class="stepper-hint" style="margin:6px 0 14px">PANAW uses your location once to find the closest pick-up point. Nothing is uploaded, and fares work without location.</div>
+  <div class="btn-row"><button class="btn btn-secondary btn-sm" id="gps-sim">Use simulated location</button><button class="btn btn-primary btn-sm" id="gps-real">Enable GPS</button></div>
+</div></div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>var module = { exports: {} };</script>
+<script>/*@FARE@*/</script>
+<script>window.TrikeFare = module.exports; module = undefined;</script>
+<script>/*@NETWORK@*/</script>
+<script>/*@NETMAP@*/</script>
+<script>
+/* Data copied at build time from trikefair/data/*.json, unchanged. */
+window.RAW = /*@DATA@*/;
+</script>
+<script>
+'use strict';
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const peso = n => '₱' + Number(n).toFixed(2);
+const store = {
+  get(k, d) { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : d; } catch { return d; } },
+  set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch {} }
+};
+
+/* ---------- network: same assembly + validation as src/db.js / src/network.js ---------- */
+const N = window.TrikeNetwork, F = window.TrikeFare;
+const RULES = RAW.rules;
+const NET = N.validate({
+  province: RAW.municipalities.province, municipalities: RAW.municipalities.municipalities,
+  defaultTerminalId: RAW.terminals.defaultTerminalId, terminals: RAW.terminals.terminals,
+  destinations: RAW.destinations.destinations, settings: RAW.routes.settings,
+  nodes: RAW.routes.nodes, edges: RAW.routes.edges, fareRules: RAW.fareRules.fareRules,
+  demoVehicles: RAW.demoVehicles.vehicles, transportModes: RAW.transportModes.modes
+}, RULES).network;
+const byId = (arr, id) => arr.find(x => x.id === id);
+const muniName = id => (byId(NET.municipalities, id) || { name: id }).name;
+
+/* ---------- prototype-only tourist layer (rec #9 #10 #13): categories are a design proposal, not survey data ---------- */
+const CATEGORY = { d5: 'Nature', d7: 'Heritage', d4: 'Ports', d6: 'Barangays', d1: 'Schools', d8: 'Schools',
+  d2: 'Essentials', d3: 'Essentials', dest_guisi_lighthouse: 'Heritage', dest_san_lorenzo_wind_farm: 'Landmarks' };
+const TOURIST_FIRST = ['d5', 'd7', 'dest_guisi_lighthouse', 'dest_san_lorenzo_wind_farm', 'd4'];
+const catOf = d => CATEGORY[d.id] || (d.dataStatus === 'reference' || d.id === 'dest_buenavista_poblacion' ? 'Towns' : 'Other');
+const shortDest = name => String(name).replace(/ \(.*\)$/, '');
+
+/* rec #7: van and motorcycle are proposals; no route or fare data exists for them */
+const MODES = [
+  ...NET.transportModes.map(m => ({ ...m, icon: { tricycle: '🛺', jeepney: '🚌', multicab: '🚙' }[m.id] || '🚗' })),
+  { id: 'van', label: 'Van (V-hire)', status: 'future', icon: '🚐', note: 'Proposed. No policy or fare data yet' },
+  { id: 'motorcycle', label: 'Motorcycle', status: 'future', icon: '🏍️', note: 'Proposed. Rules differ per municipality' }
+];
+
+/* ---------- state ---------- */
+const S = {
+  who: store.get('panaw_proto_who', null),
+  muni: 'buenavista', terminalId: NET.defaultTerminalId, stops: [''], mode: 'tricycle',
+  hire: 'regular', pax: 1, disc: 'none', dpax: 0, bestOrder: false, routeIx: 0,
+  exploreCat: 'All', exploreMuni: 'all', assocMuni: 'buenavista', photoIx: 0,
+  history: store.get('panaw_proto_history', []), photosPack: store.get('panaw_proto_photos', false),
+  stack: []
+};
+
+function toast(msg) { const t = $('#toast'); t.textContent = msg; t.classList.add('show'); clearTimeout(t._h); t._h = setTimeout(() => t.classList.remove('show'), 2400); }
+
+/* ---------- navigation ---------- */
+const TABS = ['screen-explore', 'screen-trip', 'screen-pickup', 'screen-history', 'screen-more'];
+const RENDER = {};
+function show(id, push = true) {
+  const cur = document.querySelector('.screen.active');
+  if (push && cur && cur.id !== id) S.stack.push(cur.id);
+  if (TABS.includes(id)) S.stack = [];
+  document.querySelectorAll('.screen').forEach(s => s.classList.toggle('active', s.id === id));
+  document.querySelectorAll('.nav-item').forEach(b => b.classList.toggle('active', b.dataset.target === id));
+  $('#nav').classList.toggle('hidden', id === 'screen-welcome');
+  if (RENDER[id]) RENDER[id]();
+  const sc = document.querySelector('#' + id + ' .screen-scroll'); if (sc) sc.scrollTop = 0;
+}
+document.addEventListener('click', e => {
+  const t = e.target.closest('[data-target],[data-go],[data-back],[data-close]');
+  if (!t) return;
+  if (t.dataset.target) show(t.dataset.target);
+  else if (t.dataset.go) show(t.dataset.go);
+  else if (t.hasAttribute('data-back')) show(S.stack.pop() || 'screen-trip', false);
+  else if (t.hasAttribute('data-close')) t.closest('.modal-overlay').classList.remove('show');
+});
+
+/* ---------- welcome ---------- */
+document.querySelectorAll('[data-who]').forEach(b => b.onclick = () => {
+  S.who = b.dataset.who; store.set('panaw_proto_who', S.who);
+  show(S.who === 'tourist' ? 'screen-explore' : 'screen-trip');
+});
+$('#switch-who').onclick = () => show('screen-welcome');
+RENDER['screen-more'] = () => { $('#who-now').textContent = 'Current: ' + (S.who === 'local' ? 'Local' : 'Tourist'); };
+
+/* ---------- explore ---------- */
+const servingTerminals = d => NET.terminals.filter(t => (t.destinationIds || []).includes(d.id));
+function photoBox(d, tall, ix = 0) {
+  return `<div class="photo ${tall ? 'tall' : ''} ph-${(NET.destinations.indexOf(d) + ix) % 4}">
+    <span class="muni">${esc(muniName(d.municipality))}</span>
+    <span class="src">📷 Photo: ${esc(muniName(d.municipality))} Tourism Office (pending)</span>
+    ${tall ? `<button class="arrow l" data-ph="-1">‹</button><button class="arrow r" data-ph="1">›</button>
+      <span class="dots">${[0,1,2,3].map(i => `<i class="${i === ix ? 'on' : ''}"></i>`).join('')}</span>` : ''}</div>`;
+}
+RENDER['screen-explore'] = () => {
+  const cats = ['All', ...new Set(NET.destinations.map(catOf))];
+  $('#explore-cats').innerHTML = cats.map(c => `<button class="chip ${c === S.exploreCat ? 'on' : ''}" data-cat="${esc(c)}">${esc(c)}</button>`).join('');
+  $('#explore-munis').innerHTML = [{ id: 'all', name: 'All Guimaras' }, ...NET.municipalities]
+    .map(m => `<button class="chip ${m.id === S.exploreMuni ? 'on' : ''}" data-em="${m.id}">${esc(m.name)}</button>`).join('');
+  const q = $('#explore-search').value.trim().toLowerCase();
+  const list = NET.destinations
+    .filter(d => S.exploreCat === 'All' || catOf(d) === S.exploreCat)
+    .filter(d => S.exploreMuni === 'all' || d.municipality === S.exploreMuni)
+    .filter(d => !q || d.name.toLowerCase().includes(q))
+    .sort((a, b) => (TOURIST_FIRST.indexOf(b.id) + 1 || -99) - (TOURIST_FIRST.indexOf(a.id) + 1 || -99) || 0);
+  $('#explore-list').innerHTML = list.length ? list.map(d => {
+    const terms = servingTerminals(d);
+    const how = d.nodeId == null ? '<span class="data-tag todo">Coordinates required</span>'
+      : terms.length ? `🛺 from ${esc(terms[0].name)}${terms.length > 1 ? ` +${terms.length - 1}` : ''}` : 'No terminal serves this yet';
+    return `<div class="card place-card" data-place="${d.id}">${photoBox(d)}
+      <h4>${esc(shortDest(d.name))}</h4><div class="meta">${esc(catOf(d))} · ${how}</div></div>`;
+  }).join('') : '<div class="empty-state"><div class="t">No places found</div><div class="s">Try another filter.</div></div>';
+};
+$('#explore-search').oninput = () => RENDER['screen-explore']();
+$('#explore-cats').onclick = e => { const c = e.target.closest('[data-cat]'); if (c) { S.exploreCat = c.dataset.cat; RENDER['screen-explore'](); } };
+$('#explore-munis').onclick = e => { const c = e.target.closest('[data-em]'); if (c) { S.exploreMuni = c.dataset.em; RENDER['screen-explore'](); } };
+$('#explore-list').onclick = e => { const c = e.target.closest('[data-place]'); if (c) { S.place = c.dataset.place; S.photoIx = 0; show('screen-place'); } };
+
+/* ---------- place detail ---------- */
+RENDER['screen-place'] = () => {
+  const d = byId(NET.destinations, S.place); if (!d) return;
+  $('#place-title').textContent = shortDest(d.name);
+  $('#place-sub').textContent = muniName(d.municipality) + ', Guimaras';
+  const terms = servingTerminals(d);
+  let trip = '';
+  if (d.nodeId == null) trip = `<div class="route-card none"><div class="route-head"><span class="t">Coordinates required</span></div>
+      <div class="why">This place has no verified location yet, so no route or fare can be shown.</div></div>`;
+  else if (!terms.length) trip = `<div class="stepper-hint">No terminal is configured to serve this place yet.</div>`;
+  else {
+    const r = N.resolveTrip(RULES, NET, { terminalId: terms[0].id, destinationId: d.id });
+    const f = r.route ? F.computeFare({ distanceKm: r.route.distanceKm, passengers: 1, hireType: 'regular' }, r.fareRules) : null;
+    trip = r.route ? `<div class="bd-row"><span class="k">From</span><span class="v plain">${esc(terms[0].name)}</span></div>
+      <div class="bd-row"><span class="k">Distance</span><span class="v">${r.route.distanceKm} km</span></div>
+      <div class="bd-row"><span class="k">Est. time</span><span class="v">${r.route.estimatedMinutes} min</span></div>
+      <div class="bd-row"><span class="k">Fare, 1 passenger</span><span class="v">${peso(f.total)}</span></div>
+      <div class="terminal-meta"><span class="data-tag ${r.fareRule.isDemo ? 'demo' : 'existing'}">${esc(r.fareRule.status)}</span>
+        <span class="data-tag ${r.route.dataStatus === 'existing' ? 'existing' : 'demo'}">${r.route.dataStatus === 'existing' ? 'Stored distance' : 'DEMO distance'}</span></div>`
+      : `<div class="route-card none"><div class="why">${esc(r.reason || r.error)}</div></div>`;
+  }
+  $('#place-body').innerHTML = `<div class="card" style="padding:10px">${photoBox(d, true, S.photoIx)}</div>
+    <div class="card"><div class="card-title">ℹ️ Visitor information</div>
+      <div class="bd-row"><span class="k">Category</span><span class="v plain">${esc(catOf(d))}</span></div>
+      <div class="bd-row"><span class="k">Open hours</span><span class="v plain"><span class="data-tag todo">To verify</span></span></div>
+      <div class="bd-row"><span class="k">Entrance fee</span><span class="v plain"><span class="data-tag todo">To verify</span></span></div>
+      <div class="bd-row"><span class="k">Info source</span><span class="v plain">${esc(muniName(d.municipality))} Tourism Office</span></div>
+      <div class="stepper-hint">The tourism office fills these fields. Until then they say "to verify" instead of guessing.</div></div>
+    <div class="card"><div class="card-title">🛺 Getting there</div>${trip}
+      ${terms.length && d.nodeId != null ? `<button class="btn btn-primary" style="margin-top:12px" id="plan-here">Plan trip to here</button>
+      <button class="btn btn-secondary btn-sm" style="margin-top:8px" id="stop-here">＋ Add as a stop to my trip</button>` : ''}</div>`;
+  const ph = $('#place-body .photo');
+  ph.onclick = e => { const a = e.target.closest('[data-ph]'); if (a) { S.photoIx = (S.photoIx + +a.dataset.ph + 4) % 4; RENDER['screen-place'](); } };
+  const plan = $('#plan-here'), add = $('#stop-here');
+  if (plan) plan.onclick = () => { setTerminal(terms[0].id); S.stops = [d.id]; show('screen-trip'); };
+  if (add) add.onclick = () => {
+    if (!terms.some(t => t.id === S.terminalId)) setTerminal(terms[0].id), S.stops = [];
+    S.stops = S.stops.filter(Boolean); if (!S.stops.includes(d.id)) S.stops.push(d.id);
+    toast('Added to your trip'); show('screen-trip');
+  };
+};
+
+/* ---------- trip form ---------- */
+function setTerminal(id) {
+  const t = byId(NET.terminals, id); if (!t) return;
+  S.terminalId = id; S.muni = t.municipality;
+  S.stops = S.stops.filter(s => (t.destinationIds || []).includes(s)); if (!S.stops.length) S.stops = [''];
+}
+RENDER['screen-trip'] = () => {
+  $('#mode-chips').innerHTML = MODES.map(m => `<button class="chip ${m.id === S.mode ? 'on' : ''}" data-mode="${m.id}">${m.icon} ${esc(m.label)}</button>`).join('');
+  $('#mode-hint').textContent = 'Tricycle is the only vehicle with route and fare data. Other vehicles open once each municipality\'s policy is on file.';
+  $('#muni').innerHTML = NET.municipalities.map(m => `<option value="${m.id}" ${m.id === S.muni ? 'selected' : ''}>${esc(m.name)}</option>`).join('');
+  const terms = N.terminalsFor(NET, S.muni);
+  $('#term').innerHTML = terms.map(t => `<option value="${t.id}" ${t.id === S.terminalId ? 'selected' : ''}>${esc(t.name)}</option>`).join('');
+  const t = byId(NET.terminals, S.terminalId);
+  const fr = byId(NET.fareRules, t.fareRuleId) || {};
+  $('#term-name').textContent = t.name;
+  $('#term-meta').innerHTML = `<span class="data-tag ${t.dataStatus === 'existing' ? 'existing' : 'demo'}">${t.dataStatus === 'existing' ? 'Existing data' : 'DEMO terminal'}</span>
+    <span class="data-tag ${fr.source === 'rules.json' ? 'info' : 'demo'}">${esc(fr.status || '')}</span>
+    ${t.latitude == null ? '<span class="data-tag todo">Coordinates required</span>' : ''}`;
+  const dests = N.destinationsFor(NET, S.terminalId);
+  $('#stops').innerHTML = S.stops.map((s, i) => `<div class="stop-row"><span class="n">${i + 1}</span>
+    <select data-stop="${i}"><option value="">Select destination…</option>${dests.map(d =>
+      `<option value="${d.id}" ${d.id === s ? 'selected' : ''}>${esc(shortDest(d.name))}${d.nodeId == null ? ' (coordinates required)' : ''}</option>`).join('')}</select>
+    ${S.stops.length > 1 ? `<button class="icon-btn" data-rm="${i}" aria-label="Remove stop">✕</button>` : ''}</div>`).join('');
+  $('#stop-count').textContent = S.stops.filter(Boolean).length + ' / 4 stops';
+  $('#add-stop').disabled = S.stops.length >= 4;
+  $('#best-order').checked = S.bestOrder;
+  $('#hire').value = S.hire; $('#pax').textContent = S.pax; $('#disc').value = S.disc; $('#dpax').textContent = S.dpax;
+  $('#pax-m').disabled = S.pax <= 1; $('#pax-p').disabled = S.pax >= 4;
+  $('#dp-m').disabled = S.dpax <= 0 || S.disc === 'none'; $('#dp-p').disabled = S.dpax >= S.pax || S.disc === 'none';
+};
+$('#mode-chips').onclick = e => {
+  const c = e.target.closest('[data-mode]'); if (!c) return;
+  const m = MODES.find(x => x.id === c.dataset.mode);
+  if (m.status !== 'active') return toast(`${m.label}: ${m.note || 'no route or fare data yet'}`);
+  S.mode = m.id; RENDER['screen-trip']();
+};
+$('#muni').onchange = e => { const t = N.terminalsFor(NET, e.target.value)[0]; if (t) setTerminal(t.id); else S.muni = e.target.value; RENDER['screen-trip'](); };
+$('#term').onchange = e => { setTerminal(e.target.value); $('#pickup-out').innerHTML = ''; RENDER['screen-trip'](); };
+$('#stops').onchange = e => { const s = e.target.closest('[data-stop]'); if (s) { S.stops[+s.dataset.stop] = s.value; RENDER['screen-trip'](); } };
+$('#stops').onclick = e => { const r = e.target.closest('[data-rm]'); if (r) { S.stops.splice(+r.dataset.rm, 1); RENDER['screen-trip'](); } };
+$('#add-stop').onclick = () => { if (S.stops.length < 4) { S.stops.push(''); RENDER['screen-trip'](); } };
+$('#best-order').onchange = e => S.bestOrder = e.target.checked;
+$('#hire').onchange = e => S.hire = e.target.value;
+$('#disc').onchange = e => { S.disc = e.target.value; if (S.disc === 'none') S.dpax = 0; RENDER['screen-trip'](); };
+$('#pax-m').onclick = () => { S.pax--; S.dpax = Math.min(S.dpax, S.pax); RENDER['screen-trip'](); };
+$('#pax-p').onclick = () => { S.pax++; RENDER['screen-trip'](); };
+$('#dp-m').onclick = () => { S.dpax--; RENDER['screen-trip'](); };
+$('#dp-p').onclick = () => { S.dpax++; RENDER['screen-trip'](); };
+
+/* ---------- nearest pick-up (rec #6): straight-line distance to terminals with stored coordinates ---------- */
+$('#pickup-btn').onclick = () => { S.gpsFor = 'terminal'; $('#gps-modal').classList.add('show'); };
+function showPickups(pos, label) {
+  if (S.gpsFor === 'pickup') return setPickup(pos, label);
+  $('#gps-modal').classList.remove('show');
+  const rows = NET.terminals.map(t => ({ t, km: t.latitude == null ? null : F.haversineKm(pos, { lat: t.latitude, lng: t.longitude }) }))
+    .sort((a, b) => (a.km ?? 1e9) - (b.km ?? 1e9));
+  $('#pickup-out').innerHTML = `<div class="divider-label">${esc(label)}</div>` + rows.map((r, i) =>
+    `<div class="opt ${r.t.id === S.terminalId ? 'on' : ''}" data-pick="${r.km == null ? '' : r.t.id}">
+      <div class="top"><b>${esc(r.t.name)}</b>${r.km == null ? '<span class="data-tag todo">Coordinates required</span>'
+        : `<span class="badge ${i === 0 ? 'badge-green' : 'badge-navy'}">${i === 0 ? 'Closest · ' : ''}${r.km.toFixed(1)} km</span>`}</div>
+      <div class="path">${esc(muniName(r.t.municipality))} · straight-line distance from your position</div></div>`).join('');
+}
+$('#pickup-out').onclick = e => { const p = e.target.closest('[data-pick]'); if (p && p.dataset.pick) { setTerminal(p.dataset.pick); RENDER['screen-trip'](); toast('Origin set to ' + byId(NET.terminals, p.dataset.pick).name); $('#pickup-out').innerHTML = ''; } };
+$('#gps-sim').onclick = () => { const n = byId(NET.nodes, 'd5'); showPickups({ lat: n.lat, lng: n.lng }, 'Simulated location: near Daliran Cave'); };
+$('#gps-real').onclick = () => {
+  if (!navigator.geolocation) return gpsFail();
+  navigator.geolocation.getCurrentPosition(p => showPickups({ lat: p.coords.latitude, lng: p.coords.longitude }, 'Your device location'), gpsFail, { timeout: 10000 });
+};
+function gpsFail() {
+  $('#gps-modal').classList.remove('show');
+  if (S.gpsFor === 'pickup') { S.pu.gpsFailed = true; return RENDER['screen-pickup'](); }
+  $('#pickup-out').innerHTML = `<div class="route-card none" style="margin-top:10px"><div class="route-head"><span class="t">GPS UNAVAILABLE</span></div>
+    <div class="why">Your location could not be obtained. Fare calculation and route selection remain available.</div></div>`;
+}
+
+/* ---------- route + fare ---------- */
+const nodeOf = id => id === 'origin' ? byId(NET.terminals, S.terminalId).nodeId : byId(NET.destinations, id).nodeId;
+function legsFor(order) {
+  const pts = ['origin', ...order];
+  return pts.slice(1).map((id, i) => {
+    const from = nodeOf(pts[i]), to = nodeOf(id);
+    if (to == null) return { to: id, error: 'Coordinates required: this place has no verified location yet.' };
+    const r = N.findRoute(NET, from, to, { mode: S.mode });
+    return r.found ? { to: id, route: r } : { to: id, error: r.reason };
+  });
+}
+function permutations(a) { return a.length <= 1 ? [a] : a.flatMap((x, i) => permutations([...a.slice(0, i), ...a.slice(i + 1)]).map(p => [x, ...p])); }
+const legsKm = legs => legs.reduce((s, l) => s + (l.route ? l.route.distanceKm : 1e6), 0);
+
+/* rec #6: alternates = best route with one of its segments switched off, re-run through the same Dijkstra */
+function alternates(fromNode, toNode, best, net = NET) {
+  const seen = new Set([best.nodeIds.join('>')]), out = [];
+  for (const seg of best.segments) {
+    const r = N.findRoute(net, fromNode, toNode,{ mode: S.mode, overrides: { [seg.id]: { available: false } } });
+    if (r.found && !seen.has(r.nodeIds.join('>'))) { seen.add(r.nodeIds.join('>')); out.push(r); }
+  }
+  return out.sort((a, b) => a.cost - b.cost).slice(0, 2);
+}
+
+$('#find-btn').onclick = () => {
+  const stops = S.stops.filter(Boolean);
+  if (!stops.length) return toast('Select at least one destination');
+  if (new Set(stops).size !== stops.length) return toast('The same destination is listed twice');
+  let order = stops;
+  if (S.bestOrder && stops.length > 1) order = permutations(stops).reduce((b, p) => legsKm(legsFor(p)) < legsKm(legsFor(b)) ? p : b, stops);
+  S.result = { order, reordered: order.join() !== stops.join() }; S.routeIx = 0;
+  show('screen-result');
+};
+
+function stepsHtml(route) {
+  return `<ul class="route-steps">${route.steps.map((s, i) => {
+    const seg = route.segments[i - 1];
+    return `<li class="route-step ${i === route.steps.length - 1 ? 'end' : ''}">${esc(shortDest(s.name))}
+      <span class="muni">${esc(s.municipalityName)}</span>${seg ? `<span class="leg">+${seg.distanceKm} km · ${seg.estimatedMinutes} min · ${seg.dataStatus === 'existing' ? 'stored' : 'DEMO'}</span>` : ''}</li>`;
+  }).join('')}</ul>${route.crossesMunicipalities ? `<div class="muni-chain">${route.municipalityNames.map(n => `<span>${esc(n)}</span>`).join('<i>→</i>')}</div>` : ''}`;
+}
+
+RENDER['screen-result'] = () => {
+  const t = byId(NET.terminals, S.terminalId);
+  const { order } = S.result;
+  const legs = legsFor(order);
+  // single stop: the user may pick an alternate route (rec #6)
+  let options = null;
+  if (legs.length === 1 && legs[0].route) {
+    options = [legs[0].route, ...alternates(t.nodeId, nodeOf(order[0]), legs[0].route)];
+    legs[0].route = options[Math.min(S.routeIx, options.length - 1)];
+  }
+  const fr = N.fareRulesFor(RULES, NET, t);
+  const info = N.fareRuleInfo(RULES, NET, t);
+  const fares = legs.map(l => l.route ? F.computeFare({ distanceKm: l.route.distanceKm, passengers: S.pax, discountedPax: S.dpax, discountType: S.disc, hireType: S.hire }, fr) : null);
+  const ok = legs.every(l => l.route);
+  const total = fares.reduce((s, f) => s + (f ? f.total : 0), 0);
+  const km = legs.reduce((s, l) => s + (l.route ? l.route.distanceKm : 0), 0);
+  const min = legs.reduce((s, l) => s + (l.route ? l.route.estimatedMinutes : 0), 0);
+  S.lastTrip = ok ? { tripId: 'T' + Date.now().toString(36).toUpperCase(), municipality: muniName(t.municipality), terminal: t.name,
+    destinations: order.map(id => shortDest(byId(NET.destinations, id).name)), distance: Math.round(km * 100) / 100, estimatedTime: min,
+    fare: Math.round(total * 100) / 100, fareStatus: info.status, transportMode: S.mode, timestamp: new Date().toISOString() } : null;
+  $('#res-sub').textContent = `${t.name} → ${order.length} stop${order.length > 1 ? 's' : ''}`;
+
+  const digits = total.toFixed(2).split('').map(c => c === '.' ? '<div class="digit-cell dot">.</div>' : `<div class="digit-cell">${c}</div>`).join('');
+  const f0 = fares[0];
+  $('#res-body').innerHTML = `
+    ${S.result.reordered ? `<div class="disclaimer" style="margin-bottom:14px">🔀 <span>Stops reordered to the shortest total distance: ${order.map(id => esc(shortDest(byId(NET.destinations, id).name))).join(' → ')}</span></div>` : ''}
+    <div class="divider-label">Route information</div>
+    ${options ? `<div class="card"><div class="card-title">🧭 Route options</div>${options.map((r, i) => `
+      <div class="opt ${i === Math.min(S.routeIx, options.length - 1) ? 'on' : ''}" data-rix="${i}">
+        <div class="top"><b>${i === 0 ? 'Suggested route' : 'Alternate route ' + i}</b>
+          <span class="badge ${i === 0 ? 'badge-green' : 'badge-navy'}">${r.distanceKm} km · ${r.estimatedMinutes} min${i ? ` · +${(r.distanceKm - options[0].distanceKm).toFixed(1)} km` : ''}</span></div>
+        <div class="path">${r.steps.map(s => esc(shortDest(s.name))).join(' → ')}</div></div>`).join('')}
+      ${options.length === 1 ? '<div class="stepper-hint">No alternate route exists in the stored network for this trip.</div>' : ''}
+      <div class="stepper-hint">The system selected the available route with the lowest route cost based on the stored transportation network. This is not live traffic.</div></div>` : ''}
+    ${legs.map((l, i) => `<div class="card"><div class="leg-head"><b>${legs.length > 1 ? `Leg ${i + 1}: ` : ''}${esc(shortDest(i ? byId(NET.destinations, order[i - 1]).name : t.name))} → ${esc(shortDest(byId(NET.destinations, l.to).name))}</b>
+        ${l.route ? `<span class="badge badge-navy">${l.route.distanceKm} km</span>` : ''}</div>
+      ${l.route ? stepsHtml(l.route) : `<div class="route-card none"><div class="route-head"><span class="t">NO ROUTE AVAILABLE</span></div><div class="why">${esc(l.error)}</div></div>`}</div>`).join('')}
+    <div class="netmap">${TrikeMap.render(NET, { route: legs.length === 1 && legs[0].route ? legs[0].route : null, originNodeId: t.nodeId, destNodeId: nodeOf(order[order.length - 1]), labels: 'terminals' })}${TrikeMap.LEGEND}</div>
+
+    <div class="divider-label">Fare information</div>
+    ${ok ? `<div class="fare-meter"><div class="meter-label">Estimated fare · ${S.pax} passenger${S.pax > 1 ? 's' : ''}</div>
+        <div class="meter-digits"><span class="peso">₱</span>${digits}</div>
+        <div class="meter-sub">${km.toFixed(2)} km · ~${min} min · ${S.hire === 'special' ? 'special trip' : 'regular hire'}</div></div>
+      <div class="card" style="margin-top:14px"><div class="card-title">🧾 Fare breakdown</div>
+        ${legs.length > 1 ? fares.map((f, i) => `<div class="bd-row"><span class="k">Leg ${i + 1} · ${legs[i].route.distanceKm} km</span><span class="v">${peso(f.total)}</span></div>`).join('') : `
+        <div class="bd-row"><span class="k">Base fare (first ${f0.baseKm} km)</span><span class="v">${peso(f0.baseFare)}</span></div>
+        <div class="bd-row"><span class="k">Extra distance ${f0.extraKm} km × ${peso(f0.perKmRate)}</span><span class="v">${peso(f0.distanceFare)}</span></div>
+        <div class="bd-row"><span class="k">Passengers</span><span class="v">${f0.passengers}</span></div>
+        ${f0.nightApplies ? `<div class="bd-row"><span class="k">Night adjustment</span><span class="v">${peso(f0.nightSurcharge)}</span></div>` : ''}
+        ${f0.discountTotal ? `<div class="bd-row discount"><span class="k">Discount (${f0.discountedPax} × 20%)</span><span class="v">−${peso(f0.discountTotal)}</span></div>` : ''}`}
+        <div class="bd-row total"><span class="k">Total</span><span class="v">${peso(total)}</span></div>
+        ${legs.length > 1 ? '<div class="stepper-hint">Proposed rule: each leg is priced as its own trip with the current fare engine. Waiting time at stops is not charged until an ordinance sets a rate.</div>' : ''}</div>
+      <div class="card"><div class="card-title">🏛️ Fare basis</div>
+        <div class="cite"><b>${esc(info.ordinance || '')}</b><br>${esc(info.lgu || '')}</div>
+        <div class="terminal-meta" style="margin-top:8px"><span class="data-tag ${info.isDemo ? 'demo' : 'info'}">${esc(info.status || '')}</span></div>
+        <div class="stepper-hint">${esc(info.statusNote || '')}</div></div>
+      <button class="btn btn-primary" id="save-trip">Save trip record</button>`
+    : `<div class="route-card none"><div class="route-head"><span class="t">NO FARE</span></div><div class="why">A fare needs a route for every stop.</div></div>`}`;
+  $('#res-body').onclick = e => { const o = e.target.closest('[data-rix]'); if (o) { S.routeIx = +o.dataset.rix; RENDER['screen-result'](); } };
+  const sv = $('#save-trip');
+  if (sv) sv.onclick = () => { S.history.unshift(S.lastTrip); store.set('panaw_proto_history', S.history.slice(0, 50)); toast('Trip saved on this phone'); sv.disabled = true; };
+};
+
+/* ---------- pick me up: rank online trikes by ETA to the passenger's spot ----------
+   "Online trikes" are the DEMO vehicles (simulated positions). ETA = stored segment
+   minutes + straight-line legs at the network's assumed speed. No live traffic. */
+S.pu = { pos: null, label: '', placeId: '', vehicleId: null, rix: 0, dest: '', requested: null, gpsFailed: false };
+const SPEED = NET.settings.assumedSpeedKph || 20;
+const FAST = { ...NET, settings: { ...NET.settings, costWeights: { distance: 0, time: 1 } } };   // rank by minutes, not km
+const MAX_SNAP_KM = 3;   // a pin farther than this from every stored point is outside the network
+const offNet = km => km / SPEED * 60;
+const nearestNode = pos => NET.nodes.reduce((b, n) => { const km = F.haversineKm(pos, n); return km < b.km ? { n, km } : b; }, { n: null, km: Infinity });
+const zeroRoute = id => ({ found: true, nodeIds: [id], segments: [], steps: [], distanceKm: 0, estimatedMinutes: 0, cost: 0 });
+
+function trikeEta(v, snap) {
+  const pos = N.simulateDemoVehicle(v, NET, Date.now()); if (!pos) return null;
+  const here = { lat: pos.latitude, lng: pos.longitude };
+  const ends = [v.path[0], v.path[v.path.length - 1]].map(id => byId(NET.nodes, id));
+  // shortcut: treats a 2-point demo path as one stored segment (true for every current demo vehicle); longer paths use straight lines to their ends
+  const seg = v.path.length === 2 && NET.edges.find(e => [e.from, e.to].sort().join() === [...v.path].sort().join());
+  const along = F.haversineKm(ends[0], here) / (F.haversineKm(ends[0], ends[1]) || 1);
+  let best = null;
+  ends.forEach((n, i) => {   // the trike may turn toward either end of its segment
+    const share = i === 0 ? along : 1 - along;
+    const toKm = seg ? share * seg.distance_km : F.haversineKm(here, n);
+    const toMin = seg ? share * seg.estimated_minutes : offNet(toKm);
+    const r = n.id === snap.n.id ? zeroRoute(n.id) : N.findRoute(FAST, n.id, snap.n.id);
+    if (!r.found) return;
+    const min = toMin + r.estimatedMinutes + offNet(snap.km);
+    if (!best || min < best.min) best = { v, via: n.id, route: r, min, km: toKm + r.distanceKm + snap.km };
+  });
+  return best;
+}
+
+function setPickup(pos, label, placeId = '') {
+  $('#gps-modal').classList.remove('show');
+  Object.assign(S.pu, { pos, label, placeId, vehicleId: null, rix: 0, requested: null, gpsFailed: false });
+  RENDER['screen-pickup']();
+}
+
+/* tap → lat/lng: the schematic map is a linear projection, so recover it from the drawn places farthest apart */
+function mapLatLng(svg, e) {
+  const p = new DOMPoint(e.clientX, e.clientY).matrixTransform(svg.getScreenCTM().inverse());
+  const pts = [...svg.querySelectorAll('.nm-node')].map((el, i) => ({ n: NET.nodes[i],   // drawn in NET.nodes order
+    x: el.tagName === 'rect' ? +el.getAttribute('x') + +el.getAttribute('width') / 2 : +el.getAttribute('cx'),
+    y: el.tagName === 'rect' ? +el.getAttribute('y') + +el.getAttribute('height') / 2 : +el.getAttribute('cy') }));
+  const ext = k => pts.reduce(([lo, hi], q) => [q[k] < lo[k] ? q : lo, q[k] > hi[k] ? q : hi], [pts[0], pts[0]]);
+  const [xl, xh] = ext('x'), [yl, yh] = ext('y');
+  if (!pts.length || xh.x === xl.x || yh.y === yl.y) return null;
+  return { lng: xl.n.lng + (p.x - xl.x) * (xh.n.lng - xl.n.lng) / (xh.x - xl.x),
+           lat: yl.n.lat + (p.y - yl.y) * (yh.n.lat - yl.n.lat) / (yh.y - yl.y) };
+}
+
+RENDER['screen-pickup'] = () => {
+  const P = S.pu;
+  const snap = P.pos ? nearestNode(P.pos) : null;
+  const inNet = snap && snap.km <= MAX_SNAP_KM;
+  const fleet = NET.demoVehicles.map(v => N.simulateDemoVehicle(v, NET, Date.now())).filter(Boolean).map(p => ({ ...p, label: p.vehicleId }));
+  const ranked = inNet && !P.requested ? NET.demoVehicles.map(v => trikeEta(v, snap)).filter(Boolean).sort((a, b) => a.min - b.min) : [];
+  const chosen = P.requested || ranked.find(x => x.v.vehicleId === P.vehicleId) || ranked[0];
+  const routes = !chosen ? [] : P.requested ? [P.requested.route]
+    : [chosen.route, ...(chosen.route.segments.length ? alternates(chosen.via, snap.n.id, chosen.route, FAST) : [])];
+  const route = routes[Math.min(P.rix, routes.length - 1)];
+  const etaOf = r => chosen.min - chosen.route.estimatedMinutes + r.estimatedMinutes;
+
+  let fareHtml = '';
+  if (chosen && P.dest) {
+    const d = byId(NET.destinations, P.dest);
+    const r = d.nodeId === snap.n.id ? null : N.findRoute(NET, snap.n.id, d.nodeId);
+    const term = byId(NET.terminals, chosen.v.terminalId);
+    const fr = term && N.fareRulesFor(RULES, NET, term), info = term && N.fareRuleInfo(RULES, NET, term);
+    if (!r || !r.found || !fr) fareHtml = `<div class="route-card none" style="margin-top:10px"><div class="route-head"><span class="t">NO ROUTE AVAILABLE</span></div>
+      <div class="why">${esc(!r ? 'You are already at this destination.' : !fr ? 'Missing fare rule for this trike\'s terminal.' : r.reason)}</div></div>`;
+    else {
+      const f = F.computeFare({ distanceKm: r.distanceKm, passengers: S.pax, discountedPax: S.dpax, discountType: S.disc, hireType: S.hire }, fr);
+      fareHtml = `<div class="bd-row" style="margin-top:10px"><span class="k">Ride ${esc(shortDest(snap.n.name))} → ${esc(shortDest(d.name))}</span><span class="v">${r.distanceKm} km · ${r.estimatedMinutes} min</span></div>
+        <div class="bd-row total"><span class="k">Estimated fare · ${S.pax} pax · ${S.hire === 'special' ? 'special' : 'regular'}</span><span class="v">${peso(f.total)}</span></div>
+        <div class="terminal-meta"><span class="data-tag ${info.isDemo ? 'demo' : 'info'}">${esc(info.status || '')}</span><span class="data-tag info">${esc(term.name)} rule</span></div>
+        <div class="stepper-hint">Same fare engine as the Trip tab, using the rule of the trike's home terminal. The pick-up distance is not charged: no ordinance sets a pick-up fee. Passengers and discount come from the Trip tab.</div>`;
+    }
+  }
+
+  const left = P.requested ? Math.max(0, P.requested.min - (Date.now() - P.requested.at) / 60000) : 0;
+  $('#pu-body').innerHTML = `
+    ${P.requested ? `<div class="card"><div class="card-title">🛺 ${esc(chosen.v.vehicleId)} is on the way <span class="badge badge-amber" style="margin-left:auto">DEMO</span></div>
+        <div class="bd-row"><span class="k">Arrives in about</span><span class="v">${left < 0.5 ? 'arriving now' : '~' + Math.ceil(left) + ' min'}</span></div>
+        <div class="bd-row"><span class="k">Expected at</span><span class="v">${new Date(P.requested.at + P.requested.min * 60000).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span></div>
+        <div class="bd-row"><span class="k">Pick-up</span><span class="v plain">${esc(P.label)}</span></div>
+        <div class="stepper-hint">Simulated request: no driver was contacted. The countdown uses the ETA at the time of request; demo trikes keep their own loop on the map.</div>
+        <button class="btn btn-danger btn-sm" id="pu-cancel">Cancel request</button></div>`
+    : `<div class="card"><div class="card-title">📍 Where should the trike pick you up?</div>
+        <button class="btn btn-secondary btn-sm" id="pu-gps">📡 Use my location</button>
+        <label class="field-label" style="margin-top:10px" for="pu-place">Or choose a known place</label>
+        <select id="pu-place"><option value="">Select a place…</option>${NET.nodes.map(n => `<option value="${n.id}" ${n.id === P.placeId ? 'selected' : ''}>${esc(shortDest(n.name))} · ${esc(muniName(n.municipality))}</option>`).join('')}</select>
+        <div class="stepper-hint">Or tap the map below to drop a pin.</div>
+        ${P.pos ? `<div class="terminal-meta"><span class="data-tag info">📍 ${esc(P.label)}</span>${inNet ? `<span class="data-tag existing">Nearest stored point: ${esc(shortDest(snap.n.name))} · ${snap.km.toFixed(2)} km</span>` : ''}</div>` : ''}
+        ${P.gpsFailed ? `<div class="route-card none" style="margin-top:10px"><div class="route-head"><span class="t">GPS UNAVAILABLE</span></div>
+          <div class="why">Your location could not be obtained. Choose a place or tap the map instead.</div></div>` : ''}
+        ${P.pos && !inNet ? `<div class="route-card none" style="margin-top:10px"><div class="route-head"><span class="t">OUTSIDE THE ROUTE NETWORK</span></div>
+          <div class="why">Your pin is ${snap.km.toFixed(1)} km from the nearest stored point. Pick-up is offered within ${MAX_SNAP_KM} km of the stored network.</div></div>` : ''}</div>`}
+
+    <div class="netmap" id="pu-map">${TrikeMap.render(NET, { route, originNodeId: chosen && chosen.via, destNodeId: snap && snap.n.id, gps: P.pos, vehicles: fleet, labels: 'terminals' })}${TrikeMap.LEGEND}
+      <div class="netmap-note">${P.requested ? '' : 'Tap the map to set your pick-up pin. '}Dashed white dots are DEMO VEHICLES.</div></div>
+
+    ${ranked.length ? `<div class="divider-label">Online trikes near you</div>
+      <div class="card"><div class="card-title">⏱️ Fastest pick-up first</div>
+        ${ranked.slice(0, 5).map((x, i) => `<div class="opt ${x === chosen ? 'on' : ''}" data-veh="${esc(x.v.vehicleId)}">
+          <div class="top"><b>${esc(x.v.vehicleId)}</b><span class="badge ${i === 0 ? 'badge-green' : 'badge-navy'}">${i === 0 ? 'Fastest · ' : ''}~${Math.ceil(x.min)} min</span></div>
+          <div class="path">${esc(muniName(x.v.municipality))} · ${x.km.toFixed(1)} km away · <span class="data-tag demo">DEMO VEHICLE</span></div></div>`).join('')}
+        <div class="stepper-hint">ETA = the trike's way to the end of its current segment + the fastest stored route to your nearest stored point + the last stretch to your pin, at the network's assumed ${SPEED} km/h. Updates every 5 seconds as the demo trikes move. Not live traffic.</div></div>`
+    : inNet && !P.requested ? `<div class="route-card none"><div class="route-head"><span class="t">NO TRIKE AVAILABLE</span></div><div class="why">No online trike can reach this spot on the stored network.</div></div>` : ''}
+
+    ${chosen ? `<div class="card"><div class="card-title">🧭 ${esc(chosen.v.vehicleId)}'s way to you</div>
+        ${routes.length > 1 ? routes.map((r, i) => `<div class="opt ${r === route ? 'on' : ''}" data-prix="${i}">
+          <div class="top"><b>${i === 0 ? 'Fastest route' : 'Alternate route ' + i}</b>
+            <span class="badge ${i === 0 ? 'badge-green' : 'badge-navy'}">~${Math.ceil(etaOf(r))} min · ${r.distanceKm} km${i ? ` · +${Math.ceil(etaOf(r) - etaOf(routes[0]))} min` : ''}</span></div>
+          <div class="path">${r.steps.map(s => esc(shortDest(s.name))).join(' → ')}</div></div>`).join('')
+          : !P.requested && route.steps.length ? '<div class="stepper-hint">No alternate pick-up route exists in the stored network for this trike.</div>' : ''}
+        ${route.steps.length ? stepsHtml(route) : '<div class="stepper-hint">The trike\'s segment ends at your nearest stored point, so no extra road route is needed.</div>'}</div>` : ''}
+
+    ${chosen && !P.requested ? `<div class="card"><div class="card-title">🎯 Where to? (optional)</div>
+        <select id="pu-dest"><option value="">Just pick me up</option>${NET.destinations.filter(d => d.nodeId != null).map(d => `<option value="${d.id}" ${d.id === P.dest ? 'selected' : ''}>${esc(shortDest(d.name))}</option>`).join('')}</select>
+        ${fareHtml}</div>
+      <button class="btn btn-primary" id="pu-req">Request ${esc(chosen.v.vehicleId)} · ~${Math.ceil(etaOf(route))} min</button>` : ''}`;
+  S.pu.offer = chosen && !P.requested ? { v: chosen.v, via: chosen.via, route, min: etaOf(route) } : null;
+};
+$('#pu-body').onclick = e => {
+  const t = e.target;
+  if (t.closest('#pu-gps')) { S.gpsFor = 'pickup'; return $('#gps-modal').classList.add('show'); }
+  const v = t.closest('[data-veh]'); if (v) { S.pu.vehicleId = v.dataset.veh; S.pu.rix = 0; return RENDER['screen-pickup'](); }
+  const r = t.closest('[data-prix]'); if (r) { S.pu.rix = +r.dataset.prix; return RENDER['screen-pickup'](); }
+  if (t.closest('#pu-req') && S.pu.offer) { S.pu.requested = { ...S.pu.offer, at: Date.now() }; toast('Request sent (DEMO)'); return RENDER['screen-pickup'](); }
+  if (t.closest('#pu-cancel')) { S.pu.requested = null; return RENDER['screen-pickup'](); }
+  const svg = t.closest('#pu-map .netmap-svg');
+  if (svg && !S.pu.requested) { const p = mapLatLng(svg, e); if (p) setPickup(p, `Pin on the map (${p.lat.toFixed(4)}, ${p.lng.toFixed(4)})`); }
+};
+$('#pu-body').onchange = e => {
+  if (e.target.id === 'pu-place') { const n = byId(NET.nodes, e.target.value); if (n) setPickup({ lat: n.lat, lng: n.lng }, shortDest(n.name), n.id); }
+  if (e.target.id === 'pu-dest') { S.pu.dest = e.target.value; RENDER['screen-pickup'](); }
+};
+setInterval(() => {   // demo trikes move: refresh ETAs like a ride app, but never under an open dropdown
+  if ($('#screen-pickup').classList.contains('active') && S.pu.pos && document.activeElement.tagName !== 'SELECT') RENDER['screen-pickup']();
+}, 5000);
+
+/* ---------- history ---------- */
+RENDER['screen-history'] = () => {
+  $('#hist-body').innerHTML = S.history.length ? `<div class="card">${S.history.map(h => `<div class="history-item" style="padding:8px 0">
+      <div class="ic-box">🛺</div><div class="mid"><div class="rt">${esc(h.terminal)} → ${esc(h.destinations.join(' → '))}</div>
+      <div class="dt">${new Date(h.timestamp).toLocaleString()} · ${h.distance} km · ${esc(h.fareStatus || '')}</div></div>
+      <div class="fare">${peso(h.fare)}</div></div>`).join('')}</div>
+      <button class="btn btn-danger btn-sm" id="clear-hist">Clear history</button>`
+    : '<div class="empty-state"><div class="t">No trips yet</div><div class="s">Saved trips appear here and stay on this phone.</div></div>';
+  const c = $('#clear-hist'); if (c) c.onclick = () => { S.history = []; store.set('panaw_proto_history', []); RENDER['screen-history'](); };
+};
+
+/* ---------- policy (rec #1 #7) ---------- */
+RENDER['screen-policy'] = () => {
+  const cell = (m, mode) => {
+    if (mode !== 'tricycle') return '❔';
+    const ts = N.terminalsFor(NET, m.id);
+    return ts.some(t => (byId(NET.fareRules, t.fareRuleId) || {}).source === 'rules.json') ? '✅' : ts.length ? '🟡' : '—';
+  };
+  $('#policy-body').innerHTML = `
+    <div class="card"><div class="card-title">🏛️ Ordinances on file</div>
+      ${NET.municipalities.map(m => { const t = N.terminalsFor(NET, m.id)[0]; const i = t && N.fareRuleInfo(RULES, NET, t);
+        return `<div class="seg-row"><div><div class="t">${esc(m.name)}</div><div class="s">${esc(i ? i.ordinance : 'No terminal configured')}</div></div>
+          <span class="data-tag ${i && !i.isDemo ? 'info' : 'demo'}">${esc(i ? i.status : '—')}</span></div>`; }).join('')}</div>
+    <div class="card"><div class="card-title">🚦 Vehicle policy per municipality</div>
+      <table class="policy"><tr><th>Municipality</th><th>🛺</th><th>🚐</th><th>🏍️</th></tr>
+      ${NET.municipalities.map(m => `<tr><td>${esc(m.name)}</td><td>${cell(m, 'tricycle')}</td><td>${cell(m, 'van')}</td><td>${cell(m, 'motorcycle')}</td></tr>`).join('')}</table>
+      <div class="stepper-hint">✅ project fare matrix · 🟡 DEMO / SAMPLE RATE · ❔ no policy on file. Each municipality sets its own rules for tricycles, vans and motorcycles. A vehicle type opens for a municipality only after its ordinance is added to the data.</div></div>
+    <div class="card"><div class="card-title">📐 Current tricycle rates (rules.json)</div>
+      <table class="rule-table"><tr><th>Item</th><th>Value</th></tr>
+        <tr><td>Base fare, first ${RULES.baseKm} km</td><td>${peso(RULES.baseFare)}</td></tr>
+        <tr><td>Per succeeding km</td><td>${peso(RULES.perKmRate)}</td></tr>
+        <tr><td>Special trip base</td><td>${peso(RULES.specialBaseFare)}</td></tr>
+        <tr><td>Special trip per km</td><td>${peso(RULES.specialPerKmRate)}</td></tr>
+        <tr><td>Student / senior / PWD</td><td>${RULES.discountRate * 100}%</td></tr>
+        <tr><td>Night surcharge</td><td>${RULES.nightSurchargeEnabled ? RULES.nightSurchargeRate * 100 + '%' : 'Off (not in ordinance)'}</td></tr></table>
+      <div class="stepper-hint">${esc(RULES._rateNote)}</div></div>`;
+};
+
+/* ---------- associations (rec #8 #12) ---------- */
+RENDER['screen-assoc'] = () => {
+  $('#assoc-munis').innerHTML = NET.municipalities.map(m => `<button class="chip ${m.id === S.assocMuni ? 'on' : ''}" data-am="${m.id}">${esc(m.name)}</button>`).join('');
+  const ts = N.terminalsFor(NET, S.assocMuni);
+  $('#assoc-body').innerHTML = `<div class="card">${ts.length ? ts.map(t => `<div class="contact-chip"><div class="who">
+      <div class="avatar" style="background:${t.operator ? 'var(--navy)' : 'var(--sky-2)'};color:${t.operator ? '#fff' : 'var(--ink-soft)'}">${t.operator ? esc(t.operator.split(' ').map(w => w[0]).join('').slice(0, 2)) : '?'}</div>
+      <div><div class="name">${esc(t.operator || 'Association: to verify')}</div><div class="meta">${esc(t.name)}</div>
+      <div class="meta">Officers / contact: to verify · Members: to verify</div></div></div>
+      <span class="data-tag ${t.operator ? 'existing' : 'todo'}">${t.operator ? 'On file' : 'To verify'}</span></div>`).join('')
+    : '<div class="empty-state"><div class="t">No terminals configured</div></div>'}</div>
+    <div class="card"><div class="card-title">🤝 What PANAW gives associations</div>
+      <div class="check">✔ Their official fare matrix shown to passengers</div>
+      <div class="check">✔ Their terminals on the map and in Explore</div>
+      <div class="check">✔ A contact for complaints and lost items</div>
+      <div class="check">✔ Trip counts per terminal on the monitor</div></div>
+    <div class="disclaimer">📝 <span>Names, officers and members come from the LGU and association inventory. No name is filled in until it has been verified.</span></div>`;
+};
+$('#assoc-munis').onclick = e => { const c = e.target.closest('[data-am]'); if (c) { S.assocMuni = c.dataset.am; RENDER['screen-assoc'](); } };
+
+/* ---------- tourism offices (rec #10) ---------- */
+RENDER['screen-tourism'] = () => {
+  $('#tourism-body').innerHTML = `<div class="card">
+      <div class="contact-chip"><div class="who"><div class="avatar" style="background:var(--navy);color:#fff">PT</div><div><div class="name">Guimaras Provincial Tourism Office</div><div class="meta">Contact: to verify</div></div></div><span class="data-tag todo">To verify</span></div>
+      ${NET.municipalities.map(m => `<div class="contact-chip"><div class="who"><div class="avatar" style="background:var(--sky-2);color:var(--navy)">${esc(m.name.split(' ').map(w => w[0]).join(''))}</div>
+        <div><div class="name">${esc(m.name)} Tourism Office</div><div class="meta">Contact: to verify</div></div></div><span class="data-tag todo">To verify</span></div>`).join('')}</div>
+    <div class="card"><div class="card-title">What the offices supply</div>
+      <div class="check">📷 Destination photos, with credit</div><div class="check">🕒 Open hours and entrance fees</div>
+      <div class="check">📍 Verified coordinates for places like Guisi Lighthouse</div><div class="check">☎️ Emergency and help-desk numbers</div></div>`;
+};
+
+/* ---------- offline (rec #11) ---------- */
+RENDER['screen-offline'] = () => {
+  const online = navigator.onLine;
+  $('#off-sub').textContent = online ? 'Connected now. Everything below also works without signal.' : 'OFFLINE · running on stored data';
+  $('#offline-body').innerHTML = `
+    <div class="card"><div class="card-title">📦 Stored on this phone</div>
+      <div class="seg-row"><div><div class="t">Fares, routes & terminals</div><div class="s">${NET.terminals.length} terminals · ${NET.destinations.length} places · ${NET.edges.length} road segments</div></div><span class="badge badge-green">Included</span></div>
+      <div class="seg-row"><div><div class="t">Network map</div><div class="s">Drawn from stored points. No map tiles needed.</div></div><span class="badge badge-green">Included</span></div>
+      <div class="seg-row"><div><div class="t">Destination photos</div><div class="s">Prototype: no photos in the pack yet</div></div>
+        <label class="switch"><input type="checkbox" id="photos-pack" ${S.photosPack ? 'checked' : ''}><span class="track"><span class="thumb"></span></span></label></div>
+      <div class="seg-row"><div><div class="t">Saved trips</div><div class="s">${S.history.length} trip record${S.history.length === 1 ? '' : 's'}</div></div><span class="badge badge-green">Local</span></div></div>
+    <div class="card"><div class="card-title">✅ Works without signal</div>
+      <div class="check">✔ Fare calculation and breakdown</div><div class="check">✔ Route suggestion and alternate routes</div>
+      <div class="check">✔ Multi-stop trips</div><div class="check">✔ Explore places and visitor info</div>
+      <div class="check">✔ GPS position (GPS does not need mobile data)</div></div>
+    <div class="card"><div class="card-title">⏸️ Paused until online</div>
+      <div class="check">• Central trip sync (none configured in this prototype)</div><div class="check">• Vehicle positions on the monitor</div>
+      <div class="check">• Photo and info updates from tourism offices</div></div>`;
+  $('#photos-pack').onchange = e => { S.photosPack = e.target.checked; store.set('panaw_proto_photos', S.photosPack); toast(S.photosPack ? 'Photos will download once the tourism office supplies them' : 'Photo pack off'); };
+};
+
+/* ---------- start ---------- */
+$('#net-pill').textContent = navigator.onLine ? 'Online · stored route data' : 'Offline · stored route data';
+show(S.who ? (S.who === 'tourist' ? 'screen-explore' : 'screen-trip') : 'screen-welcome', false);
+</script>
+</body>
+</html>

@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PANAW — Guimaras Local Transport System</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/vendor/leaflet/leaflet.css">
+<link rel="stylesheet" href="/styles.css">
+<style>
+/* passenger app components, built from the tokens in styles.css */
+.chips{display:flex; gap:6px; flex-wrap:wrap;}
+.chip{font-size:12px; font-weight:600; padding:6px 10px; border-radius:6px; background:var(--white);
+  border:1px solid var(--line); color:var(--navy); cursor:pointer; font-family:var(--font-body);}
+.chip.on{background:var(--navy); color:var(--white); border-color:var(--navy);}
+.hscroll{display:flex; gap:6px; overflow-x:auto; padding-bottom:4px; margin-bottom:10px;}
+.hscroll::-webkit-scrollbar{height:0;}
+.hscroll .chip{white-space:nowrap;}
+.photo{height:130px; border-radius:8px; position:relative; overflow:hidden; background:#DDE7E8;
+  display:flex; align-items:center; justify-content:center; color:var(--ink-soft); font-size:11.5px; font-weight:600;}
+.photo img{position:absolute; inset:0; width:100%; height:100%; object-fit:cover;}
+.photo.tall{height:210px;}
+.photo .muni{position:absolute; top:8px; left:8px; background:var(--white); color:var(--navy); padding:2px 7px; border-radius:4px; font-size:10px; z-index:1;}
+.photo .arrow{position:absolute; top:50%; transform:translateY(-50%); width:30px; height:30px; border-radius:6px;
+  border:none; background:rgba(8,40,48,.6); color:#fff; cursor:pointer; font-size:16px; z-index:1;}
+.photo .arrow.l{left:8px;} .photo .arrow.r{right:8px;}
+.photo .count{position:absolute; bottom:8px; right:8px; background:rgba(8,40,48,.6); color:#fff; padding:2px 7px; border-radius:4px; font-size:10px; z-index:1;}
+.place-card{cursor:pointer;}
+.place-card h4{margin:9px 0 2px; font-family:var(--font-display); font-size:14.5px; color:var(--navy);}
+.place-card .meta{font-size:11.5px; color:var(--ink-soft); display:flex; flex-wrap:wrap; gap:4px 8px; align-items:center;}
+.who-card{display:flex; gap:12px; align-items:center; cursor:pointer; text-align:left; width:100%; font-family:var(--font-body); border:none; background:none; padding:0;}
+.who-card .big{width:46px; height:46px; border-radius:8px; background:var(--sky-2); color:var(--navy);
+  display:flex; align-items:center; justify-content:center; flex-shrink:0;}
+.who-card .t{display:block; font-family:var(--font-display); font-weight:700; font-size:15px; color:var(--navy);}
+.who-card .s{display:block; font-size:12px; color:var(--ink-soft); margin-top:2px;}
+.stop-row{display:flex; gap:8px; align-items:center; margin-bottom:8px;}
+.stop-row .n{width:24px; height:24px; border-radius:4px; background:var(--teal); color:#fff; font-size:12px;
+  font-weight:700; display:flex; align-items:center; justify-content:center; flex-shrink:0;}
+.stop-row select{flex:1; min-width:0;}
+.icon-btn{width:34px; height:34px; border-radius:6px; border:1px solid var(--line); background:var(--sky);
+  color:var(--ink-soft); cursor:pointer; flex-shrink:0; font-size:16px;}
+.icon-btn:hover{color:var(--red); background:var(--red-soft);}
+.opt{border:1px solid var(--line); border-radius:8px; padding:10px; margin-bottom:8px; cursor:pointer; background:var(--white);}
+.opt.on{border-color:var(--teal); background:var(--sky-2); box-shadow:inset 3px 0 0 var(--teal);}
+.opt .top{display:flex; justify-content:space-between; align-items:center; gap:8px;}
+.opt .top b{color:var(--navy); font-family:var(--font-display); font-size:13.5px;}
+.opt .path{font-size:11.5px; color:var(--ink-soft); margin-top:4px; line-height:1.45;}
+.menu-item{display:flex; align-items:center; gap:12px; padding:12px 2px; border-bottom:1px solid var(--line);
+  cursor:pointer; background:none; border-left:none; border-right:none; border-top:none; width:100%; text-align:left;
+  font-family:var(--font-body); text-decoration:none; color:inherit;}
+.menu-item:last-child{border-bottom:none;}
+.menu-item .ic{width:36px; height:36px; border-radius:8px; background:var(--sky-2); color:var(--navy);
+  display:flex; align-items:center; justify-content:center; flex-shrink:0;}
+.menu-item .t{display:block; font-weight:700; color:var(--navy); font-size:13.5px;}
+.menu-item .s{display:block; font-size:11.5px; color:var(--ink-soft); margin-top:1px;}
+.menu-item .go{margin-left:auto; color:var(--ink-soft);}
+.leg-head{display:flex; justify-content:space-between; align-items:center; gap:8px; margin:4px 0 2px;}
+.leg-head b{font-size:12.5px; color:var(--navy);}
+.badge{white-space:nowrap; flex-shrink:0;}
+.cite{border-left:3px solid var(--teal); background:var(--sky); padding:9px 11px; font-size:12px; line-height:1.5; color:var(--navy);}
+.check{font-size:12.5px; padding:4px 0; color:var(--ink);}
+.cmp{width:100%; border-collapse:collapse; font-size:11.5px;}
+.cmp th{background:var(--sky-2); color:var(--navy); font-size:10px; text-transform:uppercase; padding:7px 6px; text-align:left;}
+.cmp td{padding:8px 6px; border-bottom:1px solid var(--line); vertical-align:top;}
+.cmp td:first-child{font-weight:600; color:var(--navy);}
+.yes{color:var(--green); font-weight:700;} .no{color:var(--ink-soft);} .part{color:#9a6b12; font-weight:700;}
+.policy{width:100%; border-collapse:collapse; font-size:11.5px;}
+.policy th,.policy td{padding:7px 4px; border-bottom:1px solid var(--line); text-align:center;}
+.policy th:first-child,.policy td:first-child{text-align:left;}
+.policy th{font-size:10px; color:var(--ink-soft); text-transform:uppercase;}
+.lmap{height:260px; border-radius:var(--radius-md); border:1px solid var(--line); margin-top:10px; z-index:0;}
+.lmap.short{height:200px;}
+.map-note{font-size:10px; color:var(--ink-soft); margin-top:5px; line-height:1.4;}
+.thumbs{display:flex; gap:8px; flex-wrap:wrap; margin-top:8px;}
+.thumbs .th{position:relative; width:84px; height:84px; border-radius:6px; overflow:hidden; border:1px solid var(--line);}
+.thumbs .th img{width:100%; height:100%; object-fit:cover;}
+.thumbs .th button{position:absolute; top:3px; right:3px; width:22px; height:22px; border-radius:4px; border:none;
+  background:rgba(8,40,48,.7); color:#fff; cursor:pointer; font-size:13px; line-height:1;}
+.consent{display:flex; gap:9px; align-items:flex-start; font-size:12px; color:var(--ink); line-height:1.45; margin-top:4px;}
+.consent input{margin-top:2px; width:16px; height:16px; flex-shrink:0;}
+.coords{font-family:var(--font-mono); font-size:11.5px; color:var(--navy);}
+.seg{display:flex; border:1px solid var(--line); border-radius:6px; overflow:hidden; margin-bottom:10px;}
+.seg button{flex:1; padding:8px; border:none; background:var(--white); font-family:var(--font-body); font-weight:600; font-size:12.5px; color:var(--navy); cursor:pointer;}
+.seg button.on{background:var(--navy); color:var(--white);}
+.nav-item svg{width:20px; height:20px;}
+.leaflet-container{font-family:var(--font-body);}
+</style>
+</head>
+<body>
+<div class="conn-chip" id="conn-chip">Offline: using stored data</div>
+<div id="app-frame">
+<div id="screens">
+
+  <!-- ======================= LOADING / ERROR ======================= -->
+  <section class="screen active" id="screen-loading">
+    <div class="topbar"><div class="brand-row"><div class="brand-mark">PN</div>
+      <div><div class="brand-name">PANAW</div><div class="brand-tag">Guimaras Local Transport System</div></div></div></div>
+    <div class="screen-scroll" id="loading-body"><div class="empty-state"><div class="t">Loading route data</div></div></div>
+  </section>
+
+  <!-- ======================= WELCOME ======================= -->
+  <section class="screen" id="screen-welcome">
+    <div class="topbar">
+      <div class="brand-row"><div class="brand-mark">PN</div>
+        <div><div class="brand-name">PANAW</div><div class="brand-tag">Progressive Advanced Network for Automated Wayfinding · Guimaras</div></div></div>
+    </div>
+    <div class="screen-scroll">
+      <div class="card"><div class="card-title">Maayong pag-abot. Welcome to Guimaras.</div>
+        <div class="stepper-hint" style="margin:0">Check the fair tricycle fare before you ride. Fares, routes and terminals are stored on your phone, so the fare check works without signal.</div></div>
+      <div class="card"><button class="who-card" data-who="tourist">
+        <span class="big" data-icon="compass"></span><span><span class="t">I am visiting Guimaras</span><span class="s">Start from beaches, churches and landmarks, and see how to get there.</span></span></button></div>
+      <div class="card"><button class="who-card" data-who="local">
+        <span class="big" data-icon="route"></span><span><span class="t">I live here</span><span class="s">Go straight to terminal, destination and fare.</span></span></button></div>
+      <div class="disclaimer"><span>The Buenavista fare is the project's provisional matrix. Rates for the other terminals are DEMO / SAMPLE RATES, not official fares. Places come from OpenStreetMap and from owners who list them.</span></div>
+    </div>
+  </section>
+
+  <!-- ======================= EXPLORE ======================= -->
+  <section class="screen" id="screen-explore">
+    <div class="topbar">
+      <div class="brand-row"><div class="brand-mark">PN</div>
+        <div><div class="brand-name">Explore Guimaras</div><div class="brand-tag">Places you can reach by tricycle</div></div></div>
+      <div class="mode-pill"><span class="dot"></span> <span id="net-pill">Stored route data</span></div>
+    </div>
+    <div class="screen-scroll">
+      <input type="text" id="explore-search" placeholder="Search places" style="margin-bottom:10px">
+      <div class="hscroll" id="explore-cats"></div>
+      <div class="hscroll" id="explore-munis"></div>
+      <div class="seg" id="explore-view"><button data-view="list">List</button><button data-view="map">Map</button></div>
+      <div id="explore-list"></div>
+    </div>
+  </section>
+
+  <!-- ======================= PLACE DETAIL ======================= -->
+  <section class="screen" id="screen-place">
+    <div class="topbar"><div class="topbar-inline"><button class="back-btn" data-back aria-label="Back">‹</button>
+      <div><div class="screen-title" id="place-title">Place</div><div class="screen-subtitle" id="place-sub"></div></div></div></div>
+    <div class="screen-scroll" id="place-body"></div>
+  </section>
+
+  <!-- ======================= LIST YOUR PLACE ======================= -->
+  <section class="screen" id="screen-list">
+    <div class="topbar"><div class="topbar-inline"><button class="back-btn" data-back aria-label="Back">‹</button>
+      <div><div class="screen-title">List your place</div><div class="screen-subtitle">Put your spot in front of visitors, with its location and photos</div></div></div></div>
+    <div class="screen-scroll">
+      <div class="card"><div class="card-title">About the place</div>
+        <label class="field-label" for="lp-name">Name</label>
+        <input type="text" id="lp-name" maxlength="80" placeholder="e.g. Raymen Beach Resort">
+        <label class="field-label" for="lp-cat" style="margin-top:10px">Category</label>
+        <select id="lp-cat"></select>
+        <label class="field-label" for="lp-desc" style="margin-top:10px">Description</label>
+        <textarea id="lp-desc" maxlength="600" placeholder="What visitors will find, opening hours, prices"></textarea>
+        <label class="field-label" for="lp-contact" style="margin-top:10px">Business contact (optional)</label>
+        <input type="text" id="lp-contact" maxlength="80" placeholder="Business phone or page">
+        <div class="stepper-hint">Shown to everyone. Use a business contact, not a personal number.</div></div>
+
+      <div class="card"><div class="card-title">Location</div>
+        <button class="btn btn-secondary btn-sm" id="lp-gps">Use my current location</button>
+        <div class="stepper-hint">Or tap the map to place the pin where the place is.</div>
+        <div id="lp-map" class="lmap"></div>
+        <div class="map-note" id="lp-map-note"></div>
+        <div id="lp-where" class="stepper-hint"></div>
+        <label class="field-label" for="lp-muni" style="margin-top:10px">Municipality</label>
+        <select id="lp-muni"></select></div>
+
+      <div class="card"><div class="card-title">Photos</div>
+        <input type="file" id="lp-photos" accept="image/*" multiple>
+        <div class="thumbs" id="lp-thumbs"></div>
+        <div class="stepper-hint">Up to 3 photos. They are resized on this phone before upload.</div></div>
+
+      <div class="card">
+        <label class="consent"><input type="checkbox" id="lp-ok"><span>I own or represent this place, or have its owner's permission, and I took these photos or may share them.</span></label>
+        <div class="stepper-hint">Your listing shows as "Listed by owner, not verified" until the LGU or tourism office checks it. It does not change fares or routes.</div></div>
+      <button class="btn btn-primary" id="lp-submit">Publish listing</button>
+    </div>
+  </section>
+
+  <!-- ======================= TRIP ======================= -->
+  <section class="screen" id="screen-trip">
+    <div class="topbar">
+      <div class="brand-row"><div class="brand-mark">PN</div>
+        <div><div class="brand-name">PANAW</div><div class="brand-tag">Guimaras Local Transport System</div></div></div>
+      <div class="mode-pill"><span class="dot"></span> <span>Terminal ride · computed on this phone</span></div>
+    </div>
+    <div class="screen-scroll">
+      <div class="card"><div class="card-title">Vehicle</div><div class="chips" id="mode-chips"></div>
+        <div class="stepper-hint">Tricycle is the only vehicle with route and fare data. Other vehicles open once each municipality's policy is on file.</div></div>
+
+      <div class="card"><div class="card-title">Origin</div>
+        <div class="origin-grid">
+          <div><label class="field-label" for="muni">Municipality</label><select id="muni"></select></div>
+          <div><label class="field-label" for="term">Terminal</label><select id="term"></select></div>
+        </div>
+        <div class="terminal-box"><div class="ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8M12 16v4"/></svg></div>
+          <div><div class="txt-label">Current terminal</div><div class="txt-main" id="term-name"></div><div class="terminal-meta" id="term-meta"></div></div></div>
+        <button class="btn btn-secondary btn-sm" style="margin-top:10px" id="near-btn">Find the nearest terminal to me</button>
+        <div id="near-out"></div>
+      </div>
+
+      <div class="card"><div class="card-title">Destinations <span class="badge badge-navy" id="stop-count" style="margin-left:auto"></span></div>
+        <div id="stops"></div>
+        <button class="btn btn-secondary btn-sm" id="add-stop">Add another stop</button>
+        <div class="switch-row" style="margin-top:12px">
+          <div class="label-block"><div class="t">Suggest best stop order</div><div class="s">Reorders your stops to the shortest total distance on the stored network.</div></div>
+          <label class="switch"><input type="checkbox" id="best-order"><span class="track"><span class="thumb"></span></span></label>
+        </div>
+      </div>
+
+      <div class="card"><div class="card-title">Hire type</div>
+        <select id="hire"><option value="regular">Regular hire: shared ride, fare per passenger</option><option value="special">Special trip: you hire the whole unit</option></select></div>
+
+      <div class="card"><div class="card-title">Passengers</div>
+        <div class="stepper"><button id="pax-m" aria-label="Fewer passengers">−</button><div class="count" id="pax">1</div><button id="pax-p" aria-label="More passengers">+</button></div>
+        <label class="field-label" style="margin-top:12px" for="disc">Discount</label>
+        <select id="disc"><option value="none">None</option><option value="student">Student</option><option value="senior">Senior citizen</option><option value="pwd">PWD</option></select>
+        <div class="stepper" style="margin-top:10px"><button id="dp-m" aria-label="Fewer discounted">−</button><div class="count" id="dpax">0</div><button id="dp-p" aria-label="More discounted">+</button></div>
+        <div class="stepper-hint">Discounted passengers. The 20% comes off each qualified passenger's own fare (RA 9994, RA 10754).</div></div>
+
+      <button class="btn btn-primary" id="find-btn">Find route and fare</button>
+    </div>
+  </section>
+
+  <!-- ======================= RESULT ======================= -->
+  <section class="screen" id="screen-result">
+    <div class="topbar"><div class="topbar-inline"><button class="back-btn" data-back aria-label="Back">‹</button>
+      <div><div class="screen-title">Route and fare</div><div class="screen-subtitle" id="res-sub"></div></div></div></div>
+    <div class="screen-scroll" id="res-body"></div>
+  </section>
+
+  <!-- ======================= PICK ME UP ======================= -->
+  <section class="screen" id="screen-pickup">
+    <div class="topbar">
+      <div class="brand-row"><div class="brand-mark">PN</div>
+        <div><div class="brand-name">Pick me up</div><div class="brand-tag">The nearest online trike comes to you, not to the terminal</div></div></div>
+      <div class="mode-pill"><span class="dot amber-dot"></span> <span>ETA from stored roads · no live traffic</span></div>
+    </div>
+    <div class="screen-scroll">
+      <div id="pu-top"></div>
+      <div id="pu-map" class="lmap"></div>
+      <div class="map-note" id="pu-map-note"></div>
+      <div id="pu-body"></div>
+    </div>
+  </section>
+
+  <!-- ======================= HISTORY ======================= -->
+  <section class="screen" id="screen-history">
+    <div class="topbar"><div class="screen-title">Trip history</div><div class="screen-subtitle">Saved on this phone</div></div>
+    <div class="screen-scroll" id="hist-body"></div>
+  </section>
+
+  <!-- ======================= MORE ======================= -->
+  <section class="screen" id="screen-more">
+    <div class="topbar"><div class="screen-title">More</div><div class="screen-subtitle">Listings, policy, associations, offline use</div></div>
+    <div class="screen-scroll">
+      <div class="card">
+        <button class="menu-item" data-go="screen-list"><span class="ic" data-icon="plus"></span><span><span class="t">List your place</span><span class="s">Advertise a resort, eatery or spot with photos</span></span><span class="go">›</span></button>
+        <button class="menu-item" data-go="screen-mine"><span class="ic" data-icon="pin"></span><span><span class="t">Your listings</span><span class="s">Places posted from this phone</span></span><span class="go">›</span></button>
+        <a class="menu-item" href="/booking.html"><span class="ic" data-icon="ticket"></span><span><span class="t">Terminal booking and receipts</span><span class="s">Lock a fare, wait for a driver, get a signed receipt</span></span><span class="go">›</span></a>
+      </div>
+      <div class="card">
+        <button class="menu-item" data-go="screen-policy"><span class="ic" data-icon="doc"></span><span><span class="t">Fare basis and local policy</span><span class="s">Ordinances, and vehicle types per municipality</span></span><span class="go">›</span></button>
+        <button class="menu-item" data-go="screen-assoc"><span class="ic" data-icon="people"></span><span><span class="t">Transport associations</span><span class="s">TODAs and operators per terminal</span></span><span class="go">›</span></button>
+        <button class="menu-item" data-go="screen-tourism"><span class="ic" data-icon="compass"></span><span><span class="t">Tourism offices</span><span class="s">Information and photo partners</span></span><span class="go">›</span></button>
+        <button class="menu-item" data-go="screen-offline"><span class="ic" data-icon="box"></span><span><span class="t">Offline</span><span class="s">What works without signal</span></span><span class="go">›</span></button>
+        <button class="menu-item" data-go="screen-about"><span class="ic" data-icon="info"></span><span><span class="t">Why PANAW</span><span class="s">Compared with Google Maps and Waze</span></span><span class="go">›</span></button>
+        <button class="menu-item" id="switch-who"><span class="ic" data-icon="swap"></span><span><span class="t">Switch visitor / local</span><span class="s" id="who-now"></span></span><span class="go">›</span></button>
+      </div>
+      <div class="footer-links" id="backend-line"></div>
+      <div class="footer-links"><a href="/driver">Driver console</a> · <a href="/monitor">Guimaras transport monitor</a></div>
+    </div>
+  </section>
+
+  <section class="screen" id="screen-mine">
+    <div class="topbar"><div class="topbar-inline"><button class="back-btn" data-back aria-label="Back">‹</button>
+      <div><div class="screen-title">Your listings</div><div class="screen-subtitle">Only this phone can remove them</div></div></div></div>
+    <div class="screen-scroll" id="mine-body"></div>
+  </section>
+
+  <section class="screen" id="screen-policy">
+    <div class="topbar"><div class="topbar-inline"><button class="back-btn" data-back aria-label="Back">‹</button>
+      <div><div class="screen-title">Fare basis and policy</div><div class="screen-subtitle">Where each fare comes from</div></div></div></div>
+    <div class="screen-scroll" id="policy-body"></div>
+  </section>
+
+  <section class="screen" id="screen-assoc">
+    <div class="topbar"><div class="topbar-inline"><button class="back-btn" data-back aria-label="Back">‹</button>
+      <div><div class="screen-title">Transport associations</div><div class="screen-subtitle">Who runs each terminal</div></div></div></div>
+    <div class="screen-scroll"><div class="hscroll" id="assoc-munis"></div><div id="assoc-body"></div></div>
+  </section>
+
+  <section class="screen" id="screen-tourism">
+    <div class="topbar"><div class="topbar-inline"><button class="back-btn" data-back aria-label="Back">‹</button>
+      <div><div class="screen-title">Tourism offices</div><div class="screen-subtitle">Partners for destination information and photos</div></div></div></div>
+    <div class="screen-scroll" id="tourism-body"></div>
+  </section>
+
+  <section class="screen" id="screen-offline">
+    <div class="topbar"><div class="topbar-inline"><button class="back-btn" data-back aria-label="Back">‹</button>
+      <div><div class="screen-title">Offline</div><div class="screen-subtitle" id="off-sub"></div></div></div></div>
+    <div class="screen-scroll" id="offline-body"></div>
+  </section>
+
+  <section class="screen" id="screen-about">
+    <div class="topbar"><div class="topbar-inline"><button class="back-btn" data-back aria-label="Back">‹</button>
+      <div><div class="screen-title">Why PANAW</div><div class="screen-subtitle">What it adds next to navigation apps</div></div></div></div>
+    <div class="screen-scroll">
+      <div class="card"><div class="card-title">At a glance</div>
+        <table class="cmp">
+          <tr><th>Feature</th><th>PANAW</th><th>Google Maps</th><th>Waze</th></tr>
+          <tr><td>Tricycle fare estimate</td><td class="yes">Yes</td><td class="no">No</td><td class="no">No</td></tr>
+          <tr><td>Fare breakdown and discounts</td><td class="yes">Yes</td><td class="no">No</td><td class="no">No</td></tr>
+          <tr><td>Fare linked to LGU ordinance</td><td class="yes">Yes</td><td class="no">No</td><td class="no">No</td></tr>
+          <tr><td>TODA terminals and associations</td><td class="yes">Yes</td><td class="part">Places only</td><td class="no">No</td></tr>
+          <tr><td>Nearest trike pick-up by ETA</td><td class="yes">Yes</td><td class="no">No</td><td class="no">No</td></tr>
+          <tr><td>Local places listed by owners</td><td class="yes">Yes</td><td class="part">Business profiles</td><td class="no">No</td></tr>
+          <tr><td>Fare works offline</td><td class="yes">Yes</td><td class="part">Maps only</td><td class="no">No</td></tr>
+          <tr><td>Multi-stop trip</td><td class="yes">Fare per leg</td><td class="yes">Directions</td><td class="part">Verify</td></tr>
+          <tr><td>Live traffic</td><td class="no">No</td><td class="yes">Yes</td><td class="yes">Yes</td></tr>
+          <tr><td>Turn-by-turn navigation</td><td class="no">No</td><td class="yes">Yes</td><td class="yes">Yes</td></tr>
+        </table>
+        <div class="stepper-hint">Check these against the current versions of each app before citing them.</div></div>
+      <div class="card"><div class="card-title">Fare transparency</div><div class="stepper-hint" style="margin:0">Navigation apps show the way. PANAW shows what the tricycle should cost and how that fare was computed.</div></div>
+      <div class="card"><div class="card-title">Ordinance-based</div><div class="stepper-hint" style="margin:0">Each fare names its source: the municipal ordinance or the association's matrix.</div></div>
+      <div class="card"><div class="card-title">Offline by design</div><div class="stepper-hint" style="margin:0">The fare engine and route network run on the phone, with no signal needed.</div></div>
+      <div class="card"><div class="card-title">Local partners</div><div class="stepper-hint" style="margin:0">TODAs, tourism offices and place owners supply the data. PANAW does not replace navigation apps. It fills the local gap they leave.</div></div>
+    </div>
+  </section>
+
+</div>
+
+<div class="bottomnav hidden" id="nav">
+  <button class="nav-item" data-target="screen-explore"><span data-icon="compass"></span><span>Explore</span></button>
+  <button class="nav-item" data-target="screen-trip"><span data-icon="route"></span><span>Trip</span></button>
+  <button class="nav-item" data-target="screen-pickup"><span data-icon="pin"></span><span>Pick-up</span></button>
+  <button class="nav-item" data-target="screen-history"><span data-icon="clock"></span><span>History</span></button>
+  <button class="nav-item" data-target="screen-more"><span data-icon="menu"></span><span>More</span></button>
+</div>
+
+<div class="modal-overlay" id="gps-modal"><div class="modal-sheet"><div class="modal-handle"></div>
+  <div class="modal-title">Location access <button class="modal-close" data-close aria-label="Close">×</button></div>
+  <div class="stepper-hint" style="margin:6px 0 14px" id="gps-why"></div>
+  <div class="btn-row"><button class="btn btn-secondary btn-sm" id="gps-sim">Use a sample location</button><button class="btn btn-primary btn-sm" id="gps-real">Enable GPS</button></div>
+</div></div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script src="/vendor/leaflet/leaflet.js"></script>
+<script src="/lib/network.js"></script>
+<script>var module = { exports: {} };</script>
+<script src="/lib/fare.js"></script>
+<script>window.TrikeFare = module.exports; module = undefined;</script>
+<script src="/netmap.js"></script>
+<script src="/passenger.js"></script>
+</body>
+</html>

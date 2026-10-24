@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PANAW — Driver Console (Guimaras)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+<div id="app-frame">
+  <div class="topbar">
+    <div class="topbar-inline">
+      <div class="back-btn" style="cursor:default;"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="3"/><path d="M12 3v6M12 15v6M3 12h6M15 12h6"/></svg></div>
+      <div>
+        <div class="screen-title">Driver Console</div>
+        <div class="screen-subtitle" id="driver-sub">Select your unit</div>
+      </div>
+    </div>
+    <div class="mode-pill"><span class="dot amber-dot"></span> Fares arrive locked — this console has no fare field</div>
+  </div>
+
+  <div class="screen-scroll" style="padding-bottom:30px;">
+    <div class="card">
+      <label class="field-label" for="driver-select">Signed in as</label>
+      <select id="driver-select"></select>
+      <div id="pin-box" style="display:none; margin-top:10px;">
+        <label class="field-label" for="pin-input">Driver PIN</label>
+        <div class="btn-row"><input type="password" id="pin-input" inputmode="numeric" autocomplete="off" placeholder="PIN from your TODA">
+          <button class="btn btn-primary btn-sm" style="flex:0 0 auto; width:auto;" id="pin-btn">Sign in</button></div>
+        <div class="stepper-hint" id="pin-hint">This server needs your PIN before you can go online, share your location or accept rides.</div>
+      </div>
+    </div>
+
+    <div class="online-toggle-card offline" id="online-card">
+      <div class="switch-row">
+        <div class="label-block">
+          <div class="t" style="color:#fff;" id="online-status">You are offline</div>
+          <div class="s" style="color:rgba(255,255,255,.85);">Go online to see the queue of locked trips.</div>
+        </div>
+        <label class="switch"><input type="checkbox" id="online-toggle" aria-label="Go online"><span class="track"><span class="thumb"></span></span></label>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="switch-row">
+        <div class="label-block">
+          <div class="t">Location sharing</div>
+          <div class="s" id="loc-hint">Off. Nothing is sent until you start sharing.</div>
+        </div>
+        <div class="badge badge-navy" id="loc-badge">OFF</div>
+      </div>
+      <div class="stepper-hint" id="loc-backend"></div>
+      <div id="loc-readout"></div>
+      <div class="btn-row" style="margin-top:10px;" id="loc-buttons">
+        <button class="btn btn-secondary btn-sm" id="loc-gps-btn">Share device GPS</button>
+        <button class="btn btn-secondary btn-sm" id="loc-demo-btn">Simulate (DEMO)</button>
+      </div>
+      <button class="btn btn-dark btn-sm" style="width:100%; margin-top:10px; display:none;" id="loc-stop-btn">Stop sharing</button>
+      <div class="stepper-hint">Sharing sends this unit's position, unit number and time to the PANAW system so the transport monitor can show it. Nothing else is collected.</div>
+    </div>
+
+    <div class="divider-label">Pick-up requests — passengers waiting at a pin</div>
+    <div id="pickups"></div>
+
+    <div class="divider-label">Queue — trips locked and waiting</div>
+    <div id="queue"></div>
+
+    <div class="divider-label">Current trip</div>
+    <div id="current"></div>
+
+    <div class="divider-label">Today</div>
+    <div class="card">
+      <div class="earnings-grid">
+        <div class="earn-box"><div class="num" id="earnings">₱0.00</div><div class="lab">Earned</div></div>
+        <div class="earn-box"><div class="num" id="trip-count">0</div><div class="lab">Trips</div></div>
+      </div>
+      <div class="stepper-hint" style="text-align:center;">Every peso here was computed by the server. The console can display it and nothing else.</div>
+    </div>
+
+    <div class="divider-label">Completed today</div>
+    <div id="completed"></div>
+    <div class="footer-links">Administration: <a href="/monitor">Guimaras transport monitor</a></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="/lib/network.js"></script>
+<script>
+'use strict';
+const $ = id => document.getElementById(id);
+const peso = n => '₱' + Number(n).toFixed(2);
+const esc = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const row = (k,v,cls) => `<div class="bd-row ${cls||''}"><span class="k">${k}</span><span class="v">${v}</span></div>`;
+const rowPlain = (k,v) => `<div class="bd-row"><span class="k">${k}</span><span class="v plain">${v}</span></div>`;
+
+let rules = null, driverId = null, online = false, current = null, poll = null;
+let netData = null;   // Guimaras network: terminals + which backend this console is talking to
+let pin = '';         // kept for this browser session only
+let seenPickups = new Set();
+const pinNeeded = () => !!(netData && netData.auth && netData.auth.driverPin);
+const signedIn = () => !pinNeeded() || pin !== '';
+
+function toast(msg){
+  const t = $('toast'); t.textContent = msg; t.classList.add('show');
+  clearTimeout(window._tt); window._tt = setTimeout(()=>t.classList.remove('show'), 2600);
+}
+async function api(path, body){
+  const res = await fetch(path, {
+    method: body ? 'POST' : 'GET',
+    headers: {'Content-Type':'application/json', 'X-Driver-Pin': pin},
+    body: body ? JSON.stringify(body) : undefined
+  });
+  const data = await res.json().catch(()=>({}));
+  if(!res.ok) throw new Error(data.error || 'Request failed');
+  return data;
+}
+
+(async function boot(){
+  rules = await api('/api/rules');
+  netData = await api('/api/network').catch(() => null);
+  $('driver-select').innerHTML = rules.drivers
+    .map(d => `<option value="${d.id}">${esc(d.name)} — ${esc(d.id)}</option>`).join('');
+  driverId = rules.drivers[0].id;
+  $('driver-select').onchange = e => { stopSharing(true); driverId = e.target.value; setPin(sessionStorage.getItem('panaw_pin_' + driverId) || ''); refreshAll(); };
+  $('pin-btn').onclick = signIn;
+  setPin(sessionStorage.getItem('panaw_pin_' + driverId) || '');
+  $('loc-gps-btn').onclick = startDeviceSharing;
+  $('loc-demo-btn').onclick = startDemoSharing;
+  $('loc-stop-btn').onclick = () => stopSharing(false);
+  renderLoc();
+  $('online-toggle').onchange = toggleOnline;
+  refreshAll();
+  setInterval(() => { if(online) refreshAll(); }, 2000);
+})();
+
+function setPin(p){
+  pin = p;
+  $('pin-box').style.display = pinNeeded() && !pin ? 'block' : 'none';
+  $('online-toggle').disabled = !signedIn();
+  if (!signedIn() && online) { $('online-toggle').checked = false; toggleOnline(); }
+}
+async function signIn(){
+  const tryPin = $('pin-input').value.trim();
+  pin = tryPin;
+  try { await api(`/api/drivers/${encodeURIComponent(driverId)}/check`, {}); }
+  catch (e) { pin = ''; $('pin-hint').textContent = 'Wrong PIN for this unit. Ask your TODA officer.'; return; }
+  sessionStorage.setItem('panaw_pin_' + driverId, tryPin);
+  $('pin-input').value = ''; setPin(tryPin); toast('Signed in.');
+}
+
+function toggleOnline(){
+  online = $('online-toggle').checked;
+  const card = $('online-card');
+  card.classList.toggle('online', online);
+  card.classList.toggle('offline', !online);
+  $('online-status').textContent = online ? 'You are online' : 'You are offline';
+  refreshAll();
+}
+
+async function refreshAll(){
+  const d = rules.drivers.find(x => x.id === driverId);
+  const term = driverTerminal();
+  $('driver-sub').textContent = `${d.name} · Unit #${d.id} · ${d.unit}` + (term ? ` · ${term.name}` : '');
+
+  const [queue, mine, inbox] = await Promise.all([
+    api('/api/trips?status=locked'),
+    api('/api/trips?driver=' + encodeURIComponent(driverId)),
+    online && signedIn() ? api('/api/pickups?driver=' + encodeURIComponent(driverId)).catch(() => []) : []
+  ]);
+  renderPickups(inbox);
+
+  // queue
+  $('queue').innerHTML = !online
+    ? '<div class="empty-state"><div class="t">Offline</div><div class="s">Go online to see waiting trips.</div></div>'
+    : queue.length
+      ? queue.map(t => `
+        <div class="request-card">
+          <div style="font-size:11.5px; font-weight:700; color:var(--teal); text-transform:uppercase;"><span class="pulse-dot"></span> Locked trip waiting</div>
+          <div style="font-weight:700; color:var(--navy); font-size:15px; margin-top:8px;">${esc(t.destination.name)}${t.destination.barangay ? ' — Brgy. '+esc(t.destination.barangay) : ''}</div>
+          <div style="font-size:12px; color:var(--ink-soft); margin-top:2px;">
+            ${t.origin ? 'From ' + esc(t.origin.name) + ' · ' : ''}${t.destination.km} km · ${t.passengers} passenger${t.passengers>1?'s':''} ·
+            ${t.hireType === 'special' ? 'special trip' : 'regular hire'}
+            ${t.discountType !== 'none' ? ` · ${t.discountedPax} × ${t.discountType}` : ''}
+          </div>
+          <div class="locked-amount">${peso(t.fare.total)}</div>
+          <div class="locked-note">Computed by the server at ${new Date(t.lockedAt).toLocaleTimeString('en-PH',{hour:'numeric',minute:'2-digit'})} · ${esc(t.id)}</div>
+          <button class="btn btn-primary" onclick="accept('${t.id}')">Accept at this fare</button>
+        </div>`).join('')
+      : '<div class="empty-state"><div class="t">Queue is empty</div><div class="s">Waiting for a passenger to lock a fare.</div></div>';
+
+  // current
+  current = mine.find(t => ['accepted','in_progress'].includes(t.status)) || null;
+  $('current').innerHTML = current ? currentHTML(current)
+    : '<div class="empty-state"><div class="s">No ongoing trip.</div></div>';
+
+  // earnings
+  const done = mine.filter(t => t.status === 'completed');
+  $('earnings').textContent = peso(done.reduce((s,t) => s + t.fare.total, 0));
+  $('trip-count').textContent = done.length;
+  $('completed').innerHTML = done.length ? done.map(t => `
+    <div class="card history-item" style="cursor:default;">
+      <div class="ic-box"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 3h12v18l-3-2-3 2-3-2-3 2z"/><path d="M9 8h6M9 12h6"/></svg></div>
+      <div class="mid"><div class="rt">${esc(t.destination.name)}${t.destination.barangay ? ' — Brgy. '+esc(t.destination.barangay) : ''}</div>
+        <div class="dt">${esc(t.id)} · ${new Date(t.completedAt).toLocaleTimeString('en-PH',{hour:'numeric',minute:'2-digit'})}</div></div>
+      <div class="fare">${peso(t.fare.total)}</div>
+    </div>`).join('')
+    : '<div class="empty-state"><div class="s">No completed trips yet.</div></div>';
+}
+
+function currentHTML(t){
+  const safety = t.events.filter(e => ['deviation','safe_confirmed','alert_sent'].includes(e.type)).slice(-3).reverse();
+  return `<div class="card">
+    ${rowPlain('Route', (t.origin ? esc(t.origin.name) + ' → ' : '') + esc(t.destination.name))}
+    ${rowPlain('Hire type', t.hireType === 'special' ? 'Special trip' : 'Regular hire')}
+    ${row('Passengers', t.passengers)}
+    ${t.discountType !== 'none' ? rowPlain('Discounts', `${t.discountedPax} × ${t.discountType} (authorized)`) : ''}
+    <div class="locked-amount">${peso(t.fare.total)}</div>
+    <div class="locked-note">Locked fare · you cannot change this amount</div>
+    <div class="badge badge-locked" style="margin:0 auto 12px; display:block; width:fit-content;">Server-computed · ${esc(t.id)}</div>
+    ${t.status === 'accepted'
+      ? `<button class="btn btn-primary" onclick="startTrip('${t.id}')">Depart terminal</button>`
+      : `<button class="btn btn-dark" onclick="complete('${t.id}')">End trip and issue receipt</button>`}
+    ${safety.length ? `<div class="divider-label">Safety events</div><div class="safety-log">${
+      safety.map(e => `<div class="safety-log-item ${e.type==='alert_sent'?'':e.type==='safe_confirmed'?'ok':'warn'}">
+        <div class="head"><span>${e.type==='alert_sent'?'Passenger alerted contacts':e.type==='safe_confirmed'?'Passenger confirmed safe':'Deviation logged ('+e.severity+')'}</span>
+        <span>${new Date(e.at).toLocaleTimeString('en-PH',{hour:'numeric',minute:'2-digit'})}</span></div></div>`).join('')
+    }</div>` : ''}
+  </div>`;
+}
+
+/* ---- pick-up requests: a passenger asked this unit to come to a pin ---- */
+function kmBetween(a, b){
+  const R = 6371, r = d => d * Math.PI / 180, x = Math.sin(r(b.lat - a.lat) / 2) ** 2 + Math.cos(r(a.lat)) * Math.cos(r(b.lat)) * Math.sin(r(b.lng - a.lng) / 2) ** 2;
+  return 2 * R * Math.asin(Math.sqrt(x));
+}
+function renderPickups(list){
+  const sharing = loc.mode === 'device' || loc.mode === 'demo';
+  for (const p of list) if (p.status === 'requested' && !seenPickups.has(p.id)) { seenPickups.add(p.id); toast('New pick-up request'); }
+  $('pickups').innerHTML = !online
+    ? '<div class="empty-state"><div class="s">Go online to receive pick-up requests.</div></div>'
+    : list.length ? list.map(p => `
+      <div class="request-card">
+        <div style="font-size:11.5px; font-weight:700; color:var(--teal); text-transform:uppercase;">${p.status === 'accepted' ? 'Accepted · go to the passenger' : 'Pick-up request · answer within 2 minutes'}</div>
+        <div style="font-weight:700; color:var(--navy); font-size:15px; margin-top:8px;">${esc(p.label)}</div>
+        <div style="font-size:12px; color:var(--ink-soft); margin-top:2px;">
+          Near ${esc(p.nearestStop.name)} · ${p.pin.lat.toFixed(5)}, ${p.pin.lng.toFixed(5)}${loc.last ? ` · ${kmBetween(loc.last, p.pin).toFixed(1)} km from you` : ''}
+        </div>
+        ${p.destination ? `<div style="font-size:12px; color:var(--ink-soft); margin-top:4px;">Going to ${esc(p.destination.name)}${p.route ? ` · ${p.route.distanceKm} km` : ''}</div>` : ''}
+        ${p.fare ? `<div class="locked-amount">${peso(p.fare.total)}</div><div class="locked-note">Server-computed fare · ${esc(p.fare.fareStatus || '')} · ${p.fare.passengers} passenger${p.fare.passengers > 1 ? 's' : ''}. Pick-up distance not charged.</div>`
+          : '<div class="locked-note">No destination given yet. Fare is set at the terminal rate once the passenger says where to.</div>'}
+        <a class="btn btn-secondary btn-sm" style="margin-bottom:8px;" target="_blank" rel="noopener"
+           href="https://www.google.com/maps/dir/?api=1&destination=${p.pin.lat},${p.pin.lng}">Open directions in Maps</a>
+        ${p.status === 'requested'
+          ? `<div class="btn-row"><button class="btn btn-danger btn-sm" onclick="pickupAct('${p.id}','decline')">Decline</button>
+             <button class="btn btn-primary btn-sm" onclick="pickupAct('${p.id}','accept')">Accept</button></div>`
+          : `<button class="btn btn-dark btn-sm" style="width:100%;" onclick="pickupAct('${p.id}','arrived')">I have arrived</button>`}
+      </div>`).join('')
+    : `<div class="empty-state"><div class="s">No pick-up requests.${sharing ? '' : ' Share your location so nearby passengers can find you.'}</div></div>`;
+}
+async function pickupAct(id, action){
+  try {
+    await api(`/api/pickups/${id}/${action}`, {});
+    toast(action === 'accept' ? 'Accepted. The passenger can see you are coming.' : action === 'decline' ? 'Declined.' : 'The passenger has been told you arrived.');
+    refreshAll();
+  } catch (e) { toast(e.message); refreshAll(); }
+}
+
+async function accept(id){
+  try { await api(`/api/trips/${id}/accept`, { driverId }); toast('Accepted at the locked fare.'); refreshAll(); }
+  catch(e){ toast(e.message); }
+}
+async function startTrip(id){
+  try { await api(`/api/trips/${id}/start`, {}); toast('Trip started.'); refreshAll(); }
+  catch(e){ toast(e.message); }
+}
+async function complete(id){
+  try { await api(`/api/trips/${id}/complete`, {}); toast('Receipt issued to the passenger.'); refreshAll(); }
+  catch(e){ toast(e.message); }
+}
+
+/* ============================================================================
+   LOCATION SHARING (Guimaras expansion)
+   device — the phone's own GPS, sent to the PANAW system
+   demo   — a SIMULATED position moving along the terminal's first route,
+            for demos where GPS is not available; always labelled DEMO
+   Nothing is read or sent until the driver starts sharing.
+   ========================================================================== */
+const loc = { mode: 'off', watchId: null, timer: null, last: null, sentAt: 0, syncOk: true, reason: '' };
+const SEND_EVERY_MS = 5000;
+
+function driverTerminal(){
+  if (!netData) return null;
+  return netData.terminals.find(t => (t.driverIds || []).includes(driverId))
+      || netData.terminals.find(t => t.id === netData.defaultTerminalId) || null;
+}
+async function sendPosition(p, source){
+  loc.last = { ...p, at: new Date(), source };
+  try {
+    await api(`/api/vehicles/${encodeURIComponent(driverId)}/location`, { lat: p.lat, lng: p.lng, accuracy: p.accuracy, source });
+    loc.syncOk = true; loc.sentAt = Date.now();
+  } catch (e) {
+    loc.syncOk = false;                 // keep going; the next send retries
+  }
+  renderLoc();
+}
+function startDeviceSharing(){
+  stopSharing(true);
+  if (!('geolocation' in navigator)) return locFailed('This device or browser has no location service.');
+  if (!window.isSecureContext) return locFailed('Browsers only allow location on secure pages (the Android app, or localhost). Use Simulate (DEMO) instead.');
+  loc.mode = 'requesting'; renderLoc();
+  loc.watchId = navigator.geolocation.watchPosition(pos => {
+    loc.mode = 'device';
+    const p = { lat: pos.coords.latitude, lng: pos.coords.longitude, accuracy: Math.round(pos.coords.accuracy) };
+    if (Date.now() - loc.sentAt >= SEND_EVERY_MS) sendPosition(p, 'device');
+    else { loc.last = { ...p, at: new Date(), source: 'device' }; renderLoc(); }
+  }, err => locFailed(err.code === 1 ? 'Location permission was denied.' : 'The device could not determine a position.'),
+  { enableHighAccuracy: true, maximumAge: 5000, timeout: 30000 });
+}
+function startDemoSharing(){
+  stopSharing(true);
+  const term = driverTerminal();
+  const dest = term && netData.destinations.find(d => d.id === (term.destinationIds || [])[0]);
+  if (!term || !dest || !dest.nodeId) return locFailed('No route data to simulate along.');
+  const fake = { vehicleId: driverId, path: [term.nodeId, dest.nodeId], periodSeconds: 120 };
+  loc.mode = 'demo';
+  const tick = () => {
+    const v = TrikeNetwork.simulateDemoVehicle(fake, netData, Date.now());
+    if (v) sendPosition({ lat: v.latitude, lng: v.longitude, accuracy: null }, 'simulated');
+  };
+  tick();
+  loc.timer = setInterval(tick, SEND_EVERY_MS);
+}
+function stopSharing(silent){
+  const wasOn = loc.mode === 'device' || loc.mode === 'demo' || loc.mode === 'requesting';
+  if (loc.watchId != null && navigator.geolocation) navigator.geolocation.clearWatch(loc.watchId);
+  clearInterval(loc.timer);
+  Object.assign(loc, { mode: 'off', watchId: null, timer: null, last: null, sentAt: 0, syncOk: true, reason: '' });
+  if (wasOn) api(`/api/vehicles/${encodeURIComponent(driverId)}/offline`, {}).catch(() => {});
+  renderLoc();
+  if (wasOn && !silent) toast('Location sharing stopped.');
+}
+function locFailed(reason){
+  stopSharing(true);
+  loc.mode = 'unavailable'; loc.reason = reason;
+  renderLoc();
+}
+function renderLoc(){
+  const local = netData && netData.backend && netData.backend.mode === 'local';
+  const [cls, label, hint] = {
+    off:         ['badge badge-navy',  'OFF',         'Off. Nothing is sent until you start sharing.'],
+    requesting:  ['badge badge-amber', 'REQUESTING',  'Waiting for permission and a first GPS fix…'],
+    device:      ['badge badge-green', 'ACTIVE',      'Sending this phone\'s GPS position every few seconds.'],
+    demo:        ['badge badge-amber', 'DEMO',        'Sending a SIMULATED position — not this phone\'s real location.'],
+    unavailable: ['badge badge-red',   'UNAVAILABLE', 'GPS unavailable.']
+  }[loc.mode];
+  $('loc-badge').className = cls; $('loc-badge').textContent = label; $('loc-hint').textContent = hint;
+  $('loc-backend').innerHTML = netData && netData.backend
+    ? `<span class="data-tag ${local ? 'demo' : 'info'}">${esc(netData.backend.label)}</span> ${esc(netData.backend.detail)}` : '';
+  const sharing = loc.mode === 'device' || loc.mode === 'demo' || loc.mode === 'requesting';
+  $('loc-buttons').style.display = sharing ? 'none' : 'flex';
+  $('loc-stop-btn').style.display = sharing ? 'flex' : 'none';
+
+  let h = '';
+  if (loc.mode === 'unavailable') {
+    h = `<div class="route-card none"><div class="route-head"><div class="t">GPS UNAVAILABLE</div></div>
+      <div class="why">Your location could not be obtained. ${esc(loc.reason)}<br>The queue and trips keep working.</div></div>`;
+  } else if (loc.last) {
+    h = `<div class="gps-grid">
+      <div class="gps-cell"><div class="lab">Latitude</div><div class="val">${loc.last.lat.toFixed(5)}</div></div>
+      <div class="gps-cell"><div class="lab">Longitude</div><div class="val">${loc.last.lng.toFixed(5)}</div></div>
+      <div class="gps-cell"><div class="lab">Source</div><div class="val">${loc.last.source === 'device' ? 'Device GPS' : 'SIMULATED'}</div></div>
+      <div class="gps-cell"><div class="lab">Last update</div><div class="val">${loc.last.at.toLocaleTimeString('en-PH',{hour:'2-digit',minute:'2-digit',second:'2-digit'})}</div></div>
+    </div>`;
+    if (!loc.syncOk) h += `<div class="route-card none"><div class="route-head"><div class="t">CENTRAL SYNC OFFLINE</div></div>
+      <div class="why">Your local trip information remains available. Location synchronization will resume when connectivity returns.</div></div>`;
+  }
+  $('loc-readout').innerHTML = h;
+}
+</script>
+</body>
+</html>

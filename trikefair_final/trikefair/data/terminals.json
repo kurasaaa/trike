@@ -1,0 +1,147 @@
+{
+  "_note": "Origin terminals. To add a terminal, add a record here: give it a municipality id, a nodeId from routes.json, a fareRuleId from fare_rules.json and the destination ids it serves. No code changes are needed. Only the New Poblacion TODA Terminal is existing project data; the rest are DEMO terminals whose names and exact locations still need verifying.",
+  "defaultTerminalId": "terminal_buenavista_poblacion",
+  "terminals": [
+    {
+      "id": "terminal_buenavista_poblacion",
+      "name": "New Poblacion TODA Terminal",
+      "municipality": "buenavista",
+      "nodeId": "terminal_buenavista_poblacion",
+      "latitude": 10.6974,
+      "longitude": 122.6472,
+      "type": "tricycle",
+      "fareRuleId": "trikefair_buenavista",
+      "operator": "Buenavista TODA",
+      "dataStatus": "existing",
+      "destinationIds": [
+        "d1",
+        "d2",
+        "d3",
+        "d4",
+        "d5",
+        "d6",
+        "d7",
+        "d8",
+        "dest_jordan_center",
+        "dest_nueva_valencia_center",
+        "dest_san_lorenzo_center",
+        "dest_sibunag_center",
+        "dest_navalas_church"
+      ],
+      "pickupPoints": [
+        "New Poblacion TODA Terminal",
+        "Buenavista New Terminal Market",
+        "MacArthur Wharf, Sto. Rosario",
+        "GSU Salvador Campus Gate"
+      ],
+      "driverIds": [
+        "BTODA-0142",
+        "BTODA-0087",
+        "BTODA-0219"
+      ]
+    },
+    {
+      "id": "terminal_buenavista_wharf",
+      "name": "MacArthur Wharf tricycle stand",
+      "municipality": "buenavista",
+      "nodeId": "d4",
+      "latitude": 10.687903,
+      "longitude": 122.6163195,
+      "type": "tricycle",
+      "fareRuleId": "demo_sample",
+      "dataStatus": "demo",
+      "note": "DEMO terminal at an existing pickup point. Verify that a tricycle stand operates here.",
+      "destinationIds": [
+        "dest_buenavista_poblacion",
+        "d2",
+        "d3",
+        "dest_jordan_center"
+      ],
+      "driverIds": []
+    },
+    {
+      "id": "terminal_jordan_poblacion",
+      "name": "Jordan Poblacion Terminal",
+      "municipality": "jordan",
+      "nodeId": "center_jordan",
+      "latitude": null,
+      "longitude": null,
+      "type": "tricycle",
+      "fareRuleId": "demo_sample",
+      "dataStatus": "demo",
+      "note": "DEMO terminal. Coordinates required: routed from the municipal center until the terminal location is verified.",
+      "destinationIds": [
+        "d8",
+        "dest_buenavista_poblacion",
+        "dest_nueva_valencia_center",
+        "dest_sibunag_center",
+        "dest_jordan_wharf",
+        "dest_jordan_public_market",
+        "dest_balaan_bukid",
+        "dest_provincial_capitol",
+        "dest_provincial_hospital",
+        "dest_mango_research",
+        "dest_trappist_abbey",
+        "dest_tatlong_pulo"
+      ],
+      "driverIds": []
+    },
+    {
+      "id": "terminal_nueva_valencia_poblacion",
+      "name": "Nueva Valencia Poblacion Terminal",
+      "municipality": "nueva_valencia",
+      "nodeId": "center_nueva_valencia",
+      "latitude": null,
+      "longitude": null,
+      "type": "tricycle",
+      "fareRuleId": "demo_sample",
+      "dataStatus": "demo",
+      "note": "DEMO terminal. Coordinates required: routed from the municipal center until the terminal location is verified.",
+      "destinationIds": [
+        "dest_jordan_center",
+        "dest_sibunag_center",
+        "dest_guisi_lighthouse",
+        "dest_raymen_beach"
+      ],
+      "driverIds": []
+    },
+    {
+      "id": "terminal_san_lorenzo_poblacion",
+      "name": "San Lorenzo Poblacion Terminal",
+      "municipality": "san_lorenzo",
+      "nodeId": "center_san_lorenzo",
+      "latitude": null,
+      "longitude": null,
+      "type": "tricycle",
+      "fareRuleId": "demo_sample",
+      "dataStatus": "demo",
+      "note": "DEMO terminal. Coordinates required: routed from the municipal center until the terminal location is verified.",
+      "destinationIds": [
+        "dest_buenavista_poblacion",
+        "dest_sibunag_center",
+        "dest_san_lorenzo_wind_farm",
+        "dest_sl_church"
+      ],
+      "driverIds": []
+    },
+    {
+      "id": "terminal_sibunag_poblacion",
+      "name": "Sibunag Poblacion Terminal",
+      "municipality": "sibunag",
+      "nodeId": "center_sibunag",
+      "latitude": null,
+      "longitude": null,
+      "type": "tricycle",
+      "fareRuleId": "demo_sample",
+      "dataStatus": "demo",
+      "note": "DEMO terminal. Coordinates required: routed from the municipal center until the terminal location is verified.",
+      "destinationIds": [
+        "dest_san_lorenzo_center",
+        "dest_nueva_valencia_center",
+        "dest_jordan_center",
+        "dest_sebaste_port"
+      ],
+      "driverIds": []
+    }
+  ]
+}

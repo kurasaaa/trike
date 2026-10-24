@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PANAW — Verified Receipt</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+<div class="receipt-page">
+  <div style="display:flex; align-items:center; gap:10px; margin-bottom:16px;">
+    <div style="width:34px; height:34px; border-radius:10px; background:var(--teal-bright); display:flex; align-items:center; justify-content:center; font-family:var(--font-display); font-weight:700; color:var(--navy-deep);">PN</div>
+    <div>
+      <div style="font-family:var(--font-display); font-weight:700; font-size:18px; color:var(--navy);">PANAW</div>
+      <div style="font-size:11px; color:var(--ink-soft);">Public receipt verification · Guimaras</div>
+    </div>
+  </div>
+  <div id="out"><div class="empty-state"><div class="s">Loading receipt…</div></div></div>
+</div>
+
+<script>
+'use strict';
+const peso = n => '₱' + Number(n).toFixed(2);
+const esc = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const row = (k,v) => `<div class="bd-row"><span class="k">${k}</span><span class="v">${v}</span></div>`;
+const rowPlain = (k,v) => `<div class="bd-row"><span class="k">${k}</span><span class="v plain">${v}</span></div>`;
+const cap = s => s.charAt(0).toUpperCase() + s.slice(1);
+
+(async function(){
+  const id = location.pathname.split('/').pop();
+  const sig = new URLSearchParams(location.search).get('s') || '';
+  const out = document.getElementById('out');
+  let r;
+  try {
+    const res = await fetch(`/api/trips/${id}/receipt?s=${encodeURIComponent(sig)}`);
+    if(!res.ok) throw new Error('not found');
+    r = await res.json();
+  } catch {
+    out.innerHTML = `<div class="verify-banner bad">Receipt not found<div class="sub">No trip with this reference exists on the server.</div></div>`;
+    return;
+  }
+
+  const f = r.fare;
+  const valid = r.signatureValid;
+  let h = '';
+
+  h += valid === true
+    ? `<div class="verify-banner ok">Verified — issued by the PANAW server<div class="sub">The fare below was computed before departure and has not been altered.</div></div>`
+    : valid === false
+      ? `<div class="verify-banner bad">Signature does not match<div class="sub">This link was altered. Do not treat the amount below as verified.</div></div>`
+      : `<div class="verify-banner ok" style="background:var(--sky-2); color:var(--navy); border-color:var(--line);">Receipt found<div class="sub">Open the signed link from the passenger's app to verify it.</div></div>`;
+
+  h += `<div class="card" style="text-align:center; background:linear-gradient(160deg,var(--navy-deep),#0d3f4a); border:none;">
+    <div style="color:#8FD9CE; font-size:10.5px; letter-spacing:.1em; text-transform:uppercase; font-weight:700;">Total paid</div>
+    <div style="font-family:var(--font-mono); color:#fff; font-size:32px; font-weight:700; margin-top:4px;">${peso(f.total)}</div>
+    <div style="color:#9FC9C6; font-size:11px; margin-top:6px;">${esc(r.id)} · ${esc(r.signature)}</div>
+  </div>`;
+
+  h += `<div class="card"><div class="card-title">Trip</div>
+    ${rowPlain('From', esc(r.origin))}
+    ${rowPlain('To', esc(r.destination))}
+    ${r.route && r.route.steps.length > 2 ? rowPlain('Via', esc(r.route.steps.slice(1, -1).map(s => s.name).join(', '))) : ''}
+    ${r.route && r.route.municipalityNames.length > 1 ? rowPlain('Municipalities', esc(r.route.municipalityNames.join(' → '))) : ''}
+    ${row('Distance', r.distanceKm + ' km')}
+    ${rowPlain('Hire type', r.hireType === 'special' ? 'Special trip (whole unit)' : 'Regular hire (per passenger)')}
+    ${r.fareRule && r.fareRule.isDemo ? rowPlain('Fare rule', 'DEMO / SAMPLE RATE') : ''}
+    ${row('Passengers', r.passengers)}
+    ${rowPlain('Fare locked', new Date(r.lockedAt).toLocaleString('en-PH'))}
+    ${r.completedAt ? rowPlain('Completed', new Date(r.completedAt).toLocaleString('en-PH')) : ''}
+    ${r.driver ? rowPlain('Driver', `${esc(r.driver.name)} · #${esc(r.driver.id)}`) : ''}
+  </div>`;
+
+  h += `<div class="card"><div class="card-title">How this fare was computed</div>
+    ${row(`${f.hireType === 'special' ? 'Special-trip base' : 'Base fare'} (first ${f.baseKm} km)`, peso(f.baseFare))}
+    ${row(`Distance fare (${f.extraKm.toFixed(1)} km × ${peso(f.perKmRate)})`, peso(f.distanceFare))}
+    ${row(f.hireType === 'special' ? 'Whole-unit fare' : 'Fare for one passenger', peso(f.singleBase))}
+    ${f.hireType === 'special'
+      ? row(`Split among ${f.passengers} rider${f.passengers > 1 ? 's' : ''}`, peso(f.singleBase / f.passengers) + ' each')
+      : row(`Charged per passenger (× ${f.passengers})`, peso(f.singleBase * f.passengers))}
+    ${f.nightApplies ? row(`Night surcharge (${(f.nightSurchargeRate*100).toFixed(0)}%)`, peso(f.nightSurcharge)) : ''}
+    ${row('Subtotal', peso(f.subtotal))}
+    ${f.discountTotal > 0 ? `<div class="bd-row discount"><span class="k">${cap(f.discountType)} discount × ${f.discountedPax}</span><span class="v">− ${peso(f.discountTotal)}</span></div>` : ''}
+    <div class="bd-row total"><span class="k">Total</span><span class="v">${peso(f.total)}</span></div>
+  </div>`;
+
+  h += `<div class="card"><div class="card-title">Per passenger</div><div class="pax-list">${
+    f.paxBreakdown.map(p => `<div class="pax-chip"><div class="who">Passenger ${p.index}${p.discounted ? `<span class="tagd">${cap(f.discountType)}</span>` : ''}</div><div class="amt">${peso(p.amount)}</div></div>`).join('')
+  }</div></div>`;
+
+  if (r.safetyEvents && r.safetyEvents.length) {
+    h += `<div class="card"><div class="card-title">Safety log</div><div class="safety-log">${
+      r.safetyEvents.map(e => `<div class="safety-log-item ${e.type==='alert_sent'?'':e.type==='safe_confirmed'?'ok':'warn'}">
+        <div class="head"><span>${e.type==='alert_sent'?'Emergency alert sent':e.type==='safe_confirmed'?'Passenger confirmed safe':'Deviation ('+e.severity+')'}</span>
+        <span>${new Date(e.at).toLocaleTimeString('en-PH',{hour:'numeric',minute:'2-digit'})}</span></div>
+        <div>${esc(e.note||'')}</div></div>`).join('')
+    }</div></div>`;
+  }
+
+  h += `<div class="disclaimer">Computed under ${esc(r.ordinance.ordinance)}, ${esc(r.ordinance.lgu)}. Demonstration data for an academic research prototype.</div>`;
+  out.innerHTML = h;
+})();
+</script>
+</body>
+</html>

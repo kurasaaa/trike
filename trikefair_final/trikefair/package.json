@@ -1,0 +1,19 @@
+{
+  "name": "trikefair",
+  "version": "1.0.0",
+  "description": "PANAW — server-authoritative tricycle fare computation, locking and receipt issuance. Academic research prototype.",
+  "main": "server.js",
+  "type": "commonjs",
+  "scripts": {
+    "start": "node server.js",
+    "test": "node tests/run-tests.js",
+    "reset": "node -e \"require('fs').unlinkSync('./data/db.json')\" && echo database cleared"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "pg": "^8.23.1"
+  },
+  "private": true
+}

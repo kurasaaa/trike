@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PANAW — Terminal booking</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+
+<div class="conn-chip" id="conn-chip">Offline — local computation</div>
+
+<div id="app-frame">
+<div id="screens">
+
+  <!-- ========================= HOME ========================= -->
+  <section class="screen active" id="screen-home">
+    <div class="topbar">
+      <div class="brand-row">
+        <div class="brand-mark">PN</div>
+        <div>
+          <div class="brand-name">PANAW</div>
+          <div class="brand-tag">Progressive Advanced Network for Automated Wayfinding · Guimaras</div>
+        </div>
+      </div>
+      <div class="mode-pill"><span class="dot"></span> <span id="home-mode-text">Terminal Ride Mode — regular queue</span></div>
+    </div>
+
+    <div class="screen-scroll">
+      <div class="card">
+        <div class="card-title">Origin</div>
+        <div class="origin-grid">
+          <div>
+            <label class="field-label" for="municipality-select">Municipality</label>
+            <select id="municipality-select"></select>
+          </div>
+          <div>
+            <label class="field-label" for="terminal-select">Terminal</label>
+            <select id="terminal-select"></select>
+          </div>
+        </div>
+        <div class="terminal-box">
+          <div class="ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8M12 16v4"/></svg></div>
+          <div>
+            <div class="txt-label">Current terminal</div>
+            <div class="txt-main" id="terminal-name">Loading…</div>
+            <div class="terminal-meta" id="terminal-meta"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Destination</div>
+        <label class="field-label" for="destination-select">Where are you headed?</label>
+        <select id="destination-select"><option value="">Select destination…</option></select>
+        <div id="route-preview"></div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Hire type</div>
+        <label class="field-label" for="hire-type">How are you taking this tricycle?</label>
+        <select id="hire-type">
+          <option value="regular">Regular hire — shared ride, fare per passenger</option>
+          <option value="special">Special trip — you hire the whole unit</option>
+        </select>
+        <div class="stepper-hint" id="hire-hint"></div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Passengers</div>
+        <div class="stepper">
+          <button id="pax-minus" aria-label="Remove passenger">−</button>
+          <div class="count" id="pax-count">1</div>
+          <button id="pax-plus" aria-label="Add passenger">+</button>
+        </div>
+        <div class="stepper-hint" id="pax-hint"></div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Fare discounts</div>
+        <label class="field-label" for="discount-type">Discount type</label>
+        <select id="discount-type"></select>
+        <label class="field-label" style="margin-top:12px;">Passengers availing this discount</label>
+        <div class="stepper">
+          <button id="disc-minus" aria-label="Fewer discounted passengers">−</button>
+          <div class="count" id="disc-count">0</div>
+          <button id="disc-plus" aria-label="More discounted passengers">+</button>
+        </div>
+        <div class="stepper-hint">The 20% comes off each qualified passenger's own fare, per RA 9994 and RA 10754.</div>
+      </div>
+
+      <div class="card">
+        <div class="switch-row">
+          <div class="label-block">
+            <div class="t">Night rate</div>
+            <div class="s" id="night-hint">Checking the server clock…</div>
+          </div>
+          <div class="badge badge-navy" id="night-badge">—</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="switch-row">
+          <div class="label-block">
+            <div class="t">Location (GPS)</div>
+            <div class="s" id="gps-hint">Off. Your location is only read after you turn this on.</div>
+          </div>
+          <div class="badge badge-navy" id="gps-badge">OFF</div>
+        </div>
+        <div id="gps-readout"></div>
+        <button class="btn btn-secondary btn-sm" style="width:100%; margin-top:10px;" id="gps-btn">Enable GPS</button>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Safety — emergency contacts</div>
+        <div id="home-contacts-list"></div>
+        <button class="btn btn-secondary btn-sm" style="width:100%; margin-top:4px;" id="open-contacts-btn">Manage emergency contacts</button>
+        <div class="stepper-hint">If the tricycle leaves the expected route and you don't confirm you're safe, these contacts are alerted with your live location.</div>
+      </div>
+
+      <div class="card" style="background:var(--sky-2); border-color:#B9DEDD;">
+        <div class="switch-row">
+          <div class="label-block">
+            <div class="t">Booking Mode</div>
+            <div class="s">Optional — request a specific unit instead of queueing. Identical fare either way.</div>
+          </div>
+          <label class="switch"><input type="checkbox" id="booking-toggle" aria-label="Booking mode"><span class="track"><span class="thumb"></span></span></label>
+        </div>
+      </div>
+
+      <button class="btn btn-primary" style="padding:16px;" id="calc-btn">Calculate fare</button>
+      <div class="stepper-hint" style="text-align:center; margin-top:10px;">
+        The fare is computed on the server, not on this phone.
+        <a href="/driver" style="color:var(--teal); font-weight:700;">Open driver console</a>
+      </div>
+      <div class="footer-links">Administration: <a href="/monitor">Guimaras transport monitor</a></div>
+    </div>
+  </section>
+
+  <!-- ========================= FARE RESULT ========================= -->
+  <section class="screen" id="screen-fare-result">
+    <div class="topbar">
+      <div class="topbar-inline">
+        <button class="back-btn" data-go="screen-home" aria-label="Back">‹</button>
+        <div>
+          <div class="screen-title">Fare Result</div>
+          <div class="screen-subtitle">Computed from the ordinance — nothing to negotiate</div>
+        </div>
+      </div>
+    </div>
+    <div class="screen-scroll">
+      <div class="fare-meter">
+        <div class="meter-label">Total trip fare</div>
+        <div class="meter-digits" id="meter-digits"></div>
+        <div class="meter-sub" id="meter-sub">—</div>
+      </div>
+
+      <div class="card" style="margin-top:14px;">
+        <div class="card-title">Route information</div>
+        <div id="result-route"></div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Fare breakdown</div>
+        <div id="fare-breakdown"></div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">What each passenger pays</div>
+        <div class="pax-list" id="pax-breakdown"></div>
+      </div>
+
+      <div id="lock-status-area"></div>
+      <button class="btn btn-primary" id="lock-fare-btn" style="padding:16px;">Lock fare</button>
+    </div>
+  </section>
+
+  <!-- ========================= ACTIVE TRIP ========================= -->
+  <section class="screen" id="screen-active-trip">
+    <div class="topbar">
+      <div class="topbar-inline">
+        <div class="back-btn" style="cursor:default;"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 15V8a1 1 0 0 1 1-1h8l3 4h4a2 2 0 0 1 2 2v2"/><circle cx="7" cy="17" r="2"/><circle cx="17" cy="17" r="2"/><path d="M9 17h6"/></svg></div>
+        <div>
+          <div class="screen-title">Active Trip</div>
+          <div class="screen-subtitle" id="trip-status-text">Waiting for a driver</div>
+        </div>
+      </div>
+      <div class="mode-pill"><span class="dot"></span> <span id="trip-lock-pill">Fare locked on the server</span></div>
+    </div>
+    <div class="screen-scroll">
+      <div class="map-box" id="map-box">
+        <svg viewBox="0 0 300 190" preserveAspectRatio="none">
+          <path id="route-path" d="M 40 150 Q 150 30 260 45" stroke="#0E7C86" stroke-width="3.5" stroke-dasharray="1 10" stroke-linecap="round" fill="none"/>
+        </svg>
+        <div class="map-pin origin"><div class="pinhead"><span>●</span></div><div class="pinlabel">Terminal</div></div>
+        <div class="map-pin dest"><div class="pinhead"><span></span></div><div class="pinlabel" id="map-dest-label">Destination</div></div>
+        <div class="trike-icon" id="trike-marker"></div>
+      </div>
+
+      <div class="deviation-banner" id="deviation-banner"><span id="deviation-banner-text"></span></div>
+
+      <div class="safety-inline" id="safety-inline">
+        <div>
+          <div class="t" id="safety-inline-text">No emergency contacts set</div>
+          <div class="s">Tap to manage — used for automatic safety alerts</div>
+        </div>
+        <span style="color:var(--red); font-weight:700;">›</span>
+      </div>
+      <div class="safety-log" id="safety-log"></div>
+
+      <div class="divider-label">Driver and unit</div>
+      <div class="card">
+        <div class="driver-card">
+          <div class="driver-avatar" id="driver-avatar">—</div>
+          <div class="driver-info">
+            <div class="name" id="driver-name">Waiting for a driver to accept…</div>
+            <div class="sub" id="driver-unit">The trip is already locked at your fare.</div>
+            <div class="stars" id="driver-rating"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="divider-label">Trip details</div>
+      <div class="card" id="trip-details"></div>
+
+      <div class="btn-row">
+        <button class="btn btn-secondary" id="share-btn">Share trip</button>
+        <button class="btn btn-danger" id="report-btn">Report issue</button>
+      </div>
+      <button class="btn btn-danger btn-danger-solid" style="margin-top:10px;" id="alert-btn">Alert emergency contacts now</button>
+
+      <div class="divider-label">Demo controls</div>
+      <div class="btn-row">
+        <button class="btn btn-secondary btn-sm" id="dev-minor">Minor deviation</button>
+        <button class="btn btn-secondary btn-sm" id="dev-major">Major deviation</button>
+      </div>
+      <div class="stepper-hint" style="text-align:center;">Severity is classified by the server from the reported coordinates, not by this button.</div>
+
+      <button class="btn btn-dark" style="margin-top:14px; padding:16px;" id="end-trip-btn">End trip</button>
+    </div>
+  </section>
+
+  <!-- ========================= RECEIPT ========================= -->
+  <section class="screen" id="screen-receipt">
+    <div class="topbar">
+      <div class="topbar-inline">
+        <button class="back-btn" data-go="screen-home" aria-label="Back">‹</button>
+        <div>
+          <div class="screen-title">Trip Receipt</div>
+          <div class="screen-subtitle">Issued by the server, not typed by the driver</div>
+        </div>
+      </div>
+    </div>
+    <div class="screen-scroll" id="receipt-scroll"></div>
+  </section>
+
+  <!-- ========================= BOOKING ========================= -->
+  <section class="screen" id="screen-booking">
+    <div class="topbar">
+      <div class="topbar-inline">
+        <button class="back-btn" data-go="screen-home" aria-label="Back">‹</button>
+        <div>
+          <div class="screen-title">Booking Mode</div>
+          <div class="screen-subtitle">Optional — request instead of queueing</div>
+        </div>
+      </div>
+      <div class="mode-pill"><span class="dot blue-dot"></span> Same fare engine as the terminal queue</div>
+    </div>
+    <div class="screen-scroll">
+      <div class="card">
+        <div class="card-title">Pickup point</div>
+        <select id="booking-pickup"></select>
+      </div>
+      <div class="card">
+        <div class="card-title">Destination</div>
+        <select id="booking-destination"><option value="">Select destination…</option></select>
+      </div>
+      <div class="card">
+        <div class="card-title">Ride settings carried from Home</div>
+        <div id="booking-settings-summary"></div>
+        <button class="btn btn-secondary btn-sm" style="width:100%; margin-top:10px;" data-go="screen-home">Change passengers or discounts</button>
+      </div>
+      <div class="divider-label">Available units nearby</div>
+      <div id="booking-tricycle-list"></div>
+      <div class="card" id="booking-estimate-card" style="display:none;">
+        <div class="card-title">Server quote</div>
+        <div id="booking-estimate"></div>
+      </div>
+      <button class="btn btn-primary" style="padding:16px;" id="request-btn">Request and lock fare</button>
+    </div>
+  </section>
+
+  <!-- ========================= HISTORY ========================= -->
+  <section class="screen" id="screen-history">
+    <div class="topbar">
+      <div class="topbar-inline">
+        <button class="back-btn" data-go="screen-home" aria-label="Back">‹</button>
+        <div>
+          <div class="screen-title">Trip History</div>
+          <div class="screen-subtitle">Receipts stored on the server</div>
+        </div>
+      </div>
+    </div>
+    <div class="screen-scroll"><div id="history-list"></div></div>
+  </section>
+
+  <!-- ========================= RULES ========================= -->
+  <section class="screen" id="screen-rules">
+    <div class="topbar">
+      <div class="topbar-inline">
+        <button class="back-btn" data-go="screen-home" aria-label="Back">‹</button>
+        <div>
+          <div class="screen-title">Fare Rules</div>
+          <div class="screen-subtitle">The matrix the server enforces</div>
+        </div>
+      </div>
+    </div>
+    <div class="screen-scroll">
+      <div class="card">
+        <div class="card-title">Governing ordinance</div>
+        <div id="rules-ordinance"></div>
+      </div>
+      <div class="card">
+        <div class="card-title">Fare matrix</div>
+        <table class="rule-table" id="rules-matrix"></table>
+      </div>
+      <div class="card">
+        <div class="switch-row">
+          <div class="label-block">
+            <div class="t">Night surcharge authorized</div>
+            <div class="s">Demo control: simulates the LGU withdrawing night rates. Applies to every connected device.</div>
+          </div>
+          <label class="switch"><input type="checkbox" id="rules-night-enabled" aria-label="Night surcharge authorized"><span class="track"><span class="thumb"></span></span></label>
+        </div>
+      </div>
+      <div class="card">
+        <div class="switch-row">
+          <div class="label-block">
+            <div class="t">Simulate night-time clock</div>
+            <div class="s">The server reads the night window from its own clock — no one can switch the surcharge on by hand. Use this for a daytime demo.</div>
+          </div>
+          <label class="switch"><input type="checkbox" id="rules-simulate-night" aria-label="Simulate night clock"><span class="track"><span class="thumb"></span></span></label>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">Transport modes</div>
+        <div id="rules-modes"></div>
+      </div>
+      <div class="disclaimer">
+        <span>This matrix is <strong>demonstration data</strong> for an academic research prototype. Actual tricycle fares follow the applicable Sangguniang Bayan ordinance and change without notice.</span>
+      </div>
+    </div>
+  </section>
+
+</div><!-- /#screens -->
+
+<div class="bottomnav" id="bottomnav">
+  <button class="nav-item active" data-target="screen-home"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></svg><span>Home</span></button>
+  <button class="nav-item" data-target="screen-booking"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 15V8a1 1 0 0 1 1-1h8l3 4h4a2 2 0 0 1 2 2v2"/><circle cx="7" cy="17" r="2"/><circle cx="17" cy="17" r="2"/><path d="M9 17h6"/></svg><span>Booking</span></button>
+  <button class="nav-item" data-target="screen-history"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 3h12v18l-3-2-3 2-3-2-3 2z"/><path d="M9 8h6M9 12h6"/></svg><span>History</span></button>
+  <button class="nav-item" data-target="screen-rules"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6h11M9 12h11M9 18h11M4.5 6h.01M4.5 12h.01M4.5 18h.01"/></svg><span>Rules</span></button>
+</div>
+
+<!-- ========================= MODALS ========================= -->
+<div class="modal-overlay" id="modal-contacts">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <div class="modal-title">Emergency contacts <button class="modal-close" data-close="modal-contacts">×</button></div>
+    <p style="font-size:12.5px; color:var(--ink-soft); margin-top:0;">These people receive an alert with your live coordinates if a trip shows a major, unconfirmed deviation.</p>
+    <div id="contacts-list"></div>
+    <div class="divider-label">Add a contact</div>
+    <label class="field-label" for="contact-name">Full name</label>
+    <input type="text" id="contact-name" placeholder="e.g. Elena Cruz" style="margin-bottom:12px;">
+    <label class="field-label" for="contact-relation">Relationship</label>
+    <select id="contact-relation" style="margin-bottom:12px;">
+      <option>Parent</option><option>Spouse</option><option>Sibling</option>
+      <option>Friend</option><option>Guardian</option><option>Other</option>
+    </select>
+    <label class="field-label" for="contact-phone">Mobile number</label>
+    <input type="text" id="contact-phone" placeholder="e.g. +63 917 123 4567">
+    <button class="btn btn-primary" style="margin-top:14px;" id="add-contact-btn">Add contact</button>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modal-report">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <div class="modal-title">Report fare issue <button class="modal-close" data-close="modal-report">×</button></div>
+    <label class="field-label" for="report-type">Issue type</label>
+    <select id="report-type" style="margin-bottom:12px;">
+      <option>Driver asked for more than the locked fare</option>
+      <option>Driver refused an authorized discount</option>
+      <option>Unauthorized night surcharge</option>
+      <option>Route deviation or unsafe driving</option>
+      <option>Other concern</option>
+    </select>
+    <label class="field-label" for="report-details">Details</label>
+    <textarea id="report-details" placeholder="Describe what happened…"></textarea>
+    <button class="btn btn-danger" style="margin-top:14px;" id="submit-report-btn">Submit report</button>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modal-share">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <div class="modal-title">Share trip <button class="modal-close" data-close="modal-share">×</button></div>
+    <p style="font-size:12.5px; color:var(--ink-soft); margin-top:0;">Anyone with this link sees the live trip and the locked fare.</p>
+    <div class="terminal-box" style="margin-bottom:12px;">
+      <div>
+        <div class="txt-label">Tracking link</div>
+        <div class="txt-main" id="share-link" style="font-family:var(--font-mono); font-size:11.5px; word-break:break-all;">—</div>
+      </div>
+    </div>
+    <button class="btn btn-primary" id="copy-link-btn">Copy link</button>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modal-deviation">
+  <div class="modal-sheet" style="text-align:center;">
+    <div class="modal-handle"></div>
+    <div class="modal-title" style="justify-content:center;">Confirm you're safe</div>
+    <p style="font-size:12.5px; color:var(--ink-soft); margin:6px 0 0;" id="deviation-modal-text"></p>
+    <div class="countdown-ring" id="countdown-ring" style="--pct:100;"><span id="countdown-num">8</span></div>
+    <p style="font-size:11.5px; color:var(--ink-soft); margin-top:0;">If you don't respond, your emergency contacts are alerted with your live location.</p>
+    <div class="btn-row" style="margin-top:8px;">
+      <button class="btn btn-secondary" id="confirm-safe-btn">I'm safe</button>
+      <button class="btn btn-danger" id="send-now-btn">Send now</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modal-gps">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <div class="modal-title">Location access <button class="modal-close" data-close="modal-gps">×</button></div>
+    <p style="font-size:12.5px; color:var(--ink-soft); margin-top:0;">PANAW uses your device location to display your current position on the route map. It stays on this phone — the passenger app does not send it to the server.</p>
+    <p style="font-size:12.5px; color:var(--ink-soft);">Your phone will ask for permission next. You can turn GPS off again at any time.</p>
+    <button class="btn btn-primary" id="gps-confirm-btn">Enable GPS</button>
+  </div>
+</div>
+
+</div><!-- /#app-frame -->
+
+<div class="toast" id="toast"></div>
+
+<script src="/vendor/qrcode.js"></script>
+<script src="/lib/network.js"></script>
+<script src="/netmap.js"></script>
+<script src="/app.js"></script>
+</body>
+</html>
