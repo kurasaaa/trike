@@ -192,22 +192,24 @@ function quote(fromNodeId, stopIds, opts, terminal) {
   for (const id of stopIds) {
     const p = byId(PLACES, id); const r = route(NET, at, p.nodeId);
     if (!r.found) return { error: r.reason };
-    // the TODA card's flat regular fare covers its own zone only; farther trips are special trips
+    // the TODA card's flat regular fare covers its own zone only; farther trips are special trips.
+    // One passenger, or a trike called to the pickup, hires the whole unit: no one else shares the fare
     const outside = set.regularFlatInZoneOnly && p.municipality !== set.zone;
-    const hire = outside ? 'special' : opts.hire;
-    legs.push({ to: p, route: r, forcedSpecial: outside && opts.hire !== 'special',
+    const why = opts.hire === 'special' ? null : opts.toPickup ? 'pickup' : opts.pax === 1 ? 'solo' : outside ? 'zone' : null;
+    const hire = why || opts.hire === 'special' ? 'special' : 'regular';
+    legs.push({ to: p, route: r, forcedSpecial: why,
       fare: F.computeFare({ distanceKm: r.distanceKm, passengers: opts.pax, discountedPax: opts.dpax, discountType: opts.disc, hireType: hire }, fr) });
     at = p.nodeId;
   }
   const steps = legs.flatMap((l, i) => i ? l.route.steps.slice(1) : l.route.steps);
   const munis = []; steps.forEach(s => { if (munis[munis.length - 1] !== s.municipalityName) munis.push(s.municipalityName); });
-  return { legs, steps, munis, terminal, info, set, forcedSpecial: legs.some(l => l.forcedSpecial), total: legs.reduce((s, l) => s + l.fare.total, 0),
+  return { legs, steps, munis, terminal, info, set, forcedSpecial: (legs.find(l => l.forcedSpecial) || {}).forcedSpecial || null, total: legs.reduce((s, l) => s + l.fare.total, 0),
     km: legs.reduce((s, l) => s + l.route.distanceKm, 0), min: legs.reduce((s, l) => s + l.route.estimatedMinutes, 0) };
 }
 /* both ways to ride: a trike to the pickup (qp) or a fare ticket from the nearest terminal (qt) */
 function rideQuotes(pickup, stops, o) {
   const snap = nearestNode(pickup);
-  const qp = quote(snap.n.id, stops, o, termRuleFor(snap.n.municipality));
+  const qp = quote(snap.n.id, stops, { ...o, toPickup: true }, termRuleFor(snap.n.municipality));
   const trikes = availableTrikes(pickup);
   // nearest terminal by its routing point
   const term = NET.terminals.map(t => ({ t, n: byId(NET.nodes, t.nodeId) })).map(x => ({ ...x, km: F.haversineKm(pickup, x.n) })).sort((a, b) => a.km - b.km)[0];
@@ -315,7 +317,7 @@ const jobOf = (me, id) => { const r = byId(Hub.requests, id); return r && me && 
 const okPos = p => p && Number.isFinite(+p.lat) && Number.isFinite(+p.lng) && Math.abs(p.lat) <= 90 && Math.abs(p.lng) <= 180;
 const cleanOpts = o => {
   const pax = Math.min(4, Math.max(1, Math.round(+o.pax) || 1)), disc = ['student', 'senior', 'pwd'].includes(o.disc) ? o.disc : 'none';
-  return { pax, hire: o.hire === 'special' ? 'special' : 'regular', disc, dpax: disc === 'none' ? 0 : Math.min(pax, Math.max(1, Math.round(+o.dpax) || 1)) };
+  return { pax, hire: o.hire === 'regular' ? 'regular' : 'special', disc, dpax: disc === 'none' ? 0 : Math.min(pax, Math.max(1, Math.round(+o.dpax) || 1)) };
 };
 const cleanStops = s => Array.isArray(s) && s.length >= 1 && s.length <= 5 && s.every(id => byId(PLACES, id)) ? s.slice() : null;
 const txt = (v, max) => String(v == null ? '' : v).trim().slice(0, max);

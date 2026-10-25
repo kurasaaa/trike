@@ -28,7 +28,7 @@ const res = [], errors = [], check = (n, ok, ev = '') => res.push({ n, ok: !!ok,
   await p.click(`${A} [data-brgy-town="jordan"]`); await p.click(`${A} .page [data-place="dest_brgy_jordan_hoskyn"]`);
   check('barangay page: "Barangay Hoskyn · Jordan", PhilAtlas tag', /Barangay Hoskyn · Jordan/.test(await txt(`${A} .page`)) && /Location: PhilAtlas/.test(await txt(`${A} .page`)));
   await p.click(`${A} .page [data-ride-here]`);
-  await p.click(`${A} [data-confirm-pickup]`); await p.click(`${A} [data-review]`);
+  { const cp = await p.$(`${A} [data-confirm-pickup]`); if (cp) await cp.click(); } await p.click(`${A} [data-review]`);
   check('Get a tricycle from a barangay opens fares', await p.evaluate(() => phones[0].tab === 'ride' && phones[0].ride.stops[0] === 'dest_brgy_jordan_hoskyn' && !!document.querySelector('#phone-a [data-book]')));
   await p.click(`${A} [data-go-tab="explore"]`);
   await p.selectOption(`${A} [data-muni-select]`, "san_lorenzo");

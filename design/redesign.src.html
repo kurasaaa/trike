@@ -64,6 +64,7 @@ input,select,textarea{font-family:inherit;}
   .stage{padding:0; gap:0;} .stage-bar,.phone-label{display:none;} .phones{gap:0; width:100%;}
   .phone-col{width:100%;} .phone-col.second{display:none;}
   .phone{width:100%; height:100vh; height:100dvh; max-height:none; min-height:0; border:none; border-radius:0; box-shadow:none;}
+  .phone::before{content:''; flex:none; height:max(env(safe-area-inset-top, 0px), var(--safe-area-inset-top, 0px)); background:#0A3543;}
 }
 
 /* ---------- phone shell ---------- */
@@ -112,6 +113,8 @@ textarea.field{min-height:80px; resize:vertical;}
 .chips{display:flex; gap:6px; overflow-x:auto; padding:0 16px 2px;} .chips::-webkit-scrollbar{height:0;}
 .filters{padding:12px 0 4px; display:grid; gap:10px;}
 .muni-pick{display:flex; align-items:center; gap:10px; padding:0 16px; font-size:13px; font-weight:600; color:var(--muted);}
+.term-pick{display:flex; gap:8px; margin-top:10px;} .term-pick label{flex:1; min-width:0; font-size:12px; font-weight:600; color:var(--muted);}
+.term-pick .field{width:100%; min-height:44px; margin-top:4px; padding:8px 10px; font-size:14px; font-weight:600; color:var(--ink);}
 .muni-pick .field{flex:1; min-height:44px; padding:8px 12px; font-weight:600; color:var(--ink);}
 .filter-line{display:flex; align-items:center; justify-content:space-between; gap:10px; padding:8px 16px 0; font-size:12.5px; color:var(--muted); font-weight:600;}
 .chip .i{width:14px; height:14px; margin:-2px 4px 0 -2px; vertical-align:middle;}
@@ -175,6 +178,9 @@ textarea.field{min-height:80px; resize:vertical;}
   box-shadow:0 -2px 14px rgba(16,35,43,.10); display:flex; flex-direction:column; z-index:10;}
 .sheet.full{top:0; max-height:none; border-radius:0;}
 .sheet .grab{width:36px; height:4px; border-radius:2px; background:var(--line); margin:8px auto 0; flex:none;}
+.sheet button.grab{display:block; width:100%; height:22px; margin:0; padding:0; border:none; background:none; cursor:pointer; position:relative;}
+.sheet button.grab::after{content:''; position:absolute; left:50%; top:9px; width:36px; height:4px; margin-left:-18px; border-radius:2px; background:var(--faint);}
+.sheet.min{max-height:34%;}
 .sheet .scroll{padding:12px 16px 16px;}
 .top-pill{position:absolute; top:12px; left:12px; right:12px; z-index:5; display:flex; justify-content:space-between; gap:8px; pointer-events:none;}
 .top-pill > *{pointer-events:auto;}
@@ -466,7 +472,7 @@ function Phone(host, startAccountId) {
   P.guest = false;
   P.auth = { step: 'welcome', role: 'passenger', error: '' };
   P.tab = null; P.pages = [];
-  P.ride = { pickup: defaultPickup(), stops: [], step: 'home', option: 'pickup', opts: { pax: 1, hire: 'regular', disc: 'none', dpax: 0 }, query: '', active: 0, reqId: null, rating: 0, refit: true };
+  P.ride = { pickup: defaultPickup(), stops: [], step: 'home', option: 'pickup', opts: { pax: 1, hire: 'special', disc: 'none', dpax: 0 }, query: '', active: 0, reqId: null, rating: 0, refit: true };
   P.explore = { q: '', cat: 'All', muni: 'all' };
   P.drive = { refit: true };
   P.listing = { photos: [], pin: null };
@@ -480,11 +486,12 @@ function Phone(host, startAccountId) {
   new MutationObserver(ms => ms.forEach(m => m.addedNodes.forEach(n => translate(n.nodeType === 1 ? n : n.parentNode)))).observe(host, { childList: true, subtree: true });
   P.render();
 }
-function defaultPickup() {
-  const n = byId(NET.nodes, 'd2');   // map centre: by the Buenavista New Terminal Market. Never used as a pickup until the passenger chooses
-  return isDemo() ? { lat: n.lat + 0.0012, lng: n.lng - 0.0008, label: 'Sample point near Buenavista New Terminal Market', src: 'demo' }
-    : { lat: n.lat + 0.0012, lng: n.lng - 0.0008, label: 'Not chosen yet', src: 'none' };
+/* the ride starts at a TODA terminal, as the original TRIKEFAIR did at New Poblacion; GPS, a place or the map change it */
+function terminalPickup(id) {
+  const t = byId(NET.terminals, id) || byId(NET.terminals, NET.defaultTerminalId), n = byId(NET.nodes, t.nodeId);
+  return { lat: n.lat, lng: n.lng, label: t.name, src: t.dataStatus === 'existing' ? 'terminal' : 'terminal_todo', terminalId: t.id, municipality: t.municipality };
 }
+const defaultPickup = () => terminalPickup(NET.defaultTerminalId);
 const Pp = Phone.prototype;
 Pp.q = function (s) { return this.host.querySelector(s); };
 Pp.toast = function (m) { const t = this.toastEl; t.textContent = m; t.classList.add('on'); clearTimeout(t._h); t._h = setTimeout(() => t.classList.remove('on'), 2400); };
@@ -555,6 +562,7 @@ function drawBasemap(map) {
 const trikeIcon = cls => L.divIcon({ className: '', html: `<div class="trike-mk ${cls}">${ic('trike')}</div>`, iconSize: [22, 22], iconAnchor: [11, 11] });
 const dotIcon = (color, size = 14) => L.divIcon({ className: '', html: `<div style="width:${size}px;height:${size}px;border-radius:50%;background:${color};border:3px solid #fff;box-shadow:0 0 0 1px rgba(0,0,0,.15)"></div>`, iconSize: [size, size], iconAnchor: [size / 2, size / 2] });
 const sqIcon = color => L.divIcon({ className: '', html: `<div style="width:14px;height:14px;border-radius:3px;background:${color};border:3px solid #fff;box-shadow:0 0 0 1px rgba(0,0,0,.15)"></div>`, iconSize: [14, 14], iconAnchor: [7, 7] });
+const sheetPad = (P, tab) => { const s = P.q(`.tab[data-tab="${tab}"] .sheet`); return s ? s.offsetHeight + 16 : 360; };
 function drawLayer(m, o) {
   if (!m || !m.map) return;
   m.layer.clearLayers();
@@ -568,7 +576,7 @@ function drawLayer(m, o) {
   if (o.fit) {
     const f = o.fitTo || pts;
     if (f.length > 1) m.map.fitBounds(f, { paddingTopLeft: [30, 60], paddingBottomRight: [30, o.bottomPad || 40], maxZoom: 15 });
-    else if (f.length === 1) m.map.setView(f[0], 14);
+    else if (f.length === 1) { m.map.setView(f[0], 15); m.map.panBy([0, Math.max(0, ((o.bottomPad || 40) - 60) / 2)], { animate: false }); }
   }
 }
 
@@ -682,7 +690,7 @@ Pp.logout = function () {
 Pp.renderRide = function (el) {
   const P = this;
   el.innerHTML = `<div class="map" data-map="ride"></div>
-    <div class="top-pill"><span class="pill"><span class="dot demo"></span>DEMO data · no live traffic</span><span data-sos-slot></span></div>
+    <div class="top-pill"><span class="pill">${isDemo() ? '<span class="dot demo"></span>DEMO data · no live traffic' : '<span class="dot"></span>Stored road data · no live traffic'}</span><span data-sos-slot></span></div>
     <div class="sheet"></div>`;
   P.map('ride', el.querySelector('[data-map="ride"]'), pos => {
     const R = P.ride;
@@ -701,10 +709,12 @@ Pp.drawRideSheet = function () {
       <div class="row-btns" style="margin-top:12px"><button class="btn primary" data-to-auth="role">Create account</button><button class="btn ghost" data-to-auth="login">Log in</button></div></div>`;
     return P.drawRideMap();
   }
+  if (!R.reqId) { const open = Hub.requests.find(r => r.passengerId === P.account.id && r.id !== R.dropped && ['requested', 'accepted', 'arrived', 'ontrip'].includes(r.status));
+    if (open) Object.assign(R, { reqId: open.id, stops: open.stopIds.slice(), ticket: null, step: 'active', refit: true }); }
   const req = P.myRide();
   if (req && !['cancelled'].includes(req.status) && R.step !== 'done') R.step = req.status === 'completed' ? 'done' : 'active';
-  sheet.className = 'sheet' + (R.step === 'search' ? ' full' : '');
-  sheet.innerHTML = `${R.step === 'search' ? '' : '<div class="grab"></div>'}<div class="scroll">${P['ride_' + R.step]()}</div>`;
+  sheet.className = 'sheet' + (R.step === 'search' ? ' full' : R.min ? ' min' : '');
+  sheet.innerHTML = `${R.step === 'search' ? '' : `<button class="grab" data-grab aria-label="${R.min ? 'Show the whole panel' : 'Make the map bigger'}"></button>`}<div class="scroll">${P['ride_' + R.step]()}</div>`;
   const bu = sheet.querySelector('[name="bunit"]'); if (bu && bu.value === '__other') sheet.querySelector('[data-other]').style.display = '';
   if (R.step === 'search') { const f = sheet.querySelector('input[data-q]'); if (f) { f.focus(); f.setSelectionRange(f.value.length, f.value.length); } }
   const live = req && ['accepted', 'arrived', 'ontrip'].includes(req.status);
@@ -776,7 +786,7 @@ Pp.page_hire = function (type) {
 };
 /* where the pickup came from, said plainly: a demo sample point never passes for the customer's location */
 const PICKUP_SRC = { none: ['Use GPS, choose a place, or tap the map', 'todo'], demo: ['Sample point for the demo, not your location', 'demo'], confirmed: ['Sample point, confirmed by you', 'demo'],
-  gps: ["From your phone's GPS", 'info'], map: ['Pinned by you on the map', 'info'], place: ['Place you chose', 'info'] };
+  gps: ["From your phone's GPS", 'info'], terminal: ['TODA terminal', 'ok'], terminal_todo: ['Terminal at the town proper, exact spot to verify', 'todo'], map: ['Pinned by you on the map', 'info'], place: ['Place you chose', 'info'] };
 const pickupTag = pk => { const [t, c] = PICKUP_SRC[pk.src] || PICKUP_SRC.map; return `<span class="tag ${c}">${t}</span>`; };
 const pickupReady = pk => pk.src !== 'demo' && pk.src !== 'none';
 // stops people take a tricycle to every day: recent trips, then the market, hospital, port and town centres
@@ -793,6 +803,9 @@ Pp.ride_home = function () {
   const P = this, R = P.ride, a = P.account, dest = R.stops[0] && byId(PLACES, R.stops[0]);
   const recent = [...new Set((a.history || []).flatMap(h => h.to))].slice(0, 2).map(n => PLACES.find(p => p.name === n)).filter(Boolean);
   const quick = [...recent, ...COMMON.map(id => byId(PLACES, id)).filter(Boolean)].filter((p, i, arr) => arr.indexOf(p) === i).slice(0, 6);
+  const termMuni = R.termMuni || R.pickup.municipality || byId(NET.terminals, NET.defaultTerminalId).municipality;
+  const termOpts = (R.pickup.terminalId && R.pickup.municipality === termMuni ? '' : '<option value="" selected>Choose a terminal</option>')
+    + NET.terminals.filter(t => t.municipality === termMuni).map(t => `<option value="${t.id}" ${t.id === R.pickup.terminalId ? 'selected' : ''}>${esc(t.name)}</option>`).join('');
   const why = !dest ? 'Choose where you are going to see the fare.' : R.pickup.src === 'none' ? 'Choose your pickup point first.' : !pickupReady(R.pickup) ? 'Confirm or change your pickup point first.' : '';
   return `<h2 class="ride-title">Where do you need a ride?</h2>
     <div class="label" style="margin-top:12px">Pickup point</div>
@@ -801,6 +814,8 @@ Pp.ride_home = function () {
       <div style="margin:6px 0 0 20px">${pickupTag(R.pickup)}</div>
       <div class="row-btns" style="margin-top:10px"><button class="btn ghost sm" data-gps>${ic('gps')}Use GPS</button><button class="btn ghost sm" data-pick-pickup>${ic('search')}Choose a place</button></div>
       <p class="hint" style="margin:8px 0 0">Or tap the map where you are waiting.</p>
+      <div class="term-pick"><label><span>Municipality</span><select class="field" data-term-muni>${NET.municipalities.map(m => `<option value="${m.id}" ${m.id === termMuni ? 'selected' : ''}>${esc(m.name)}</option>`).join('')}</select></label>
+        <label><span>Terminal</span><select class="field" data-term-pick>${termOpts}</select></label></div>
       ${R.pickup.src === 'none' ? '<p class="hint" style="margin:8px 0 0">PANAW does not use your location until you tap Use GPS.</p>' : ''}
       ${R.pickup.src === 'demo' ? '<div class="banner info" style="font-weight:500">PANAW has not used your location. This sample point is here for the demo. <button class="link inline" data-confirm-pickup>Use the sample point</button></div>' : ''}
     </div>
@@ -849,10 +864,16 @@ Pp.quotes = function () {
   const R = this.ride;
   return H.rideQuotes(R.pickup, R.stops, R.opts);   // the server prices the booking again with this same code
 };
+const FORCED = { pickup: 'A tricycle called to your pickup is hired for you alone, so it is a special trip: one fare for the whole tricycle, split among your passengers.',
+  solo: 'One passenger pays the full special-trip fare: no one else shares the tricycle.',
+  zone: "This trip leaves the TODA's Buenavista zone, so it is priced as a special trip (the whole tricycle)." };
 Pp.ride_options = function () {
   const P = this, R = P.ride, o = R.opts;
+  if (!R.stops.length || !R.stops.every(Boolean)) { R.step = 'home'; return P.ride_home(); }
   const { snap, qp, qt, trikes, term } = P.quotes();
   P._optAny = trikes.length > 0;
+  // no trike can come: show the terminal, and switch back by itself once a trike comes online
+  if (!trikes.length && R.option === 'pickup') { R.option = 'terminal'; R.autoTerm = true; } else if (trikes.length && R.autoTerm) { R.option = 'pickup'; R.autoTerm = false; }
   if (snap.km > 3) return `<div style="display:flex; gap:8px; align-items:center"><button class="icon-btn" data-ride="home" aria-label="Back">${ic('back')}</button><b>Outside the route network</b></div>
     <p class="hint" style="margin-top:10px">Your pickup is ${snap.km.toFixed(1)} km from the nearest road PANAW knows. Move the pin closer to a road in Guimaras.</p>`;
   const sel = R.option === 'terminal' ? qt : qp;
@@ -874,7 +895,7 @@ Pp.ride_options = function () {
         <div class="s">${esc(short(term.t.name))} · ${term.km.toFixed(1)} km from you</div></span>
         <span class="price">${qt.error ? '—' : peso(qt.total)}</span></button>
     </div>
-    <div class="fare-line"><span>${o.pax} passenger${o.pax > 1 ? 's' : ''} · ${o.hire === 'special' || sel.forcedSpecial ? 'Special trip' : 'Regular'}${o.disc !== 'none' ? ` · ${o.dpax} ${o.disc}` : ''}</span><button class="link" data-fare-opts>Change</button></div>
+    <div class="fare-line"><span>${o.pax} passenger${o.pax > 1 ? 's' : ''} · ${f0.hireType === 'special' ? 'Special trip (whole tricycle)' : 'Regular (shared)'}${o.disc !== 'none' ? ` · ${o.dpax} ${o.disc}` : ''}</span><button class="link" data-fare-opts>Change</button></div>
     <details class="breakdown"><summary>How this fare is computed</summary>
       ${sel.legs.length > 1 ? sel.legs.map((l, i) => `<div class="kv"><span class="k">Leg ${i + 1} to ${esc(l.to.name)} · ${l.route.distanceKm} km</span><span class="v">${peso(l.fare.total)}</span></div>`).join('') : `
       ${f0.hireType === 'regular' && !f0.perKmRate ? `<div class="kv"><span class="k">Regular fare, flat per passenger</span><span class="v">${peso(f0.baseFare)}</span></div>` : `
@@ -885,7 +906,7 @@ Pp.ride_options = function () {
       ${f0.discountTotal ? `<div class="kv"><span class="k">Discount (${f0.discountedPax} × 20%)</span><span class="v">−${peso(f0.discountTotal)}</span></div>` : ''}`}
       <div class="kv total"><span class="k">Total</span><span class="v">${peso(sel.total)}</span></div>
       ${sel.legs.length === 1 && sel.legs[0].to.card && sel.set.id === 'npbtoda_card' ? `<div class="kv"><span class="k">TODA fare card, special trip to ${esc(sel.legs[0].to.name)}</span><span class="v">${peso(sel.legs[0].to.card)}</span></div>` : ''}
-      ${sel.forcedSpecial ? '<p class="hint" style="margin-top:6px">This trip leaves the TODA\'s Buenavista zone, so it is priced as a special trip (the whole tricycle).</p>' : ''}
+      ${sel.forcedSpecial ? `<p class="hint" style="margin-top:6px">${FORCED[sel.forcedSpecial]}</p>` : ''}
       <p class="hint" style="margin-top:8px">${esc(sel.info.ordinance || '')} · <span class="tag ${fareTag(sel.info)}">${esc(sel.info.status)}</span>
         ${R.option === 'pickup' ? '<br>The pick-up distance is not charged: no ordinance sets a pick-up fee.' : ''}<br>Route from stored road data, not live traffic.</p>
     </details>
@@ -936,7 +957,7 @@ Pp.ride_done = function () {
     return `<b style="font-size:18px">Fare ticket</b>
       <div class="ticket" style="margin-top:12px"><div class="hint">Show this to the driver at</div><b>${esc(t.terminal)}</b>
         <div class="amt">${peso(t.total)}</div><div class="hint">${esc(t.to)} · ${t.km.toFixed(1)} km · ${t.pax} passenger${t.pax > 1 ? 's' : ''}</div>
-        <div class="code">${esc(t.code)}</div><div class="hint">${esc(t.ordinance)} · ${esc(t.status)}</div></div>
+        <div class="code">${esc(t.code)}</div><div class="hint">${esc(t.ordinance.includes(t.status) ? t.ordinance : t.ordinance + ' · ' + t.status)}</div></div>
       <div class="card stack" style="margin-top:12px"><b>Board a trike</b>
         <p class="hint" style="margin:0">When you get on, tell PANAW which unit you are in. This turns on the safety watch, the Emergency button, trip sharing and a receipt for this ride.</p>
         <div><label class="label">Which tricycle are you in?</label>
@@ -971,7 +992,7 @@ Pp.drawRideMap = function () {
     stops = (active ? req.stopIds : R.stops).map(id => byId(PLACES, id));
   }
   const fit = R.refit; R.refit = false;
-  drawLayer(m, { trikes, pickup: R.pickup.src === 'none' ? null : R.pickup, stops, line, fit, bottomPad: 360 });
+  drawLayer(m, { trikes, pickup: R.pickup.src === 'none' ? null : R.pickup, stops, line, fit, bottomPad: sheetPad(P, 'ride') });
 };
 Pp.updateRide = function () {
   const P = this, req = P.myRide();
@@ -1081,7 +1102,7 @@ Pp.drawDriveMap = function () {
     if (job.status === 'requested' || job.status === 'accepted') { const a = approach(d.pos, job.pickup); approachLine = a && a.path; }
   }
   const fit = P.drive.refit || (job && job.status !== P._jobFit); P._jobFit = job && job.status; P.drive.refit = false;
-  drawLayer(m, { trikes, pickup: job ? job.pickup : null, stops, line, approach: approachLine, fit, fitTo: job ? null : [[d.pos.lat, d.pos.lng]], bottomPad: 340 });
+  drawLayer(m, { trikes, pickup: job ? job.pickup : null, stops, line, approach: approachLine, fit, fitTo: job ? null : [[d.pos.lat, d.pos.lng]], bottomPad: sheetPad(P, 'drive') });
 };
 Pp.updateDrive = function () {
   const P = this, job = P.myJob(), d = P.me();
@@ -1236,7 +1257,7 @@ Pp.page_place = function (id) {
   const routable = !p.listing;
   // a place with no road from its own town's terminal has no tricycle route from anywhere (island barangays); that does not depend on the pickup
   const noRoad = routable && !route(NET, termRuleFor(p.municipality).nodeId, p.nodeId).found;
-  const q = routable && ready && !noRoad ? quote(snap.n.id, [p.id], { pax: 1, hire: 'regular', disc: 'none', dpax: 0 }, termRuleFor(snap.n.municipality)) : null;
+  const q = routable && ready && !noRoad ? quote(snap.n.id, [p.id], { pax: 1, hire: 'special', disc: 'none', dpax: 0 }, termRuleFor(snap.n.municipality)) : null;
   const srcLabel = p.listing ? 'The owner (not verified)' : p.source === 'osm' ? 'OpenStreetMap (location)' : p.source === 'existing' ? 'PANAW project data' : 'PhilAtlas (location)';
   const near = p.listing ? nearestNode(p) : null;
   const photos = p.photos || [], ix = Math.min(P._ph || 0, Math.max(0, photos.length - 1));
@@ -1250,7 +1271,7 @@ Pp.page_place = function (id) {
       ${noRoad ? `<div class="banner warn">No road route to this place in PANAW. ${esc(p.note)}</div>` : ''}
       ${routable && !noRoad && q && q.error ? `<div class="banner warn">No tricycle route from your pickup point (${esc(R.pickup.label)}) to this place. ${esc(q.error)}</div>` : ''}
       ${routable && !noRoad && !(q && q.error) && !P.isDriver() && !P.isOperator() ? `<button class="btn primary" data-ride-here="${p.id}">${ic('trike')}Get a tricycle to this place</button>
-        <p class="hint" style="margin-top:-6px">${q ? `Estimate from your pickup point (${esc(R.pickup.label)}): about ${peso(q.total)}, ${q.km.toFixed(1)} km by road from ${esc(short(snap.n.name))}, the stop PANAW knows nearest to your pickup, for 1 passenger. Not a door-to-door measurement; you confirm everything on the Ride screen.` : 'Choose your pickup point on the Ride screen to check the route and fare before booking.'}</p>
+        <p class="hint" style="margin-top:-6px">${q ? `Estimate from your pickup point (${esc(R.pickup.label)}): about ${peso(q.total)}, ${q.km.toFixed(1)} km by road from ${esc(short(snap.n.name))}, the stop PANAW knows nearest to your pickup, for 1 passenger (special trip, the whole tricycle). Not a door-to-door measurement; you confirm everything on the Ride screen.` : 'Choose your pickup point on the Ride screen to check the route and fare before booking.'}</p>
         <button class="btn ghost" data-hire-group="${p.id}">${ic('van')}Going as a group? Hire a jeepney or van</button>` : ''}
       ${p.card ? `<div class="card"><div class="kv"><span class="k">TODA fare card, special trip from New Poblacion</span><span class="v">${peso(p.card)}</span></div>
         <div class="kv"><span class="k">Regular fare, per passenger</span><span class="v">${peso(byId(NET.fareRules, 'npbtoda_card').rates.baseFare)}</span></div></div>` : ''}
@@ -1539,8 +1560,9 @@ Pp.onClick = function (e) {
   if ((el = c('[data-dest]'))) { Object.assign(R, { stops: [el.dataset.dest], step: 'home', refit: true }); return P.drawRideSheet(); }
   if (c('[data-confirm-pickup]')) { R.pickup = { ...R.pickup, src: 'confirmed' }; return P.drawRideSheet(); }
   if (c('[data-pick-pickup]')) { Object.assign(R, { pickMode: true, step: 'search', query: '' }); return P.drawRideSheet(); }
+  if (c('[data-grab]')) { R.min = !R.min; R.refit = true; return P.drawRideSheet(); }
   if (c('[data-clear-dest]')) { R.stops = []; R.refit = true; return P.drawRideSheet(); }
-  if (c('[data-review]')) { if (R.stops.length && R.stops.every(Boolean) && pickupReady(R.pickup)) { R.step = 'options'; R.refit = true; } return P.drawRideSheet(); }
+  if (c('[data-review]')) { if (R.stops.length && R.stops.every(Boolean) && pickupReady(R.pickup)) { R.step = 'options'; R.option = 'pickup'; R.autoTerm = false; R.refit = true; } return P.drawRideSheet(); }
   if ((el = c('[data-pick]'))) {
     if (R.pickMode) { const pl = byId(PLACES, el.dataset.pick); Object.assign(R, { pickMode: false, query: '', step: 'home', refit: true, pickup: { lat: pl.lat, lng: pl.lng, label: short(pl.name), src: 'place' } }); return P.drawRideSheet(); }
     R.stops[R.active] = el.dataset.pick; R.query = '';
@@ -1551,12 +1573,12 @@ Pp.onClick = function (e) {
   if ((el = c('[data-edit-stop]'))) { R.active = +el.dataset.editStop; R.query = ''; return P.drawRideSheet(); }
   if ((el = c('[data-rm-stop]'))) { R.stops.splice(+el.dataset.rmStop, 1); R.active = Math.min(R.active, R.stops.length - 1); return P.drawRideSheet(); }
   if (c('[data-add-stop]')) { R.stops.push(''); R.active = R.stops.length - 1; R.query = ''; return P.drawRideSheet(); }
-  if ((el = c('[data-option]'))) { if (el.disabled) return; R.option = el.dataset.option; return P.drawRideSheet(); }
+  if ((el = c('[data-option]'))) { if (el.disabled) return; R.option = el.dataset.option; R.autoTerm = false; return P.drawRideSheet(); }
   if (c('[data-fare-opts]')) return P.fareModal();
   if ((el = c('[data-mod]'))) return P.fareModalAct(el);
   if (c('[data-book]')) return P.book();
   const rideAct = (name, extra) => { const r = P.myRide(); return r ? P.act(name, { id: r.id, ...extra }).then(res => { if (res.error) P.toast(res.error); P.drawRideSheet(); return res; }) : Promise.resolve({}); };
-  if (c('[data-cancel-ride]')) { const r = P.myRide(); if (r) P.act('cancel', { id: r.id }); R.reqId = null; R.step = 'options'; P.toast('Ride cancelled'); return P.drawRideSheet(); }
+  if (c('[data-cancel-ride]')) { const r = P.myRide(); if (r) { P.act('cancel', { id: r.id }); R.dropped = r.id; } R.reqId = null; R.step = 'options'; P.toast('Ride cancelled'); return P.drawRideSheet(); }
   if (c('[data-retry]')) return rideAct('retry');
   if ((el = c('[data-rate]'))) { R.rating = +el.dataset.rate; P.drawRideSheet(); return rideAct('rate', { stars: R.rating }); }
   if (c('[data-ride-new]')) { Object.assign(R, { reqId: null, stops: [], step: 'home', option: 'pickup', ticket: null, rating: 0, refit: true }); return P.drawRideSheet(); }
@@ -1582,7 +1604,7 @@ Pp.onClick = function (e) {
   if (c('[data-board]')) {
     const v = P.formVals(), typed = v.bunit === '__other' || !v.bunit, unit = (typed ? v.bother : v.bunit).toUpperCase();
     return P.act('board', { code: R.ticket.code, unit, typed }).then(res => {
-      if (res.error) return P.toast(res.error);
+      if (res.error) { P.toast(res.error); if (/in progress/.test(res.error)) P.drawRideSheet(); return; }   // the open ride comes back on screen
       if (!(P.account.contacts || []).length) P.toast('Tip: add an emergency contact in Account > Safety');
       Object.assign(R, { reqId: res.id, ticket: null, step: 'active', refit: true }); P._rideKey = null;
       P.drawRideSheet();
@@ -1633,6 +1655,8 @@ Pp.onInput = function (e) {
 };
 Pp.onChange = async function (e) {
   const P = this;
+  if (e.target.matches('[data-term-muni]')) { const t = termRuleFor(e.target.value); P.ride.termMuni = e.target.value; P.ride.pickup = terminalPickup(t.id); P.ride.refit = true; return P.drawRideSheet(); }
+  if (e.target.matches('[data-term-pick]') && e.target.value) { P.ride.pickup = terminalPickup(e.target.value); P.ride.termMuni = P.ride.pickup.municipality; P.ride.refit = true; return P.drawRideSheet(); }
   if (e.target.matches('[data-muni-select]')) { P.explore.muni = e.target.value; return P.drawGrid(); }
   if (e.target.matches('[data-photos]')) {
     for (const f of [...e.target.files]) { if (P.listing.photos.length >= 3) break; try { P.listing.photos.push(await shrink(f)); } catch { P.toast('That file is not an image'); } }
@@ -1654,7 +1678,7 @@ Pp.fareModal = function () {
   const P = this, o = P.ride.opts, host = P.content.querySelector('.modalhost');
   host.innerHTML = `<div class="modal"><div class="modal-box"><h3>Fare options</h3><div class="stack">
     <div><span class="label">Passengers</span><div class="stepper"><button data-mod="pax-">−</button><b>${o.pax}</b><button data-mod="pax+">+</button></div></div>
-    <div><span class="label">Hire type</span><div class="seg"><button class="${o.hire === 'regular' ? 'on' : ''}" data-mod="regular">Regular (shared)</button><button class="${o.hire === 'special' ? 'on' : ''}" data-mod="special">Special trip</button></div></div>
+    ${P.ride.option !== 'terminal' || o.pax < 2 ? `<p class="hint">${P.ride.option !== 'terminal' ? FORCED.pickup : 'One passenger pays the special-trip fare. A shared regular fare needs two or more passengers.'}</p>` : `<div><span class="label">Hire type</span><div class="seg"><button class="${o.hire === 'regular' ? 'on' : ''}" data-mod="regular">Regular (shared)</button><button class="${o.hire === 'special' ? 'on' : ''}" data-mod="special">Special trip</button></div></div>`}
     <div><span class="label">Discount (RA 9994, RA 10754)</span><select class="field" data-mod-disc><option value="none">None</option>${['student', 'senior', 'pwd'].map(d => `<option value="${d}" ${o.disc === d ? 'selected' : ''}>${d === 'pwd' ? 'PWD' : d[0].toUpperCase() + d.slice(1)}</option>`).join('')}</select></div>
     ${o.disc !== 'none' ? `<div><span class="label">Discounted passengers</span><div class="stepper"><button data-mod="dp-">−</button><b>${o.dpax}</b><button data-mod="dp+">+</button></div></div>` : ''}
     <button class="btn primary" data-mod="done">Done</button></div></div></div>`;
@@ -1676,7 +1700,7 @@ Pp.book = function () {
   });
   if (!(P.account.contacts || []).length) P.toast('Tip: add an emergency contact in Account > Safety');
   return P.act('book', trip).then(res => {
-    if (res.error) return P.toast(res.error);
+    if (res.error) { P.toast(res.error); if (/in progress/.test(res.error)) P.drawRideSheet(); return; }   // the open ride comes back on screen
     R.reqId = res.id; R.step = 'active'; R.refit = true; P._rideKey = null;
     P.drawRideSheet();
   });

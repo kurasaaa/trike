@@ -20,7 +20,7 @@ const check = (n, ok, ev = '') => res.push({ n, ok: !!ok, ev: String(ev).slice(0
   await p.type(`${A} input[data-q]`, 'hosp'); await p.click(`${A} [data-pick="d3"]`);
   check('edited stop replaced, other stop kept', await ev(`JSON.stringify(phones[0].ride.stops) === '["dest_nueva_valencia_center","d3"]'`), await ev(`JSON.stringify(phones[0].ride.stops)`));
   await p.click(`${A} [data-ride="search"]`); await p.click(`${A} [data-rm-stop="1"]`); await p.click(`${A} [data-ride="home"]`);
-  await p.click(`${A} [data-confirm-pickup]`); await p.click(`${A} [data-review]`);
+  { const cp = await p.$(`${A} [data-confirm-pickup]`); if (cp) await cp.click(); } await p.click(`${A} [data-review]`);
   // ride to "Alert now" and the directions link
   await p.click(`${B} [data-online="1"]`); await ev(`Object.values(Hub.drivers).filter(d => d.bot).forEach(d => d.status = 'busy')`);
   await waitFor(`!document.querySelector('#phone-a [data-book]').disabled`, 3000);

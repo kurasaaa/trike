@@ -26,15 +26,15 @@ const check = (n, ok, ev = '') => res.push({ n, ok: !!ok, ev: String(ev).slice(0
   // Ride landing
   const ride = await txt('.tab.on .sheet');
   check('Ride: heading, Pickup point and destination labels', /Where do you need a ride\?/.test(ride) && /Pickup point/.test(ride) && /Where are you going\?/.test(ride), ride.slice(0, 120));
-  check('Ride: sample pickup labelled as not your location', /Sample point for the demo, not your location/.test(ride));
+  check('Ride: pickup starts at the New Poblacion TODA terminal, labelled', /New Poblacion TODA Terminal/.test(ride) && /TODA terminal/.test(await txt('.pickup-box')));
   check('Ride: no "Your location" claim before GPS', !/Your current location/.test(ride));
   check('Ride: Review fare disabled without a destination, reason shown', await ev(`document.querySelector('[data-review]').disabled`) && /Choose where you are going/.test(ride));
   check('Ride: no tourism filters on the Ride screen', !(await p.$('.tab.on [data-cat], .tab.on [data-muni-select]')));
-  check('Ride: no vehicle count from an unconfirmed sample pickup', /Choose your pickup point/.test(await txt('.tab.on .nearby')), await txt('.tab.on .nearby'));
+  check('Ride: trikes near the terminal, simulated ones labelled DEMO', /DEMO/.test(await txt('.tab.on .nearby')) && /simulated/.test(await txt('.tab.on .nearby')), await txt('.tab.on .nearby'));
   // direct ride, no Explore needed
   await p.click('.tab.on [data-ride="search"]'); await p.type('[data-q]', 'hosp'); await p.click('[data-pick="d3"]');
   check('direct ride: destination chosen from Ride search', /Hospital/i.test(await txt('.dest-box')));
-  check('direct ride: Review fare still blocked by sample pickup', await ev(`document.querySelector('[data-review]').disabled`) && /Confirm or change your pickup point/.test(await txt('.tab.on .sheet')));
+  check('direct ride: Review fare ready from the terminal pickup', await ev(`!document.querySelector('[data-review]').disabled`));
   await p.click('[data-pick-pickup]'); await p.type('[data-q]', 'market'); await p.click('[data-pick="d2"]');
   check('Ride: simulated trikes labelled DEMO, not real', /DEMO/.test(await txt('.tab.on .nearby')) && /simulated/.test(await txt('.tab.on .nearby')), await txt('.tab.on .nearby'));
   check('pickup chosen from a known place, labelled', /Place you chose/.test(await txt('.pickup-box')) && /Market/.test(await txt('.pickup-box')));

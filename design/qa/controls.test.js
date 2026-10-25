@@ -63,7 +63,10 @@ const check = (area, name, ok, evidence = '') => { results.push({ area, name, ok
   await click(`${A} [data-ride="home"]`); await click(`${A} [data-review]`);
   // options and fare
   const fareP = await text(`${A} [data-option="pickup"] .price`), fareT = await text(`${A} [data-option="terminal"] .price`);
-  check('Ride', 'regular fare is TODA flat P25 (pickup & terminal)', fareP === '₱25.00' && fareT === '₱25.00', fareP + ' / ' + fareT);
+  // one passenger hires the whole tricycle: special-trip fare, never the shared P25
+  const solo = await ev(`(() => { const t = byId(NET.terminals, NET.defaultTerminalId); const fr = N.fareRulesFor(RULES, NET, t);
+    const r = route(NET, nearestNode(phones[0].ride.pickup).n.id, 'd3'); return F.computeFare({ distanceKm: r.distanceKm, passengers: 1, hireType: 'special' }, fr).total; })()`);
+  check('Ride', 'one passenger pays the special-trip fare (pickup & terminal)', fareP === '₱' + solo.toFixed(2) && solo > 25 && await ev(`phones[0].quotes().qt.legs[0].fare.hireType === 'special'`) && fareT === '₱' + (await ev(`phones[0].quotes().qt.total`)).toFixed(2), fareP + ' / ' + fareT + ' vs ' + solo);
   await click(`${A} [data-option="terminal"]`);
   check('Ride', 'option toggle selects terminal', await has(`${A} [data-option="terminal"].on`));
   check('Ride', 'terminal option uses stop icon', await ev(`!!document.querySelector('#phone-a [data-option="terminal"] .ic svg path[d^="M6 21V4"]')`));
@@ -79,24 +82,31 @@ const check = (area, name, ok, evidence = '') => { results.push({ area, name, ok
   await click(`${A} [data-mod="pax+"]`);
   await pick(`${A} [data-mod-disc]`, 'senior');
   check('Fare modal', 'discount shows discounted-passenger stepper', (await p.$$(`${A} .modal .stepper`)).length === 2);
-  await click(`${A} [data-mod="special"]`);
-  check('Fare modal', 'special trip selected', await has(`${A} [data-mod="special"].on`));
-  await click(`${A} [data-mod="regular"]`); await click(`${A} [data-mod="done"]`);
+  check('Fare modal', 'trike to the pickup: special trip only, no shared option', !(await has(`${A} [data-mod="regular"]`)) && /special trip/.test(await text(`${A} .modal`)));
+  await click(`${A} [data-mod="done"]`);
   const twoPax = await text(`${A} [data-option="pickup"] .price`);
-  const expect2 = await ev(`(() => { const t = byId(NET.terminals, NET.defaultTerminalId); const fr = N.fareRulesFor(RULES, NET, t);
-    const r = route(NET, nearestNode(phones[0].ride.pickup).n.id, 'd3'); return F.computeFare({ distanceKm: r.distanceKm, passengers: 2, discountedPax: 1, discountType: 'senior', hireType: 'regular' }, fr).total; })()`);
-  check('Fare modal', '2 pax, 1 senior = engine total (P25 + P20)', twoPax === '₱' + expect2.toFixed(2) && expect2 === 45, twoPax + ' vs ' + expect2);
+  const fare2 = hire => ev(`(() => { const t = byId(NET.terminals, NET.defaultTerminalId); const fr = N.fareRulesFor(RULES, NET, t);
+    const r = route(NET, nearestNode(phones[0].ride.pickup).n.id, 'd3'); return F.computeFare({ distanceKm: r.distanceKm, passengers: 2, discountedPax: 1, discountType: 'senior', hireType: '${hire}' }, fr).total; })()`);
+  const sp2 = await fare2('special');
+  check('Fare modal', '2 pax, 1 senior, trike to pickup = special fare split', twoPax === '₱' + sp2.toFixed(2), twoPax + ' vs ' + sp2);
+  await click(`${A} [data-option="terminal"]`); await click(`${A} [data-fare-opts]`);
+  await click(`${A} [data-mod="regular"]`);
+  check('Fare modal', 'terminal, 2 passengers: shared regular fare can be chosen', await has(`${A} [data-mod="regular"].on`));
+  await click(`${A} [data-mod="done"]`);
+  const reg2 = await fare2('regular'), termPrice = await text(`${A} [data-option="terminal"] .price`);
+  check('Fare modal', '2 pax, 1 senior, shared at the terminal = engine total (P25 + P20)', termPrice === '₱' + reg2.toFixed(2) && reg2 === 45, termPrice + ' vs ' + reg2);
+  await click(`${A} [data-option="pickup"]`);
   await click(`${A} details.breakdown summary`);
   check('Ride', 'fare breakdown expands', await ev(`document.querySelector('#phone-a details.breakdown').open`));
   await click(`${A} [data-fare-opts]`); await click(`${A} [data-mod="pax-"]`); await pick(`${A} [data-mod-disc]`, 'none'); await click(`${A} [data-mod="done"]`);
   // no driver anywhere -> no driver state (bots busy, driver offline)
   await click(`${A} details.breakdown summary`);
   await ev(`Object.values(Hub.drivers).forEach(d => { if (d.bot) d.status = 'busy'; })`);
-  check('Ride', 'BUG-004: Book disables when every trike goes busy', await waitFor(`document.querySelector('#phone-a [data-book]').disabled && /No trike online/.test(document.querySelector('#phone-a [data-option="pickup"]').innerText)`, 3000));
+  check('Ride', 'BUG-004: no trike: pickup option off, switches to the terminal fare ticket', await waitFor(`phones[0].ride.option === 'terminal' && /fare ticket/.test(document.querySelector('#phone-a [data-book]').innerText) && /No trike online/.test(document.querySelector('#phone-a [data-option="pickup"]').innerText)`, 3000));
   check('Ride', 'BUG-004: open breakdown survives the refresh', await ev(`document.querySelector('#phone-a details.breakdown').open`));
   await ev(`Hub.drivers['DEMO-TRIKE-001'].status = 'available'`);
-  check('Ride', 'BUG-004: Book re-enables when a trike frees up', await waitFor(`!document.querySelector('#phone-a [data-book]').disabled`, 3000));
-  await ev(`Hub.drivers['DEMO-TRIKE-001'].status = 'busy'`); await waitFor(`document.querySelector('#phone-a [data-book]').disabled`, 3000);
+  check('Ride', 'BUG-004: Book trike comes back when a trike frees up', await waitFor(`phones[0].ride.option === 'pickup' && !document.querySelector('#phone-a [data-book]').disabled && /Book trike/.test(document.querySelector('#phone-a [data-book]').innerText)`, 3000));
+  await ev(`Hub.drivers['DEMO-TRIKE-001'].status = 'busy'`); await waitFor(`phones[0].ride.option === 'terminal'`, 3000);
   /* ================= DRIVER ONLINE + FULL RIDE ================= */
   await click(`${B} [data-online="1"]`);
   check('Driver', 'Go online', /Online/.test(await text(`${B} [data-online-pill]`)));
@@ -158,7 +168,7 @@ const check = (area, name, ok, evidence = '') => { results.push({ area, name, ok
   check('Ride', 'Complete -> rating screen', /How was your ride/.test(await text(`${A} .sheet`)));
   await click(`${A} [data-rate="4"]`);
   check('Ride', 'star rating selects 4', (await p.$$(`${A} .stars button.on`)).length === 4);
-  check('Driver', 'earnings updated', await ev(`Hub.accounts.find(a => a.id === 'u-bobong').earnings === 25`));
+  check('Driver', 'earnings updated', await ev(`Hub.accounts.find(a => a.id === 'u-bobong').earnings === Hub.requests.find(r => r.status === 'completed' && r.driverId === 'BTODA-0142').quote.total`));
   await click(`${A} [data-ride-new]`);
   check('Ride', 'Done returns home', await has(`${A} [data-ride="search"]`));
   /* ================= TERMINAL TICKET ================= */

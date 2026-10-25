@@ -101,11 +101,11 @@ const PNG = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJA
   check('sign-up works with no demo accounts present', await ev(`!!phones[0].account && phones[0].account.name === 'Recheck Rider'`));
   check('signed in: Explore still opens on its own', await (async () => { await p.click('[data-go-tab="explore"]'); await wait(200); return ev(`phones[0].tab === 'explore' && !phones[0].myRide()`); })());
 
-  /* ---------- 6. place page before any pickup: no route verdict, no fare ---------- */
+  /* ---------- 6. place page from the default pickup (the New Poblacion TODA terminal): special-trip estimate ---------- */
   await p.selectOption('[data-muni-select]', 'all'); await wait(150);
   await p.click('[data-place="dest_guisi_lighthouse"]'); await wait(300);
   let pg = await txt('.page');
-  check('no pickup yet: no route failure, no fare, neutral guidance', !/No tricycle route|No road route/.test(pg) && !/₱\d+\.\d\d,/.test(pg) && /Choose your pickup point on the Ride screen to check the route and fare/.test(pg), pg.slice(0, 200));
+  check('default terminal pickup: no route failure, special-trip estimate for 1 passenger', !/No tricycle route|No road route/.test(pg) && /Estimate from your pickup point \(New Poblacion TODA Terminal\): about ₱\d+/.test(pg) && /special trip, the whole tricycle/.test(pg), pg.slice(0, 260));
   await p.click('.page [data-back]');
   await ev(`phones[0].openPage('place', 'dest_brgy_sibunag_inampologan')`); await wait(300);
   pg = await txt('.page');
@@ -115,14 +115,19 @@ const PNG = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJA
   /* ---------- 9. Ride directly, and 7. pickup sources ---------- */
   await p.click('[data-go-tab="ride"]'); await wait(200);
   let ride = await txt('.tab.on .sheet');
-  check('Ride: pickup starts unset, not a sample or "your location"', /Not chosen yet/.test(ride) && !/Sample point|Your current location/.test(ride), ride.slice(0, 160));
-  check('Ride: no pickup marker on the map before a pickup exists', await ev(`!document.querySelector('.tab.on .map .leaflet-marker-pane .leaflet-marker-icon[style*="2F6FED"], .tab.on .map [style*="2F6FED"]')`));
-  check('Ride: no vehicle count before a pickup', /Choose your pickup point to see which tricycles can come/.test(await txt('.tab.on .nearby')));
+  check('Ride: pickup starts at the New Poblacion TODA terminal, labelled, not "your location"', /New Poblacion TODA Terminal/.test(ride) && /TODA terminal/.test(await txt('.pickup-box')) && !/Sample point|Your current location/.test(ride), ride.slice(0, 160));
+  check('Ride: the terminal pickup is on the map', await ev(`!!document.querySelector('.tab.on .map [style*="2F6FED"]')`));
+  check('Ride: vehicle line honest from the terminal (no simulated trikes in the real app)', /No tricycle online near this pickup/.test(await txt('.tab.on .nearby')), await txt('.tab.on .nearby'));
+  await p.selectOption('[data-term-muni]', 'jordan'); await wait(150);
+  check('other municipality: pickup moves to its terminal, spot marked to verify', /Jordan Poblacion Terminal/.test(await txt('.pickup-box')) && /exact spot to verify/.test(await txt('.pickup-box')) && await ev(`phones[0].ride.pickup.terminalId === 'terminal_jordan_poblacion'`));
+  check('terminal list shows only that municipality', await ev(`[...document.querySelectorAll('[data-term-pick] option')].every(o => !o.value || byId(NET.terminals, o.value).municipality === 'jordan')`));
+  await p.selectOption('[data-term-muni]', 'buenavista'); await wait(150);
+  check('back to Buenavista: New Poblacion TODA Terminal again', await ev(`phones[0].ride.pickup.terminalId === 'terminal_buenavista_poblacion'`));
   check('Ride: no demo "use the sample point" shortcut', !(await p.$('[data-confirm-pickup]')));
   await p.click('.tab.on [data-ride="search"]'); await p.type('[data-q]', 'market'); await wait(150);
-  check('destination search: no distances from an unchosen pickup', !(await p.$('[data-results] .km')));
+  check('destination search: distances from the terminal pickup', !!(await p.$('[data-results] .km')));
   await p.click('[data-pick="d2"]'); await wait(150);
-  check('direct ride: destination set, Review fare blocked until a pickup is chosen', /Market/.test(await txt('.dest-box')) && await ev(`document.querySelector('[data-review]').disabled`) && /Choose your pickup point first/.test(await txt('.tab.on .sheet')));
+  check('direct ride: destination set, Review fare ready from the terminal', /Market/.test(await txt('.dest-box')) && await ev(`!document.querySelector('[data-review]').disabled`));
   // pickup by GPS
   await p.click('.tab.on [data-gps]'); await wait(600);
   check('pickup from GPS is labelled as GPS', /From your phone's GPS/.test(await txt('.pickup-box')), await txt('.pickup-box'));
@@ -160,7 +165,7 @@ const PNG = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJA
   await ev(`phones[0].ride.pickup = defaultPickup(); phones[0].ride.stops = [];`);
   await p.click('.page [data-ride-here]'); await wait(300);
   check('Get a tricycle: Ride opens with the place as destination, nothing booked', await ev(`phones[0].tab === 'ride' && phones[0].ride.stops[0] === 'dest_guisi_lighthouse' && !phones[0].myRide()`) && /Guisi/.test(await txt('.dest-box')));
-  check('Get a tricycle: pickup must still be chosen', /Not chosen yet/.test(await txt('.pickup-box')) && await ev(`document.querySelector('[data-review]').disabled`));
+  check('Get a tricycle: pickup stays at the terminal, Review fare ready', /New Poblacion TODA Terminal/.test(await txt('.pickup-box')) && await ev(`!document.querySelector('[data-review]').disabled`));
 
   /* ---------- driver in the real app: TODA approval, no self-confirm ---------- */
   await p.click('[data-go-tab="account"]'); await p.click('[data-logout]'); await wait(300);

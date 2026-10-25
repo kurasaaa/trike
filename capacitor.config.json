@@ -4,7 +4,7 @@
   "webDir": "www",
   "plugins": {
     "SystemBars": {
-      "insetsHandling": "native",
+      "insetsHandling": "css",
       "style": "DARK"
     }
   }
