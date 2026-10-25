@@ -22,5 +22,7 @@ New in the picks pass:
 - `picks.test.js <html>`: language switch, ratings, and offline data kept after a restart.
 - `offline-map.js <html> [shot.png]`: the map draws Guimaras with the network cut.
 - `online.test.js http://localhost:3456`: two phones on one server. Start a **copy** of the server first, because it writes `data/db.json`.
+- `recheck.test.js ../../trikefair_final/trikefair/public/app.html`: REDO_RECHECKED.md section 15.8 on the **real app** build (no demo accounts): filter results, barangay counts, image fallbacks, route wording, pickup sources, place to Ride, TODA approval.
+- `panaw-redesign.html` is the demo preview (sample accounts, simulated trikes); `public/app.html` and the APKs are the real app.
 - `redo.test.js <html>`: REDO.md acceptance checks at phone size (Ride and Explore separation, pickup confirmation, filters, place to Ride).
 - `shots.js <html> <outdir>`: screenshots of the main passenger screens.

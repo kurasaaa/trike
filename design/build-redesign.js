@@ -24,7 +24,8 @@ const out = fs.readFileSync(path.join(__dirname, 'redesign.src.html'), 'utf8')
   .replace('/*@HUB@*/', () => read('src/hub.js'))
   .replace('/*@DATA@*/', () => JSON.stringify(data).replace(/</g, '\\u003c'));
 
-fs.writeFileSync(path.join(__dirname, 'panaw-redesign.html'), out);
-// the same page is the server's app at / (served over http it connects to that server)
+// the laptop design preview is the demo: sample accounts, simulated trikes, two phones side by side
+fs.writeFileSync(path.join(__dirname, 'panaw-redesign.html'), out.replace('</head>', () => '<script>window.PANAW_DEMO = true;</script></head>'));
+// the real app: the server's page at / and both APKs. No demo accounts or simulated trikes
 fs.writeFileSync(path.join(app, 'public', 'app.html'), out);
 console.log('wrote design/panaw-redesign.html', out.length, 'bytes');

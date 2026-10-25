@@ -23,7 +23,7 @@ const res = [], errors = [], check = (n, ok, ev = '') => res.push({ n, ok: !!ok,
   await p.click(`${A} [data-brgy-town="sibunag"]`);
   check('island barangay marked "No road route"', /Inampologan No road route \(island\)/.test(await txt(`${A} .page`)));
   await p.click(`${A} .page [data-place="dest_brgy_sibunag_inampologan"]`);
-  check('island place page: no Ride here, explains why', !(await p.$(`${A} .page [data-ride-here]`)) && /No tricycle route here/.test(await txt(`${A} .page`)));
+  check('island place page: no Ride here, explains why', !(await p.$(`${A} .page [data-ride-here]`)) && /No road route to this place/.test(await txt(`${A} .page`)));
   await p.click(`${A} .page [data-back]`); await p.click(`${A} .page [data-back]`);
   await p.click(`${A} [data-brgy-town="jordan"]`); await p.click(`${A} .page [data-place="dest_brgy_jordan_hoskyn"]`);
   check('barangay page: "Barangay Hoskyn · Jordan", PhilAtlas tag', /Barangay Hoskyn · Jordan/.test(await txt(`${A} .page`)) && /Location: PhilAtlas/.test(await txt(`${A} .page`)));

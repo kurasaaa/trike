@@ -71,6 +71,12 @@
         </div>
 
         <div class="card">
+          <div class="card-title">Drivers waiting for TODA approval</div>
+          <div id="pending-drivers"><div class="stepper-hint">Needs the admin key.</div></div>
+          <div class="stepper-hint">Check the unit, plate and license against the TODA list before approving. A driver can go online only after this.</div>
+        </div>
+
+        <div class="card">
           <div class="card-title">Place listings</div>
           <div id="listings"></div>
           <div class="stepper-hint">Posted by owners from the passenger app and shown as "not verified". Remove a listing that is wrong, offensive or not in Guimaras.</div>
@@ -137,6 +143,8 @@ function ago(ms){
   setInterval(renderLive, 1000);
   refreshListings();
   setInterval(refreshListings, 30000);   // listings carry photos: poll slowly
+  refreshPending();
+  setInterval(refreshPending, 30000);
 })();
 
 let listings = [];
@@ -148,6 +156,27 @@ async function refreshListings(){
       ${p.description ? `<div class="meta">${esc(p.description)}</div>` : ''}</div>`).join('')
     : '<div class="stepper-hint">No listings yet.</div>';
 }
+function renderPending(list){
+  $('pending-drivers').innerHTML = list.length ? list.map(d => `<div class="vehicle-item">
+      <div class="top"><span class="id">${esc(d.unit)} · ${esc(d.name)}</span><button class="btn btn-sm" style="width:auto" data-approve="${esc(d.id)}">Approve</button></div>
+      <div class="meta">Plate ${esc(d.plate)} · license ${esc(d.license || 'not given')} · ${esc(termName(d.terminalId))} · ${esc(d.mobile)}</div></div>`).join('')
+    : '<div class="stepper-hint">No driver is waiting.</div>';
+}
+// the timer never asks for the key (no prompt every 30 s); the button does, through api()
+async function refreshPending(ask){
+  if (!ask) {
+    try { const r = await fetch('/api/admin/app-drivers', { headers: { 'X-Admin-Key': adminKey() } }); if (r.ok) return renderPending((await r.json()).pending); } catch {}
+    $('pending-drivers').innerHTML = '<button class="btn btn-sm" style="width:auto" data-pending-key>Enter admin key to see drivers</button>'; return;
+  }
+  try { renderPending((await api('/api/admin/app-drivers')).pending); } catch (err) { $('pending-drivers').innerHTML = `<div class="stepper-hint">${esc(err.message)}</div>`; }
+}
+document.addEventListener('click', async e => {
+  if (e.target.closest('[data-pending-key]')) return refreshPending(true);
+  const b = e.target.closest('[data-approve]'); if (!b) return;
+  if (!confirm('Approve this driver? They can then receive ride requests.')) return;
+  try { renderPending((await api(`/api/admin/app-drivers/${encodeURIComponent(b.dataset.approve)}/approve`, {})).pending); toast('Driver approved'); }
+  catch (err) { toast(err.message); }
+});
 document.addEventListener('click', async e => {
   const b = e.target.closest('[data-rmplace]'); if (!b) return;
   if (!confirm('Remove this listing for everyone?')) return;

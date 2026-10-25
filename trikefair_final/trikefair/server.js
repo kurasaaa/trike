@@ -61,7 +61,9 @@ const verifyPw = (pw, stored) => {
   return kind === 'scrypt' && !!h && same(crypto.scryptSync(pw, salt, 32).toString('hex'), h);
 };
 const readData = f => JSON.parse(fs.readFileSync(path.join(__dirname, 'data', f), 'utf8'));
-const H = require('./src/hub').create({ N: network, F: fare, hash: hashPw, verify: verifyPw, RAW: {
+// PANAW_DEMO=1 adds the sample accounts and simulated trikes for a laptop demo; left unset, only real sign-ups exist.
+const DEMO = process.env.PANAW_DEMO === '1';
+const H = require('./src/hub').create({ N: network, F: fare, hash: hashPw, verify: verifyPw, demo: DEMO, RAW: {
   rules: db.rules(), municipalities: readData('municipalities.json'), terminals: readData('terminals.json'),
   destinations: readData('destinations.json'), routes: readData('routes.json'), fareRules: readData('fare_rules.json'),
   demoVehicles: readData('demo_vehicles.json'), transportModes: readData('transport_modes.json') } });
@@ -517,6 +519,18 @@ route('POST', /^\/api\/admin\/places\/([\w-]+)\/remove$/, (req, res, m) => {
   json(res, 200, { ok: true });
 });
 
+/* TODA approval of driver accounts: a driver can go online only after this */
+route('GET', /^\/api\/admin\/app-drivers$/, (req, res) => {
+  if (!adminOk(req)) return json(res, 401, DENIED_ADMIN);
+  json(res, 200, { pending: H.pendingDrivers() });
+});
+route('POST', /^\/api\/admin\/app-drivers\/([\w-]+)\/approve$/, (req, res, m) => {
+  if (!adminOk(req)) return json(res, 401, DENIED_ADMIN);
+  if (!H.approveDriver(m[1])) return json(res, 404, { error: 'No such driver account.' });
+  saveHub();
+  json(res, 200, { pending: H.pendingDrivers() });
+});
+
 route('POST', /^\/api\/admin\/reset$/, (req, res) => {
   if (!adminOk(req)) return json(res, 401, DENIED_ADMIN);
   db.reset();
@@ -615,6 +629,7 @@ db.init().then(storage => {
   console.log(`  Network: ${n.municipalities.length} municipalities · ${n.terminals.length} terminals · ${n.edges.length} route segments · data mode DEMONSTRATION`);
   if (!report.ok) report.errors.forEach(e => console.log(`  [data error] ${e}`));
   console.log(`  Storage: ${storage === 'postgres' ? 'PostgreSQL (DATABASE_URL)' : 'data/db.json'}`);
+  console.log(`  App accounts  : ${DEMO ? 'DEMO (sample accounts and simulated trikes, PANAW_DEMO=1)' : 'real sign-ups only'}`);
   console.log(`  Driver PINs: ${AUTH.driverPin ? 'required' : 'OFF (set DRIVER_PINS before going public)'} · Admin key: ${AUTH.adminKey ? 'required' : 'OFF (set ADMIN_KEY before going public)'}`);
   console.log('');
 })).catch(err => { console.error('Could not open the database:', err.message); process.exit(1); });

@@ -1,8 +1,80 @@
 # UI/UX Audit Report: PANAW
 
-This file holds two audit rounds:
-- **Round 2** (REDO.md, customer-centred redesign) comes first.
-- **Round 1** (the earlier QA and UI pass) follows unchanged.
+This file holds three audit rounds:
+- **Round 3** (REDO_RECHECKED.md section 15, and turning the app into the real product with no demo accounts) comes first.
+- **Round 2** (REDO.md, customer-centred redesign) follows.
+- **Round 1** (the earlier QA and UI pass) is at the end, unchanged.
+
+---
+
+# Round 3: Recheck findings and the real app (REDO_RECHECKED.md section 15)
+
+The owner asked for the real app, not a demo build: no demo accounts.
+
+## Two builds now
+
+| Build | Where it runs | Sample accounts, operators, simulated trikes | Demo-only buttons |
+|---|---|---|---|
+| **Real app** | Render (`/`), `PANAW.apk`, `PANAW-online.apk` | None. Only people who sign up exist. | Hidden |
+| **Design preview** | `design/panaw-redesign.html` on a laptop | Yes, labelled DEMO | Shown |
+
+**How it works:**
+- `src/hub.js` takes a `demo` option.
+  - When it's off, nothing sample is seeded.
+  - A database saved by the demo comes back with its sample accounts, sample operators and simulated trikes removed, along with the rides that belonged to them. Real sign-ups and their history stay.
+- **Server:** `server.js` runs the real app unless `PANAW_DEMO=1` is set.
+- **Preview:** `design/build-redesign.js` sets `PANAW_DEMO` in the preview only.
+
+**Drivers:**
+- In the real app a driver can't approve themselves (the old "Confirm now (demo only)" button). The hub refuses the request too.
+- The TODA approves the driver on the monitor page (`/monitor`, "Drivers waiting for TODA approval").
+- This needs the server's admin key (`ADMIN_KEY`, already set on Render). The endpoints are `GET /api/admin/app-drivers` and `POST /api/admin/app-drivers/:id/approve`.
+
+**Pickup:**
+- The real app starts with no pickup ("Not chosen yet"). No pin is drawn and no vehicle count is shown until the passenger uses GPS, chooses a place, or taps the map.
+- The preview keeps its labelled sample point and the "Use the sample point" button.
+
+## Section 15 findings: what was found and what changed
+
+| # | Finding (checked against the source and in the running app) | Change |
+|---|---|---|
+| 15.1 | Place page said "Info from [town] Tourism Office", which no data supports. The badges said OpenStreetMap, PhilAtlas or project data. | The row now reads **Place information**, with the same source as the badge: OpenStreetMap (location), PhilAtlas (location), PANAW project data, or "The owner (not verified)". The Tourism offices list in Account still says "To verify". |
+| 15.2 | A photo link that failed to load showed a broken image, in the grid and on the place page. | One document-level `error` listener swaps a failed photo for the category icon and "Photo could not load". It removes the `<img>`, so it can't fail again and can't loop. The place-page arrows still work, so a second photo still loads after the first fails. |
+| 15.3 | With all towns, barangays show as one row per town, but the count said "N places". | The summary describes what is on screen, e.g. "25 places · 98 barangays by municipality (5 towns)" (owner listings add to the 25). When rows are listed one by one (a town or a search is chosen), it gives that count, e.g. "12 barangays" for San Lorenzo. |
+| 15.4 | The place page judged the route from the sample pickup and could say "No tricycle route here". | Before a pickup is chosen, it shows "Choose your pickup point on the Ride screen to check the route and fare". After one is chosen, it shows "No tricycle route from your pickup point (X)", or an estimate that names its basis: the stop PANAW knows nearest to the pickup, not door to door. The 3 island barangays with no road from their own town always show "No road route to this place in PANAW", because that is true from every pickup. The route and fare code is unchanged. |
+| 15.5 | "N trikes online (DEMO)": the qualifier was easy to miss. | The real app has no simulated trikes, so it shows only real drivers who are online. If none are online it says so and offers a fare ticket. In the preview, the count reads "DEMO · N simulated trikes for testing, not real vehicles". There is no count before a pickup is chosen. |
+| 15.6 | The pickup search said "Search a landmark near you" but searched every place. | It now reads "Search a place or landmark", with "Searches every place in PANAW, not only those near you. Check the town under each name." While you are choosing a pickup, results are listed by name with their town and no distances (a distance from a pickup you haven't chosen means nothing). No distance limit was added. |
+| 15.7 | Hiding the demo panel is not security. | The real app has no demo accounts at all. The server refuses `09171234567` / `demo1234` (tested), and Render's saved demo accounts are removed on the next start. The panel exists only in the preview. |
+
+**Also fixed (found while testing):**
+- The live update of the "trikes near this pickup" line crashed: its pattern no longer matched the new markup. It also used to paste the common stops a second time.
+- The line is now drawn by one function, `nearbyLine`, and the live update replaces only that line.
+
+**Smaller copy changes:**
+- When location fails: "Location unavailable. Tap the map or choose a place for your pickup."
+- A driver waiting for approval reads that the screen updates by itself once approved.
+
+## Logic preservation
+
+These are unchanged:
+- `src/fare.js`, `src/network.js`, `data/*.json` and `rules.json`.
+- The fare and route calls and the booking rules.
+
+A test checks that the terminal fare shown equals the fare engine's total.
+
+`src/hub.js` changed only in what it **seeds and restores**, plus driver approval:
+- the `demo` option;
+- `verify` and `detour` are refused when demo is off;
+- `pendingDrivers` and `approveDriver` were added.
+
+The owner asked for this change directly ("make this as a final product app").
+
+## Not implemented / still open
+
+- **Offline APK (`PANAW.apk`):** it has no server, so there are no drivers and nobody to approve them. Fares, routes, Explore, fare tickets and the offline map work. Booking a trike honestly shows that none is online. Real rides need `PANAW-online.apk`.
+- **Old pages:** the classic page (`/classic`) and the monitor's simulated "DEMO VEHICLE" list are older admin and reference screens, and still show demo data. Both are labelled DEMO.
+- **Route data:** routes and non-Buenavista fares are still the project's demonstration data, labelled as such. That doesn't change by removing demo accounts.
+- **Phone checks:** large text and screen-reader checks on a real phone are not done.
 
 ---
 

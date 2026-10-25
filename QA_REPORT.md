@@ -277,3 +277,46 @@ Data files changed: `data/routes.json`, `data/destinations.json`, `data/terminal
 - Real Android phone: keyboard, system bars and larger text sizes.
 - Screen readers.
 - The online APK against Render. This round has not been pushed, so Render still serves the previous screens.
+
+---
+
+## Addendum: REDO_RECHECKED.md section 15 and the real app (no demo accounts)
+
+**Files changed**
+
+| File | Why |
+|---|---|
+| `trikefair_final/trikefair/src/hub.js` | New `demo` option. When it's off, nothing sample is seeded, and restoring a demo database drops its sample accounts, operators, simulated trikes and their rides. `verify` and `detour` are refused. Added `pendingDrivers` and `approveDriver`. Fare and route code is untouched. |
+| `trikefair_final/trikefair/server.js` | Real app unless `PANAW_DEMO=1`. Added admin endpoints to list and approve drivers. The start-up log shows the mode. |
+| `trikefair_final/trikefair/public/monitor.html` | New "Drivers waiting for TODA approval" card. It asks for the admin key only when tapped. |
+| `trikefair_final/trikefair/public/app.html` | Rebuilt from `design/redesign.src.html`. |
+| `trikefair_final/trikefair/tests/run-tests.js` | The ride test signs up instead of using the demo login. New test: demo login refused, no simulated trikes or sample operators, no self-approval, admin approval, then the driver can go online. |
+| `design/redesign.src.html` | Real app vs. preview mode. Covers the pickup with no default, place-page route and estimate wording (15.4), a source row that matches the badge (15.1), the photo fallback (15.2), barangay counts (15.3), the honest vehicle line (15.5) and pickup-search wording and order (15.6). Demo-only buttons are hidden. Fixed the crash in the nearby line's live update. |
+| `design/build-redesign.js` | Only `design/panaw-redesign.html` gets `PANAW_DEMO`. |
+| `design/qa/recheck.test.js` | New: 58 checks of section 15.8, run on the real app build. |
+| `design/qa/online.test.js`, `redo.test.js`, `brgy.test.js` | Online test: real sign-ups plus TODA approval. The other two: new wording for the vehicle line and the island route. |
+| `PANAW.apk`, `PANAW-online.apk` | Rebuilt from the real app. Neither contains `PANAW_DEMO`. |
+
+**Results (run on 2026-10-25)**
+
+| Suite | Build | Result |
+|---|---|---|
+| `recheck.test.js` (section 15.8 scenarios 1 to 12) | real app, `public/app.html` | 58/58, 0 page errors |
+| `online.test.js` (two phones plus a tracking page) | copy of the server in real-app mode | 29/29 |
+| Monitor approval (browser, admin key set) | copy of the server | PASS: no prompt on load, one when tapped, driver verified |
+| `redo.test.js` | design preview | 29/29 |
+| `controls.test.js` | design preview | 130/130 |
+| `supplement.test.js` | design preview | 10/10 |
+| `brgy.test.js` | design preview | 15/15 |
+| `picks.test.js` | design preview | 13/13 |
+| `bug001`, `bug002`, `bug003`, `offline-map` | design preview | PASS |
+| `npm test` | server | 53/53 |
+| Production restore of a demo database | Node script | PASS: only the real account and its rides are kept |
+
+The first run caught 2 test failures that came from deliberate wording changes. The tests were updated, and they still check the same behaviour. It also caught a real crash in the vehicle line's live update, which is now fixed. The rerun is clean.
+
+**Not verified**
+- A real Android phone.
+- Screen readers.
+- The online APK against Render. This round is not pushed yet.
+- The first start on Render will drop the saved demo accounts. That was checked only with a local copy, not on Render's database.

@@ -783,6 +783,8 @@ textarea.field{min-height:80px; resize:vertical;}
 .dest-box .ic{color:var(--teal); display:flex;} .dest-box .grow{flex:1; min-width:0;} .dest-box b{display:block; font-size:15px;}
 .dest-box .grow span{display:block; font-size:12px; color:var(--muted);}
 .pw{position:relative;} .pw .field{padding-right:72px;} .pw .link{position:absolute; right:4px; top:50%; transform:translateY(-50%);}
+.hero.broken,.pimg.broken{display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px; background:var(--teal-50); color:var(--teal);}
+.pimg.broken svg{width:28px; height:28px;} .ph-note{font-size:11.5px; color:var(--muted);}
 .form-error{background:var(--red-50); color:var(--red); border-radius:10px; padding:10px 12px; font-size:13px; font-weight:600;}
 .demo-access{margin-top:24px; border:1px dashed var(--line); border-radius:12px; padding:10px 12px; font-size:13px;}
 .demo-access summary{cursor:pointer; font-weight:600; color:var(--muted); min-height:28px;}
@@ -941,7 +943,7 @@ table.t td{padding:9px 6px; border-bottom:1px solid var(--line); vertical-align:
 .trike-mk.mine{background:var(--navy); color:#fff;} .trike-mk.bot{border-style:dashed;}
 .trike-mk svg{width:13px; height:13px;}
 </style>
-</head>
+<script>window.PANAW_DEMO = true;</script></head>
 <body>
 <div class="stage">
   <div class="stage-bar">
@@ -1607,8 +1609,9 @@ const randomHex = n => {
   return Array.from(b, x => x.toString(16).padStart(2, '0')).join('');
 };
 
-/* opts.hash / opts.verify: how passwords are kept. The server passes scrypt; the in-tab demo keeps them as typed. */
-function create({ N, F, RAW, hash = p => p, verify = (p, h) => p === h }) {
+/* opts.hash / opts.verify: how passwords are kept. The server passes scrypt; the in-tab demo keeps them as typed.
+   opts.demo: seed the sample accounts, operators and simulated trikes. Off for the real app: only people who sign up exist. */
+function create({ N, F, RAW, hash = p => p, verify = (p, h) => p === h, demo = true }) {
 const RULES = RAW.rules;
 const NET = N.validate({
   province: RAW.municipalities.province, municipalities: RAW.municipalities.municipalities,
@@ -1650,13 +1653,14 @@ const Hub = {
   emit() { this.listeners.forEach(f => f()); }
 };
 function seedHub() {
+  Hub.requests = []; Hub.listings = []; Hub.reports = []; Hub.drivers = {}; Hub.accounts = []; Hub.operators = [];
+  if (!demo) return;
   Hub.accounts = [
     { id: 'u-ana', role: 'passenger', name: 'Ana Reyes', mobile: '09171234567', password: hash('demo1234'), history: [], ratings: [], demo: true,
       contacts: [{ id: 'c1', name: 'Elena Reyes', relation: 'Parent', mobile: '09170001111' }] },
     { id: 'u-bobong', role: 'driver', name: RULES.drivers[0].name, mobile: '09181234567', password: hash('demo1234'), history: [], demo: true,
       unit: RULES.drivers[0].id, vehicle: RULES.drivers[0].unit, plate: '6283-YB', terminalId: NET.defaultTerminalId, verified: true, earnings: 0 }
   ];
-  Hub.requests = []; Hub.listings = []; Hub.reports = []; Hub.drivers = {};
   // DEMO operators only: no real names or numbers. Real operators sign up themselves.
   Hub.accounts.push({ id: 'u-vanop', role: 'operator', name: 'Demo Operator', mobile: '09191234567', password: hash('demo1234'), history: [], contacts: [], demo: true });
   Hub.operators = [
@@ -1978,7 +1982,7 @@ const ACTIONS = {
   retry(me, p) { const r = mine(me, p.id); if (!r || r.status !== 'nodriver') return { error: 'Nothing to retry.' }; r.declinedBy = []; dispatch(r); return {}; },
   sos(me, p) { const r = mine(me, p.id); if (!r || !ACTIVE.includes(r.status)) return { error: 'No trip in progress.' }; return sendAlert(r, 'manual') ? {} : { error: 'No emergency contacts to alert' }; },
   safe(me, p) { const r = mine(me, p.id); if (r) confirmSafe(r); return {}; },
-  detour(me, p) { const r = mine(me, p.id); if (r && r.status === 'ontrip') simulateDetour(r, Math.min(3, Math.max(0, +p.km || 0))); return {}; },
+  detour(me, p) { const r = mine(me, p.id); if (demo && r && r.status === 'ontrip') simulateDetour(r, Math.min(3, Math.max(0, +p.km || 0))); return {}; },
   pstart(me, p) { const r = mine(me, p.id); if (r && passengerDrives(Hub.drivers[r.driverId])) startRide(r); return {}; },
   pend(me, p) { const r = mine(me, p.id); if (r && passengerDrives(Hub.drivers[r.driverId])) completeRide(r); return {}; },
   rate(me, p) {
@@ -2020,7 +2024,10 @@ const ACTIONS = {
     Object.assign(o, { rate: txt(v.rate, 120), seats: +v.seats, notes: txt(v.notes, 300) }); return {};
   },
   /* driver */
-  verify(me) { if (me.role === 'driver') me.verified = true; return {}; },   // DEMO: the TODA officer's check
+  verify(me) {   // DEMO: stands in for the TODA officer's check; the real app approves on the server (approveDriver)
+    if (!demo) return { error: 'Your TODA officer approves your unit.' };
+    if (me.role === 'driver') me.verified = true; return {};
+  },
   online(me, p) {
     if (me.role !== 'driver' || !me.verified) return { error: 'Your unit is not confirmed yet.' };
     const d = ensureDriver(me); if (ACTIVE.some(s => Hub.requests.some(r => r.driverId === d.id && r.status === s)) && !p.on) return { error: 'Finish your trip first.' };
@@ -2039,6 +2046,10 @@ const ACTIONS = {
     fn(r); return { fare: r.quote.total };
   }
 };
+/* the TODA officer's approval of a driver account, from the server's admin side (never from the driver's own phone) */
+const pendingDrivers = () => Hub.accounts.filter(a => a.role === 'driver' && !a.verified)
+  .map(a => ({ id: a.id, name: a.name, mobile: a.mobile, unit: a.unit, plate: a.plate, license: a.license || '', terminalId: a.terminalId }));
+function approveDriver(id) { const a = Hub.accounts.find(x => x.id === id && x.role === 'driver'); if (!a) return false; a.verified = true; return true; }
 function run(name, me, payload) {
   if (!Object.prototype.hasOwnProperty.call(ACTIONS, name) || name === 'checkListing') return { error: 'Unknown action.' };
   if (!me && !['signup', 'login', 'publish'].includes(name)) return { error: 'Log in first.' };
@@ -2069,7 +2080,7 @@ function view(me) {
     listings: Hub.listings.map(({ ownerKey, ...l }) => ({ ...l, kind: l.kind || l.category, owner: l.owner || null, photos: l.photos || [] })),
     operators: Hub.operators,
     reports: me ? Hub.reports.filter(r => r.by === me.id) : [],
-    seq: Hub.seq, serverTime: Date.now()
+    seq: Hub.seq, serverTime: Date.now(), demo
   };
 }
 /* the public tracking page for a shared ride: no account needed, only the unguessable share code */
@@ -2091,11 +2102,18 @@ function dump() {
 }
 function restore(s) {
   if (!s || s.v !== 1) return false;
-  Object.assign(Hub, { seq: s.seq, accounts: s.accounts, operators: s.operators, reports: s.reports, requests: s.requests, drivers: {} });
-  for (const d of s.drivers) if (!d.bot) Hub.drivers[d.id] = { ...d, motion: null, gps: null };
-  const old = Object.fromEntries(s.drivers.filter(d => d.bot).map(d => [d.id, d]));
-  NET.demoVehicles.forEach(v => { Hub.drivers[v.vehicleId] = { ratings: (old[v.vehicleId] || {}).ratings || [] }; });
-  seedBots();
+  // the real app drops whatever the demo left behind: sample accounts, their sessions' rides, sample operators, simulated trikes
+  const botIds = new Set(NET.demoVehicles.map(v => v.vehicleId)), keep = a => demo || !a.demo, gone = new Set(s.accounts.filter(a => !keep(a)).map(a => a.id));
+  const goneUnits = new Set(s.accounts.filter(a => !keep(a) && a.unit).map(a => a.unit));
+  Object.assign(Hub, { seq: s.seq, accounts: s.accounts.filter(keep), operators: s.operators.filter(keep), reports: s.reports.filter(r => !gone.has(r.by)),
+    requests: s.requests.filter(r => !gone.has(r.passengerId) && (demo || !botIds.has(r.driverId)) && !goneUnits.has(r.driverId)), drivers: {} });
+  const units = new Set(Hub.accounts.map(a => a.unit).filter(Boolean));
+  for (const d of s.drivers) if (!d.bot && (demo || units.has(d.id) || d.noApp)) Hub.drivers[d.id] = { ...d, motion: null, gps: null };
+  if (demo) {
+    const old = Object.fromEntries(s.drivers.filter(d => d.bot).map(d => [d.id, d]));
+    NET.demoVehicles.forEach(v => { Hub.drivers[v.vehicleId] = { ratings: (old[v.vehicleId] || {}).ratings || [] }; });
+    seedBots();
+  }
   // shortcut: a trike's planned motion is not saved, so rides that were moving end here; save motions if restarts mid-ride matter
   for (const r of Hub.requests) if (ACTIVE.includes(r.status)) {
     const d = Hub.drivers[r.driverId];
@@ -2105,7 +2123,7 @@ function restore(s) {
 }
 
 return { RULES, NET, FAST, SPEED, DEMO_SPEEDUP, TOL, CONFIRM_S, PLACES, FEATURED, Hub, ACTIONS,
-  byId, muniName, short, initials, offMin, fmtMin, nearestNode, route, ensureDriver, seedHub, tick, run, view, trackView, dump, restore,
+  byId, muniName, short, initials, offMin, fmtMin, nearestNode, route, ensureDriver, seedHub, tick, run, view, trackView, dump, restore, pendingDrivers, approveDriver, DEMO: demo,
   approach, availableTrikes, termRuleFor, quote, rideQuotes, alertText, passengerDrives, ratingOf, offRouteKm,
   // the ride steps, for the in-tab demo and tests
   dispatch, createRide, boardRide, acceptRide, declineRide, arrivedRide, startRide, completeRide, cancelRide, sendAlert, confirmSafe, watchRide, simulateDetour };
@@ -2123,7 +2141,9 @@ return { create };
    ===================================================================== */
 const N = window.TrikeNetwork, F = window.TrikeFare, RAW = window.RAW;
 // accounts, drivers, rides and the safety watch: src/hub.js, the same code the PANAW server runs
-const H = PanawHub.create({ N, F, RAW });
+// PANAW_DEMO: only the laptop design preview sets it. The real app has no sample accounts, operators or simulated trikes.
+const DEMO_BUILD = !!window.PANAW_DEMO;
+const H = PanawHub.create({ N, F, RAW, demo: DEMO_BUILD });
 const { RULES, NET, FAST, SPEED, TOL, CONFIRM_S, PLACES, Hub, byId, muniName, short, initials, offMin, fmtMin, nearestNode, route,
   FEATURED, seedHub, approach, availableTrikes, termRuleFor, quote, alertText, passengerDrives, ratingOf } = H;
 
@@ -2181,6 +2201,8 @@ const CAT_ICON = { Beaches: 'beach', Heritage: 'church', Nature: 'leaf', Landmar
 const API = typeof window.PANAW_API === 'string' ? window.PANAW_API.replace(/\/$/, '')
   : /^https?:$/.test(location.protocol) && !window.PANAW_LOCAL ? '' : null;
 const REMOTE = API !== null;
+// connected, the server says whether it runs the demo (PANAW_DEMO=1 on a laptop server)
+const isDemo = () => REMOTE ? !!Remote.demo : DEMO_BUILD;
 const store = {
   get(k) { try { return localStorage.getItem(k); } catch { return null; } },
   set(k, v) { try { v == null ? localStorage.removeItem(k) : localStorage.setItem(k, v); } catch { /* private mode: not kept */ } }
@@ -2195,7 +2217,7 @@ function loadLocal() {
   try { const s = JSON.parse(store.get(LOCAL_KEY)); if (s && H.restore(s.hub)) Hub.listings = s.listings || []; } catch { /* nothing saved */ }
 }
 const Remote = {
-  token: null, phone: null, online: true, lrev: '',
+  token: null, phone: null, online: true, lrev: '', demo: false,
   async call(path, body) {
     const r = await fetch(API + path, { method: body ? 'POST' : 'GET', cache: 'no-store',
       headers: { 'Content-Type': 'application/json', ...(this.token ? { Authorization: 'Bearer ' + this.token } : {}) }, body: body ? JSON.stringify(body) : undefined });
@@ -2208,6 +2230,7 @@ const Remote = {
     // a poll leaves listings out when the board has not changed since lrev
     Object.assign(Hub, { accounts: v.accounts, drivers: v.drivers, requests: v.requests, listings: v.listings || Hub.listings, operators: v.operators, reports: v.reports });
     if (v.listings && v.listingsRev) this.lrev = v.listingsRev;
+    this.demo = !!v.demo;
     const P = this.phone;
     if (P && v.me && this.token) P.account = v.me;
     Hub.emit();
@@ -2285,8 +2308,9 @@ function Phone(host, startAccountId) {
   P.render();
 }
 function defaultPickup() {
-  const n = byId(NET.nodes, 'd2');   // demo position: by the Buenavista New Terminal Market
-  return { lat: n.lat + 0.0012, lng: n.lng - 0.0008, label: 'Sample point near Buenavista New Terminal Market', src: 'demo' };
+  const n = byId(NET.nodes, 'd2');   // map centre: by the Buenavista New Terminal Market. Never used as a pickup until the passenger chooses
+  return isDemo() ? { lat: n.lat + 0.0012, lng: n.lng - 0.0008, label: 'Sample point near Buenavista New Terminal Market', src: 'demo' }
+    : { lat: n.lat + 0.0012, lng: n.lng - 0.0008, label: 'Not chosen yet', src: 'none' };
 }
 const Pp = Phone.prototype;
 Pp.q = function (s) { return this.host.querySelector(s); };
@@ -2440,8 +2464,8 @@ Pp.renderAuth = function () {
   // keep what was typed when a form comes back with an error (never the password)
   for (const [k, v] of Object.entries(A.vals || {})) { const i = P.content.querySelector(`[name="${k}"]`); if (i && k !== 'password') i.value = v; }
 };
-/* the prototype's shared demo logins: tucked into a closed "Demo access" section, and left out when a build sets PANAW_HIDE_DEMO */
-const demoAccess = () => window.PANAW_HIDE_DEMO ? '' : `<details class="demo-access"><summary>Demo access (for testing)</summary>
+/* the design preview's sample logins; the real app has none (its hub does not create them) */
+const demoAccess = () => !DEMO_BUILD || REMOTE ? '' : `<details class="demo-access"><summary>Demo access (for testing)</summary>
   <p class="hint">Sample accounts for trying the prototype. They are not real people.</p>
   <div class="kv"><span class="k">Passenger</span><span class="v">09171234567</span></div><div class="kv"><span class="k">Tricycle driver</span><span class="v">09181234567</span></div>
   <div class="kv"><span class="k">Van operator</span><span class="v">09191234567</span></div><div class="kv"><span class="k">Password</span><span class="v">demo1234</span></div></details>`;
@@ -2533,7 +2557,7 @@ Pp.safetyBlock = function (req) {
         <p class="hint" style="margin-top:6px">PANAW does not text anyone by itself. This opens your phone's Messages app with the alert written; tap Send there.${this.trackLink(req) ? '' : ' The live tracking link needs the online app.'}</p></div>`;
     })()}
     <div class="row-btns" style="margin-top:10px"><button class="btn ghost sm" data-share>${ic('share')}Share trip</button><button class="btn ghost sm" data-report="${req.id}">Report issue</button></div>
-    ${req.status === 'ontrip' ? '<div class="demo-row">DEMO: simulate a detour <button data-detour="0.6">Minor</button><button data-detour="1.6">Major</button></div>' : ''}`;
+    ${req.status === 'ontrip' && isDemo() ? '<div class="demo-row">DEMO: simulate a detour <button data-detour="0.6">Minor</button><button data-detour="1.6">Major</button></div>' : ''}`;
 };
 Pp.drawSafetyPrompt = function (req) {
   const P = this, host = P.content.querySelector('.modalhost'); if (!host) return;
@@ -2578,25 +2602,33 @@ Pp.page_hire = function (type) {
     <p class="hint" style="margin-top:12px">Rates are set by each operator. They are not ordinance fares, and PANAW does not take a cut.</p></div>`];
 };
 /* where the pickup came from, said plainly: a demo sample point never passes for the customer's location */
-const PICKUP_SRC = { demo: ['Sample point for the demo, not your location', 'demo'], confirmed: ['Sample point, confirmed by you', 'demo'],
+const PICKUP_SRC = { none: ['Use GPS, choose a place, or tap the map', 'todo'], demo: ['Sample point for the demo, not your location', 'demo'], confirmed: ['Sample point, confirmed by you', 'demo'],
   gps: ["From your phone's GPS", 'info'], map: ['Pinned by you on the map', 'info'], place: ['Place you chose', 'info'] };
 const pickupTag = pk => { const [t, c] = PICKUP_SRC[pk.src] || PICKUP_SRC.map; return `<span class="tag ${c}">${t}</span>`; };
-const pickupReady = pk => pk.src !== 'demo';
+const pickupReady = pk => pk.src !== 'demo' && pk.src !== 'none';
 // stops people take a tricycle to every day: recent trips, then the market, hospital, port and town centres
 const COMMON = ['d2', 'd3', 'd4', 'd6', 'dest_jordan_center', 'dest_nueva_valencia_center', 'dest_san_lorenzo_center', 'dest_sibunag_center'];
+/* tricycles that can come, counted only from a pickup the passenger chose; simulated ones never pass as real */
+const nearbyLine = pk => {
+  const near = pickupReady(pk) ? availableTrikes(pk) : [], sim = near.filter(x => x.d.bot).length, real = near.filter(x => !x.d.bot);
+  return `<div class="nearby">${ic('trike')}<span>${!pickupReady(pk) ? 'Choose your pickup point to see which tricycles can come.'
+    : real.length ? `${real.length} tricycle${real.length > 1 ? 's' : ''} online near this pickup · closest ${fmtMin(real[0].a.min)} away${sim ? ` · plus ${sim} simulated (DEMO)` : ''}`
+    : sim ? `<span class="tag demo">DEMO</span> ${sim} simulated trike${sim > 1 ? 's' : ''} for testing, not real vehicles`
+    : 'No tricycle online near this pickup right now. You can still get a fare ticket at a terminal.'}</span></div>`;
+};
 Pp.ride_home = function () {
   const P = this, R = P.ride, a = P.account, dest = R.stops[0] && byId(PLACES, R.stops[0]);
-  const near = availableTrikes(R.pickup), demoNear = near.filter(x => x.d.bot).length;
   const recent = [...new Set((a.history || []).flatMap(h => h.to))].slice(0, 2).map(n => PLACES.find(p => p.name === n)).filter(Boolean);
   const quick = [...recent, ...COMMON.map(id => byId(PLACES, id)).filter(Boolean)].filter((p, i, arr) => arr.indexOf(p) === i).slice(0, 6);
-  const why = !dest ? 'Choose where you are going to see the fare.' : !pickupReady(R.pickup) ? 'Confirm or change your pickup point first.' : '';
+  const why = !dest ? 'Choose where you are going to see the fare.' : R.pickup.src === 'none' ? 'Choose your pickup point first.' : !pickupReady(R.pickup) ? 'Confirm or change your pickup point first.' : '';
   return `<h2 class="ride-title">Where do you need a ride?</h2>
     <div class="label" style="margin-top:12px">Pickup point</div>
     <div class="pickup-box">
       <div class="pickup-line"><span class="pin"></span><span class="grow"><b>${esc(R.pickup.label)}</b></span></div>
       <div style="margin:6px 0 0 20px">${pickupTag(R.pickup)}</div>
       <div class="row-btns" style="margin-top:10px"><button class="btn ghost sm" data-gps>${ic('gps')}Use GPS</button><button class="btn ghost sm" data-pick-pickup>${ic('search')}Choose a place</button></div>
-      <p class="hint" style="margin:8px 0 0">Or tap the map to drop the pickup pin where you are waiting.</p>
+      <p class="hint" style="margin:8px 0 0">Or tap the map where you are waiting.</p>
+      ${R.pickup.src === 'none' ? '<p class="hint" style="margin:8px 0 0">PANAW does not use your location until you tap Use GPS.</p>' : ''}
       ${R.pickup.src === 'demo' ? '<div class="banner info" style="font-weight:500">PANAW has not used your location. This sample point is here for the demo. <button class="link inline" data-confirm-pickup>Use the sample point</button></div>' : ''}
     </div>
     <div class="label" style="margin-top:16px">Where are you going?</div>
@@ -2606,15 +2638,15 @@ Pp.ride_home = function () {
     <p class="hint" style="margin-top:12px">You see the fare and how it is computed before anything is booked.</p>
     <button class="btn primary" style="margin-top:8px" data-review ${why ? 'disabled aria-describedby="review-why"' : ''}>Review fare</button>
     ${why ? `<p class="hint" id="review-why" style="margin-top:6px">${why}</p>` : ''}
-    <div class="nearby">${ic('trike')}<span>${near.length ? `${near.length} trike${near.length > 1 ? 's' : ''} online near this pickup · closest ${fmtMin(near[0].a.min)} away${demoNear ? ` (${demoNear === near.length ? 'all' : demoNear} DEMO)` : ''}` : 'No trike online near this pickup right now. You can still get a fare ticket at a terminal.'}</span></div>
+    ${nearbyLine(R.pickup)}
     <div class="section">${recent.length ? 'Recent and common stops' : 'Common stops'}</div>
     <div class="quick">${quick.map(p => `<button data-dest="${p.id}"><b>${esc(short(p.name).split(',')[0])}</b><span>${esc(muniName(p.municipality))}</span></button>`).join('')}</div>`;
 };
 Pp.ride_search = function () {
   const P = this, R = P.ride;
   if (R.pickMode) return `<div style="display:flex; align-items:center; gap:8px; margin-bottom:12px"><button class="icon-btn" data-ride="home" aria-label="Back">${ic('back')}</button><b style="font-size:16px">Choose a pickup point</b></div>
-    <input class="field" data-q placeholder="Search a landmark near you" aria-label="Search a pickup place" value="${esc(R.query)}">
-    <p class="hint" style="margin-top:8px">The tricycle comes to this place. Pick the closest landmark, or go back and use GPS or the map.</p>
+    <input class="field" data-q placeholder="Search a place or landmark" aria-label="Search a pickup place" value="${esc(R.query)}">
+    <p class="hint" style="margin-top:8px">Searches every place in PANAW, not only those near you. Check the town under each name. The tricycle comes to the place you choose.</p>
     <div data-results style="margin-top:8px">${P.results()}</div>`;
   if (!R.stops.length) R.stops = [''];
   return `<div style="display:flex; align-items:center; gap:8px; margin-bottom:12px"><button class="icon-btn" data-ride="home" aria-label="Back">${ic('back')}</button><b style="font-size:16px">Where are you going?</b></div>
@@ -2631,11 +2663,14 @@ Pp.ride_search = function () {
 };
 Pp.results = function () {
   const P = this, R = P.ride, q = R.query.trim().toLowerCase();
-  const list = PLACES.filter(p => !q || p.name.toLowerCase().includes(q) || muniName(p.municipality).toLowerCase().includes(q))
-    .map(p => ({ p, km: F.haversineKm(R.pickup, p) })).sort((a, b) => q ? a.km - b.km : exploreRank(a.p) - exploreRank(b.p) || a.km - b.km).slice(0, 12);
+  // distances mean something only from a pickup the passenger chose; while choosing the pickup itself, list by name
+  const from = !R.pickMode && pickupReady(R.pickup);
+  const list = PLACES.filter(p => (!q || p.name.toLowerCase().includes(q) || muniName(p.municipality).toLowerCase().includes(q)) && !(R.pickMode && !q && p.category === 'Barangays'))
+    .map(p => ({ p, km: from ? F.haversineKm(R.pickup, p) : null }))
+    .sort((a, b) => from && q ? a.km - b.km : R.pickMode ? a.p.name.localeCompare(b.p.name) : exploreRank(a.p) - exploreRank(b.p) || (from ? a.km - b.km : a.p.name.localeCompare(b.p.name))).slice(0, R.pickMode ? 30 : 12);
   return (q ? '' : '<div class="section" style="margin-top:6px">Suggestions</div>') + (list.length ? list.map(({ p, km }) => `<button class="result" data-pick="${p.id}">
       <span class="ic">${ic(CAT_ICON[p.category] || 'pin')}</span><span class="grow"><div class="t">${esc(p.name)}</div><div class="s">${esc(p.category)} · ${esc(muniName(p.municipality))}</div></span>
-      <span class="km">${km.toFixed(1)} km</span></button>`).join('') : '<div class="empty"><b>No place found</b>Try another name or municipality.</div>');
+      ${km == null ? '' : `<span class="km">${km.toFixed(1)} km</span>`}</button>`).join('') : '<div class="empty"><b>No place found</b>Try another name or municipality.</div>');
 };
 Pp.quotes = function () {
   const R = this.ride;
@@ -2763,7 +2798,7 @@ Pp.drawRideMap = function () {
     stops = (active ? req.stopIds : R.stops).map(id => byId(PLACES, id));
   }
   const fit = R.refit; R.refit = false;
-  drawLayer(m, { trikes, pickup: R.pickup, stops, line, fit, bottomPad: 360 });
+  drawLayer(m, { trikes, pickup: R.pickup.src === 'none' ? null : R.pickup, stops, line, fit, bottomPad: 360 });
 };
 Pp.updateRide = function () {
   const P = this, req = P.myRide();
@@ -2776,8 +2811,8 @@ Pp.updateRide = function () {
     if (alert && alert.type === 'alert_sent' && P._alerted !== alert.at) { P._alerted = alert.at; P.toast('Safety alert ready. Tap "Send this alert by text".'); }
     if (key !== P._rideKey) { P._rideKey = key; if (req.status === 'accepted' && P._last !== 'accepted') P.toast('Your trike is on the way'); P._last = req.status; P.drawRideSheet(); return; }
   } else if (P.ride.step === 'home') {
-    const near = availableTrikes(P.ride.pickup).length;
-    if (near !== P._near) { P._near = near; const el = P.q('.tab[data-tab="ride"] .nearby'); if (el) el.outerHTML = P.ride_home().match(/<div class="nearby">[\s\S]*$/)[0]; }
+    const near = nearbyLine(P.ride.pickup);
+    if (near !== P._near) { P._near = near; const el = P.q('.tab[data-tab="ride"] .nearby'); if (el) el.outerHTML = near; }
   } else if (P.ride.step === 'options') {
     // keep "Trike comes to you" honest: redraw when trikes appear or all go busy; otherwise update the minutes in place
     const t = availableTrikes(P.ride.pickup), any = t.length > 0;
@@ -2824,8 +2859,8 @@ Pp.drawDriveSheet = function () {
   if (pill) pill.innerHTML = `<span class="dot ${d.online ? 'on' : ''}"></span>${d.online ? 'Online' : 'Offline'} · Unit ${esc(a.unit)}`;
   let h;
   if (!a.verified) h = `<b style="font-size:18px">Waiting for TODA confirmation</b>
-    <p class="hint">Your TODA officer checks your unit ${esc(a.unit)} and plate ${esc(a.plate)} before you can go online.</p>
-    <button class="btn ghost" style="margin-top:12px" data-verify>Confirm now (demo only)</button>`;
+    <p class="hint">Your TODA officer checks your unit ${esc(a.unit)} and plate ${esc(a.plate)} in PANAW before you can go online. This screen updates by itself once you are approved.</p>
+    ${isDemo() ? '<button class="btn ghost" style="margin-top:12px" data-verify>Confirm now (demo only)</button>' : ''}`;
   else if (job && job.status === 'requested') {
     const left = Math.max(0, 60 - (Date.now() - job.askedAt) / 1000), to = job.stopIds.map(id => byId(PLACES, id).name).join(' → ');
     h = `<div class="req"><div style="display:flex; gap:12px; align-items:center">
@@ -2956,7 +2991,7 @@ Pp.drawGrid = function () {
     .sort((a, b) => exploreRank(a) - exploreRank(b) || a.name.localeCompare(b.name));
   const g = P.q('[data-grid]'); if (!g) return;
   const photo = p => p.photos && p.photos[0];
-  const card = p => `<button class="pcard wide" data-place="${esc(p.id)}"><div class="pimg"><img src="${esc(photo(p))}" alt=""></div>
+  const card = p => `<button class="pcard wide" data-place="${esc(p.id)}"><div class="pimg" data-fallback="${CAT_ICON[p.category] || 'store'}"><img src="${esc(photo(p))}" alt=""></div>
       <div class="b"><b>${esc(p.name)}</b><span>${esc(p.kind || p.category)} · ${esc(muniName(p.municipality))}${p.listing ? ' · Owner listing' : ''}</span></div></button>`;
   const row = p => `<button class="list-row" data-place="${esc(p.id)}"><span class="ic">${ic(CAT_ICON[p.category] || 'pin')}</span>
       <span class="grow"><div class="t">${esc(short(p.name))}</div><div class="s">${esc(p.category)} · ${esc(muniName(p.municipality))}</div></span><span class="chev">${ic('chev')}</span></button>`;
@@ -2970,7 +3005,10 @@ Pp.drawGrid = function () {
         <span class="ic">${ic('home')}</span><span class="grow"><div class="t">${esc(m.name)}</div><div class="s">${n} barangay${n > 1 ? 's' : ''}</div></span><span class="chev">${ic('chev')}</span></button>`).join('')}</div>`;
   const grouped = !q && E.muni === 'all';
   const active = [E.cat !== 'All' && E.cat, E.muni !== 'all' && muniName(E.muni), q && `"${E.q.trim()}"`].filter(Boolean);
-  const head = `<div class="filter-line" aria-live="polite"><span>${list.length} place${list.length === 1 ? '' : 's'}${active.length ? ' · ' + esc(active.join(' · ')) : ' in Guimaras'}</span>
+  const other = list.length - brgy.length, townsN = new Set(brgy.map(p => p.municipality)).size, plural = (n, w) => `${n} ${w}${n === 1 ? '' : 's'}`;
+  const summary = !grouped || !brgy.length ? plural(list.length, list.length && list.every(p => p.category === 'Barangays') ? 'barangay' : 'place')
+    : (other ? plural(other, 'place') + ' · ' : '') + `${plural(brgy.length, 'barangay')} by municipality (${plural(townsN, 'town')})`;
+  const head = `<div class="filter-line" aria-live="polite"><span>${summary}${active.length ? ' · ' + esc(active.join(' · ')) : ' in Guimaras'}</span>
       ${active.length ? '<button class="link" data-clear-filters>Clear filters</button>' : ''}</div>`;
   const html = grouped
     ? block('', list.filter(p => p.category !== 'Barangays')) + towns
@@ -3000,6 +3038,14 @@ Pp.page_brgy = function (muni) {
       <span class="chev">${ic('chev')}</span></button>`).join('')}</div></div>`];
 };
 
+/* a photo that fails (bad link, offline) is swapped once for the category icon; removing the img means it cannot fail again */
+document.addEventListener('error', e => {
+  const img = e.target, box = img.tagName === 'IMG' && img.parentNode && img.parentNode.closest && img.parentNode.closest('[data-fallback]');
+  if (!box) return;
+  img.remove(); box.classList.add('empty', 'broken');
+  if (!box.querySelector('svg.i')) box.insertAdjacentHTML('afterbegin', ic(box.dataset.fallback) + '<span class="ph-note">Photo could not load</span>');
+}, true);
+
 /* ---------- pages (open over the current tab; the tab bar stays) ---------- */
 Pp.openPage = function (name, data) { this.pages.push({ name, data }); this.renderPage(); };
 Pp.renderPage = function () {
@@ -3013,30 +3059,34 @@ Pp.renderPage = function () {
 };
 Pp.page_place = function (id) {
   const P = this, p = P.allPlaces().find(x => x.id === id);
-  const R = P.ride, snap = nearestNode(R.pickup);
+  const R = P.ride, ready = pickupReady(R.pickup), snap = ready ? nearestNode(R.pickup) : null;
   const routable = !p.listing;
-  const q = routable ? quote(snap.n.id, [p.id], { pax: 1, hire: 'regular', disc: 'none', dpax: 0 }, termRuleFor(snap.n.municipality)) : null;
+  // a place with no road from its own town's terminal has no tricycle route from anywhere (island barangays); that does not depend on the pickup
+  const noRoad = routable && !route(NET, termRuleFor(p.municipality).nodeId, p.nodeId).found;
+  const q = routable && ready && !noRoad ? quote(snap.n.id, [p.id], { pax: 1, hire: 'regular', disc: 'none', dpax: 0 }, termRuleFor(snap.n.municipality)) : null;
+  const srcLabel = p.listing ? 'The owner (not verified)' : p.source === 'osm' ? 'OpenStreetMap (location)' : p.source === 'existing' ? 'PANAW project data' : 'PhilAtlas (location)';
   const near = p.listing ? nearestNode(p) : null;
   const photos = p.photos || [], ix = Math.min(P._ph || 0, Math.max(0, photos.length - 1));
   return [p.name, `
-    <div class="hero ${photos[ix] ? '' : 'empty'}">${photos[ix] ? `<img src="${esc(photos[ix])}" alt="">` : ic(CAT_ICON[p.category] || 'pin')}
+    <div class="hero ${photos[ix] ? '' : 'empty'}" data-fallback="${CAT_ICON[p.category] || 'pin'}">${photos[ix] ? `<img src="${esc(photos[ix])}" alt="Photo ${ix + 1} of ${photos.length}: ${esc(p.name)}">` : ic(CAT_ICON[p.category] || 'pin')}
       ${photos.length > 1 ? '<button class="nav l" data-ph="-1">‹</button><button class="nav r" data-ph="1">›</button>' : ''}</div>
     <div class="pad stack">
       <div><div style="font-size:21px; font-weight:800">${esc(p.name)}</div>
         <div class="hint" style="margin-top:3px">${p.barangay ? `Barangay ${esc(p.barangay)}` : esc(p.category)} · ${esc(muniName(p.municipality))}, Guimaras</div>
         <div style="margin-top:8px">${p.listing ? '<span class="tag demo">Listed by owner · not verified</span>' : p.source === 'osm' ? '<span class="tag info">Location: OpenStreetMap</span>' : p.source === 'existing' ? '<span class="tag ok">Project data</span>' : p.barangay ? '<span class="tag info">Location: PhilAtlas</span>' : '<span class="tag info">PhilAtlas town center</span>'}</div></div>
-      ${routable && q && q.error ? `<div class="banner warn">No tricycle route here. ${esc(p.note || q.error)}</div>` : ''}
-      ${routable && !(q && q.error) && !P.isDriver() && !P.isOperator() ? `<button class="btn primary" data-ride-here="${p.id}">${ic('trike')}Get a tricycle to this place</button>
-        <p class="hint" style="margin-top:-6px">${pickupReady(R.pickup) ? `From your pickup point (${esc(R.pickup.label)}): about ${peso(q.total)}, ${q.km.toFixed(1)} km, 1 passenger. You confirm everything on the Ride screen.` : 'You choose your pickup point and see the fare on the Ride screen before booking.'}</p>
+      ${noRoad ? `<div class="banner warn">No road route to this place in PANAW. ${esc(p.note)}</div>` : ''}
+      ${routable && !noRoad && q && q.error ? `<div class="banner warn">No tricycle route from your pickup point (${esc(R.pickup.label)}) to this place. ${esc(q.error)}</div>` : ''}
+      ${routable && !noRoad && !(q && q.error) && !P.isDriver() && !P.isOperator() ? `<button class="btn primary" data-ride-here="${p.id}">${ic('trike')}Get a tricycle to this place</button>
+        <p class="hint" style="margin-top:-6px">${q ? `Estimate from your pickup point (${esc(R.pickup.label)}): about ${peso(q.total)}, ${q.km.toFixed(1)} km by road from ${esc(short(snap.n.name))}, the stop PANAW knows nearest to your pickup, for 1 passenger. Not a door-to-door measurement; you confirm everything on the Ride screen.` : 'Choose your pickup point on the Ride screen to check the route and fare before booking.'}</p>
         <button class="btn ghost" data-hire-group="${p.id}">${ic('van')}Going as a group? Hire a jeepney or van</button>` : ''}
       ${p.card ? `<div class="card"><div class="kv"><span class="k">TODA fare card, special trip from New Poblacion</span><span class="v">${peso(p.card)}</span></div>
         <div class="kv"><span class="k">Regular fare, per passenger</span><span class="v">${peso(byId(NET.fareRules, 'npbtoda_card').rates.baseFare)}</span></div></div>` : ''}
       ${p.listing ? `<div class="card"><div style="white-space:pre-line; font-size:14px; line-height:1.5">${esc(p.description || 'No description yet.')}</div>
         ${p.contact ? `<div class="kv" style="margin-top:8px"><span class="k">Contact</span><span class="v">${esc(p.contact)}</span></div>` : ''}</div>
-        <div class="card"><div class="kv"><span class="k">Nearest stop</span><span class="v">${esc(short(near.n.name))}</span></div><div class="kv"><span class="k">Distance from stop</span><span class="v">${near.km.toFixed(1)} km</span></div></div>`
+        <div class="card"><div class="kv"><span class="k">Place information</span><span class="v">${esc(srcLabel)}</span></div><div class="kv"><span class="k">Nearest stop</span><span class="v">${esc(short(near.n.name))}</span></div><div class="kv"><span class="k">Distance from stop</span><span class="v">${near.km.toFixed(1)} km</span></div></div>`
       : `<div class="card"><div class="kv"><span class="k">Open hours</span><span class="v"><span class="tag todo">To verify</span></span></div>
         <div class="kv"><span class="k">Entrance fee</span><span class="v"><span class="tag todo">To verify</span></span></div>
-        <div class="kv"><span class="k">Info from</span><span class="v">${esc(muniName(p.municipality))} Tourism Office</span></div></div>`}
+        <div class="kv"><span class="k">Place information</span><span class="v">${esc(srcLabel)}</span></div></div>`}
       <div class="minimap" data-minimap></div>
     </div>`, () => {
     const el = P.q('[data-minimap]'); const m = P.maps.page = P.map('page', el);
@@ -3425,7 +3475,7 @@ Pp.useGps = function () {
     const pos = { lat: p.coords.latitude, lng: p.coords.longitude };
     if (nearestNode(pos).km > 25) return P.toast('You are outside Guimaras. Tap the map to set a pickup instead.');
     P.ride.pickup = { ...pos, label: 'Your current location', src: 'gps' }; P.ride.refit = true; P.drawRideSheet();
-  }, () => P.toast('Location unavailable. Tap the map to set your pickup.'), { timeout: 10000 });
+  }, () => P.toast('Location unavailable. Tap the map or choose a place for your pickup.'), { timeout: 10000 });
 };
 Pp.fareModal = function () {
   const P = this, o = P.ride.opts, host = P.content.querySelector('.modalhost');
@@ -3465,13 +3515,14 @@ Pp.book = function () {
 let phones = [];
 function start() {
   // connected: one phone per device, signed in with the token this phone keeps
-  const wide = !REMOTE && window.matchMedia('(min-width: 861px)').matches;
+  const wide = DEMO_BUILD && !REMOTE && window.matchMedia('(min-width: 861px)').matches;
   Hub.listeners.clear();
   // fresh elements, so phones from before a reset stop receiving taps
   const fresh = id => { const old = document.getElementById(id), el = old.cloneNode(false); old.replaceWith(el); return el; };
   phones = [new Phone(fresh('phone-a'), wide ? 'u-ana' : REMOTE ? null : store.get('panaw-local-me'))];
   if (wide) phones.push(new Phone(fresh('phone-b'), 'u-bobong'));
 }
+if (!DEMO_BUILD) document.querySelector('.stage-bar').style.display = 'none';
 if (REMOTE) {
   document.body.classList.add('connected');
   document.querySelector('.stage-bar').style.display = 'none';

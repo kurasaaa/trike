@@ -438,7 +438,7 @@ const stripTime = f => { const c = { ...f }; delete c.computedAt; return c; };
       assert.strictEqual((await get('/api/hub/view', auth)).status, 401);
     });
     await test('API', 'app ride: fare priced on the server, tracking link public, driver view silent', async () => {
-      const a = (await post('/api/hub/login', { mobile: '09171234567', password: 'demo1234' })).body.token;
+      const a = (await post('/api/hub/signup', { role: 'passenger', name: 'Ana Test', mobile: '09990002222', password: 'secret123' })).body.token;
       const r = await post('/api/hub/book', { pickup: { lat: 10.695, lng: 122.64, label: 'Test' }, stops: ['d6'], opts: { pax: 1, hire: 'regular', disc: 'none' },
         quote: { total: 1 } }, { Authorization: 'Bearer ' + a });
       assert.strictEqual(r.status, 200, JSON.stringify(r.body));
@@ -450,6 +450,22 @@ const stripTime = f => { const c = { ...f }; delete c.computedAt; return c; };
       assert.strictEqual((await get('/t/' + ride.share)).status, 200);
       assert.strictEqual((await post('/api/hub/book', { pickup: { lat: 10.695, lng: 122.64 }, stops: ['d6'], opts: {} })).status, 400, 'booking needs a login');
       await post('/api/hub/cancel', { id: ride.id }, { Authorization: 'Bearer ' + a });
+    });
+    await test('API', 'real app: no demo accounts or simulated trikes; drivers go online only after TODA approval', async () => {
+      assert.strictEqual((await post('/api/hub/login', { mobile: '09171234567', password: 'demo1234' })).status, 400, 'demo login refused');
+      const d = await post('/api/hub/signup', { role: 'driver', name: 'Test Driver', mobile: '09990003333', password: 'secret123',
+        unit: 'BTODA-0999', plate: '1234-AB', terminalId: 'terminal_buenavista_poblacion' });
+      assert.strictEqual(d.status, 200, JSON.stringify(d.body));
+      const auth = { Authorization: 'Bearer ' + d.body.token };
+      assert.ok(Object.values(d.body.view.drivers).every(x => !x.bot), 'no simulated trikes');
+      assert.strictEqual(d.body.view.operators.length, 0, 'no sample operators');
+      assert.strictEqual((await post('/api/hub/verify', {}, auth)).status, 400, 'a driver cannot approve themselves');
+      assert.strictEqual((await post('/api/hub/online', { on: true }, auth)).status, 400);
+      const pend = await get('/api/admin/app-drivers');
+      assert.deepStrictEqual(pend.body.pending.map(x => x.unit), ['BTODA-0999']);
+      assert.strictEqual((await post('/api/admin/app-drivers/nobody/approve')).status, 404);
+      assert.strictEqual((await post(`/api/admin/app-drivers/${pend.body.pending[0].id}/approve`)).body.pending.length, 0);
+      assert.strictEqual((await post('/api/hub/online', { on: true }, auth)).status, 200);
     });
     await test('API', 'reset clears trips, vehicles and segment overrides', async () => {
       await post('/api/admin/network', { edgeId: 'e_bv_jordan', available: false });

@@ -19,8 +19,9 @@ const randomHex = n => {
   return Array.from(b, x => x.toString(16).padStart(2, '0')).join('');
 };
 
-/* opts.hash / opts.verify: how passwords are kept. The server passes scrypt; the in-tab demo keeps them as typed. */
-function create({ N, F, RAW, hash = p => p, verify = (p, h) => p === h }) {
+/* opts.hash / opts.verify: how passwords are kept. The server passes scrypt; the in-tab demo keeps them as typed.
+   opts.demo: seed the sample accounts, operators and simulated trikes. Off for the real app: only people who sign up exist. */
+function create({ N, F, RAW, hash = p => p, verify = (p, h) => p === h, demo = true }) {
 const RULES = RAW.rules;
 const NET = N.validate({
   province: RAW.municipalities.province, municipalities: RAW.municipalities.municipalities,
@@ -62,13 +63,14 @@ const Hub = {
   emit() { this.listeners.forEach(f => f()); }
 };
 function seedHub() {
+  Hub.requests = []; Hub.listings = []; Hub.reports = []; Hub.drivers = {}; Hub.accounts = []; Hub.operators = [];
+  if (!demo) return;
   Hub.accounts = [
     { id: 'u-ana', role: 'passenger', name: 'Ana Reyes', mobile: '09171234567', password: hash('demo1234'), history: [], ratings: [], demo: true,
       contacts: [{ id: 'c1', name: 'Elena Reyes', relation: 'Parent', mobile: '09170001111' }] },
     { id: 'u-bobong', role: 'driver', name: RULES.drivers[0].name, mobile: '09181234567', password: hash('demo1234'), history: [], demo: true,
       unit: RULES.drivers[0].id, vehicle: RULES.drivers[0].unit, plate: '6283-YB', terminalId: NET.defaultTerminalId, verified: true, earnings: 0 }
   ];
-  Hub.requests = []; Hub.listings = []; Hub.reports = []; Hub.drivers = {};
   // DEMO operators only: no real names or numbers. Real operators sign up themselves.
   Hub.accounts.push({ id: 'u-vanop', role: 'operator', name: 'Demo Operator', mobile: '09191234567', password: hash('demo1234'), history: [], contacts: [], demo: true });
   Hub.operators = [
@@ -390,7 +392,7 @@ const ACTIONS = {
   retry(me, p) { const r = mine(me, p.id); if (!r || r.status !== 'nodriver') return { error: 'Nothing to retry.' }; r.declinedBy = []; dispatch(r); return {}; },
   sos(me, p) { const r = mine(me, p.id); if (!r || !ACTIVE.includes(r.status)) return { error: 'No trip in progress.' }; return sendAlert(r, 'manual') ? {} : { error: 'No emergency contacts to alert' }; },
   safe(me, p) { const r = mine(me, p.id); if (r) confirmSafe(r); return {}; },
-  detour(me, p) { const r = mine(me, p.id); if (r && r.status === 'ontrip') simulateDetour(r, Math.min(3, Math.max(0, +p.km || 0))); return {}; },
+  detour(me, p) { const r = mine(me, p.id); if (demo && r && r.status === 'ontrip') simulateDetour(r, Math.min(3, Math.max(0, +p.km || 0))); return {}; },
   pstart(me, p) { const r = mine(me, p.id); if (r && passengerDrives(Hub.drivers[r.driverId])) startRide(r); return {}; },
   pend(me, p) { const r = mine(me, p.id); if (r && passengerDrives(Hub.drivers[r.driverId])) completeRide(r); return {}; },
   rate(me, p) {
@@ -432,7 +434,10 @@ const ACTIONS = {
     Object.assign(o, { rate: txt(v.rate, 120), seats: +v.seats, notes: txt(v.notes, 300) }); return {};
   },
   /* driver */
-  verify(me) { if (me.role === 'driver') me.verified = true; return {}; },   // DEMO: the TODA officer's check
+  verify(me) {   // DEMO: stands in for the TODA officer's check; the real app approves on the server (approveDriver)
+    if (!demo) return { error: 'Your TODA officer approves your unit.' };
+    if (me.role === 'driver') me.verified = true; return {};
+  },
   online(me, p) {
     if (me.role !== 'driver' || !me.verified) return { error: 'Your unit is not confirmed yet.' };
     const d = ensureDriver(me); if (ACTIVE.some(s => Hub.requests.some(r => r.driverId === d.id && r.status === s)) && !p.on) return { error: 'Finish your trip first.' };
@@ -451,6 +456,10 @@ const ACTIONS = {
     fn(r); return { fare: r.quote.total };
   }
 };
+/* the TODA officer's approval of a driver account, from the server's admin side (never from the driver's own phone) */
+const pendingDrivers = () => Hub.accounts.filter(a => a.role === 'driver' && !a.verified)
+  .map(a => ({ id: a.id, name: a.name, mobile: a.mobile, unit: a.unit, plate: a.plate, license: a.license || '', terminalId: a.terminalId }));
+function approveDriver(id) { const a = Hub.accounts.find(x => x.id === id && x.role === 'driver'); if (!a) return false; a.verified = true; return true; }
 function run(name, me, payload) {
   if (!Object.prototype.hasOwnProperty.call(ACTIONS, name) || name === 'checkListing') return { error: 'Unknown action.' };
   if (!me && !['signup', 'login', 'publish'].includes(name)) return { error: 'Log in first.' };
@@ -481,7 +490,7 @@ function view(me) {
     listings: Hub.listings.map(({ ownerKey, ...l }) => ({ ...l, kind: l.kind || l.category, owner: l.owner || null, photos: l.photos || [] })),
     operators: Hub.operators,
     reports: me ? Hub.reports.filter(r => r.by === me.id) : [],
-    seq: Hub.seq, serverTime: Date.now()
+    seq: Hub.seq, serverTime: Date.now(), demo
   };
 }
 /* the public tracking page for a shared ride: no account needed, only the unguessable share code */
@@ -503,11 +512,18 @@ function dump() {
 }
 function restore(s) {
   if (!s || s.v !== 1) return false;
-  Object.assign(Hub, { seq: s.seq, accounts: s.accounts, operators: s.operators, reports: s.reports, requests: s.requests, drivers: {} });
-  for (const d of s.drivers) if (!d.bot) Hub.drivers[d.id] = { ...d, motion: null, gps: null };
-  const old = Object.fromEntries(s.drivers.filter(d => d.bot).map(d => [d.id, d]));
-  NET.demoVehicles.forEach(v => { Hub.drivers[v.vehicleId] = { ratings: (old[v.vehicleId] || {}).ratings || [] }; });
-  seedBots();
+  // the real app drops whatever the demo left behind: sample accounts, their sessions' rides, sample operators, simulated trikes
+  const botIds = new Set(NET.demoVehicles.map(v => v.vehicleId)), keep = a => demo || !a.demo, gone = new Set(s.accounts.filter(a => !keep(a)).map(a => a.id));
+  const goneUnits = new Set(s.accounts.filter(a => !keep(a) && a.unit).map(a => a.unit));
+  Object.assign(Hub, { seq: s.seq, accounts: s.accounts.filter(keep), operators: s.operators.filter(keep), reports: s.reports.filter(r => !gone.has(r.by)),
+    requests: s.requests.filter(r => !gone.has(r.passengerId) && (demo || !botIds.has(r.driverId)) && !goneUnits.has(r.driverId)), drivers: {} });
+  const units = new Set(Hub.accounts.map(a => a.unit).filter(Boolean));
+  for (const d of s.drivers) if (!d.bot && (demo || units.has(d.id) || d.noApp)) Hub.drivers[d.id] = { ...d, motion: null, gps: null };
+  if (demo) {
+    const old = Object.fromEntries(s.drivers.filter(d => d.bot).map(d => [d.id, d]));
+    NET.demoVehicles.forEach(v => { Hub.drivers[v.vehicleId] = { ratings: (old[v.vehicleId] || {}).ratings || [] }; });
+    seedBots();
+  }
   // shortcut: a trike's planned motion is not saved, so rides that were moving end here; save motions if restarts mid-ride matter
   for (const r of Hub.requests) if (ACTIVE.includes(r.status)) {
     const d = Hub.drivers[r.driverId];
@@ -517,7 +533,7 @@ function restore(s) {
 }
 
 return { RULES, NET, FAST, SPEED, DEMO_SPEEDUP, TOL, CONFIRM_S, PLACES, FEATURED, Hub, ACTIONS,
-  byId, muniName, short, initials, offMin, fmtMin, nearestNode, route, ensureDriver, seedHub, tick, run, view, trackView, dump, restore,
+  byId, muniName, short, initials, offMin, fmtMin, nearestNode, route, ensureDriver, seedHub, tick, run, view, trackView, dump, restore, pendingDrivers, approveDriver, DEMO: demo,
   approach, availableTrikes, termRuleFor, quote, rideQuotes, alertText, passengerDrives, ratingOf, offRouteKm,
   // the ride steps, for the in-tab demo and tests
   dispatch, createRide, boardRide, acceptRide, declineRide, arrivedRide, startRide, completeRide, cancelRide, sendAlert, confirmSafe, watchRide, simulateDetour };

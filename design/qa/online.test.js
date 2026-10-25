@@ -14,25 +14,39 @@ const check = (n, ok, ev = '') => res.push({ n, ok: !!ok, ev: String(ev).slice(0
     await p.goto(BASE + '/'); await p.waitForTimeout(800); return p;
   };
   const waitFor = (p, js, ms = 8000) => p.waitForFunction(js, null, { timeout: ms, polling: 250 }).then(() => true, () => false);
+  // the real server has no demo accounts: every account here is signed up
   const login = async (p, mobile) => {
-    await p.click('[data-auth="login"]'); await p.fill('[name="mobile"]', mobile); await p.fill('[name="password"]', 'demo1234'); await p.click('[data-login]');
+    await p.click('[data-auth="login"]'); await p.fill('[name="mobile"]', mobile); await p.fill('[name="password"]', 'password1'); await p.click('[data-login]');
+    return waitFor(p, `!!phones[0].account && phones[0].account.mobile === '${mobile}'`);
+  };
+  const signup = async (p, role, name, mobile, extra = {}) => {
+    await p.click('[data-auth="role"]'); await p.click(`[data-role="${role}"]`); await p.click('[data-auth="signup"]');
+    await p.fill('[name="name"]', name); await p.fill('[name="mobile"]', mobile); await p.fill('[name="password"]', 'password1');
+    for (const [k, v] of Object.entries(extra)) await p.fill(`[name="${k}"]`, v);
+    await p.click('[data-signup]');
     return waitFor(p, `!!phones[0].account && phones[0].account.mobile === '${mobile}'`);
   };
   const A = await phone(), B = await phone();
   check('served page runs in connected mode', await A.evaluate(`REMOTE === true && API === ''`));
-  check('wrong password is refused', await (async () => {
-    await A.click('[data-auth="login"]'); await A.fill('[name="mobile"]', '09171234567'); await A.fill('[name="password"]', 'nope12345'); await A.click('[data-login]');
+  check('real server: no Demo access section', !(await A.$('details.demo-access')));
+  check('the old demo login is refused by the real server', await (async () => {
+    await A.click('[data-auth="login"]'); await A.fill('[name="mobile"]', '09171234567'); await A.fill('[name="password"]', 'demo1234'); await A.click('[data-login]');
     await A.waitForTimeout(600); const t = await A.textContent('.auth'); await A.click('[data-auth="welcome"]'); return t.includes('Wrong mobile number or password');
   })());
-  check('passenger logs in on phone A', await login(A, '09171234567'));
-  check('driver logs in on phone B', await login(B, '09181234567'));
+  check('passenger signs up on phone A', await signup(A, 'passenger', 'Ana Online', '09995551001'));
+  await A.evaluate(`phones[0].act('addContact', { name: 'Elena Test', relation: 'Parent', mobile: '09170001111' })`);
+  check('driver signs up on phone B', await signup(B, 'driver', 'Bobong Online', '09995551002', { unit: 'BTODA-0888', plate: '8888-AB' }));
+  check('new driver waits for TODA approval, no self-confirm button', await waitFor(B, `/Waiting for TODA confirmation/.test(document.body.innerText) && !document.querySelector('[data-verify]')`));
+  const pend = await fetch(BASE + '/api/admin/app-drivers').then(r => r.json());
+  await fetch(BASE + '/api/admin/app-drivers/' + pend.pending[0].id + '/approve', { method: 'POST' });
+  check('after TODA approval the driver can go online', await waitFor(B, `!!document.querySelector('[data-online="1"]')`));
   check('view has no password hash', await A.evaluate(`!JSON.stringify(Hub.accounts).includes('scrypt')`));
   // demo trikes busy so the request goes to the real driver phone
   await B.click('[data-online="1"]');
   check('driver goes online on the server', await waitFor(B, `phones[0].me().online === true`));
   await fetch(BASE + '/api/hub/view').then(r => check('view needs a login', r.status === 401));
   // the request must reach phone B through the server
-  await A.evaluate(`(() => { const P = phones[0]; P.ride.stops = ['d6']; P.ride.step = 'options'; P.drawRideSheet(); })()`);
+  await A.evaluate(`(() => { const P = phones[0]; P.ride.pickup = { lat: 10.695, lng: 122.64, label: 'Pinned on the map', src: 'map' }; P.ride.stops = ['d6']; P.ride.step = 'options'; P.drawRideSheet(); })()`);
   // make bots unavailable on the server would need a server hook; instead decline bots by waiting for B's request
   let gotIt = false;
   for (let i = 0; i < 6 && !gotIt; i++) {
@@ -70,7 +84,7 @@ const check = (n, ok, ev = '') => res.push({ n, ok: !!ok, ev: String(ev).slice(0
   check('rating reaches the driver record', await waitFor(B, `(phones[0].me().ratings || []).some(r => r.stars === 5)`));
   check('earnings recorded on the driver account', await waitFor(B, `phones[0].account.earnings === ${fareA}`), await B.evaluate(`phones[0].account.earnings`));
   // a fresh login on another phone sees the history (state is on the server, not the phone)
-  const C = await phone(); await login(C, '09171234567');
+  const C = await phone(); await login(C, '09995551001');
   check('history is kept on the server account', await C.evaluate(`phones[0].account.history.some(h => h.kind === 'ride' && h.fare === ${fareA})`));
   // sign-up and logout
   const D = await phone();
