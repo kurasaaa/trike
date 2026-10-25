@@ -27,6 +27,7 @@ const check = (n, ok, ev = '') => res.push({ n, ok: !!ok, ev: String(ev).slice(0
   await p.fill('[name="mobile"]', '09171234567'); await p.fill('[name="password"]', 'demo1234'); await p.click('[data-login]');
   await p.click('[data-go-tab="ride"]');
   await p.evaluate(`(() => { const P = phones[0]; P.ride.stops = ['d6']; P.ride.step = 'options'; P.drawRideSheet(); })()`);
+  { const cp = await p.$('[data-confirm-pickup]'); if (cp) await cp.click(); }
   await waitFor(`!document.querySelector('[data-book]').disabled`); await p.click('[data-book]');
   check('driver card shows a rating line', await waitFor(`/No ratings yet|Rated \\d/.test(document.querySelector('.tab.on .sheet').innerText)`, 15000));
   check('demo trike finishes the ride', await waitFor(`phones[0].myRide() && phones[0].myRide().status === 'completed'`, 120000));

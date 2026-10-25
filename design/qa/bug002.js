@@ -8,7 +8,7 @@ const { chromium } = require('playwright-core');
     const tick = () => new Promise(r => setTimeout(r, 0));   // actions resolve asynchronously since the hub can run on a server
     const [A, B] = phones; B.host.querySelector('[data-online="1"]').click();
     Object.values(Hub.drivers).filter(d => d.bot).forEach(d => d.status = 'busy');
-    A.ride.stops = ['dest_jordan_center']; A.ride.step = 'options'; A.drawRideSheet(); A.host.querySelector('[data-book]').click(); await tick();
+    A.ride.stops = ['dest_jordan_center']; A.ride.step = 'options'; A.drawRideSheet(); A.host.querySelector('[data-confirm-pickup]').click(); A.host.querySelector('[data-book]').click(); await tick();
     B.host.querySelector('[data-job="accept"]').click(); await tick(); B.host.querySelector('[data-job="arrived"]').click(); await tick(); B.host.querySelector('[data-job="start"]').click(); await tick();
     H.simulateDetour(A.myRide(), 1.6);
   });

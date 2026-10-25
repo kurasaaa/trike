@@ -36,7 +36,7 @@ const check = (n, ok, ev = '') => res.push({ n, ok: !!ok, ev: String(ev).slice(0
   // make bots unavailable on the server would need a server hook; instead decline bots by waiting for B's request
   let gotIt = false;
   for (let i = 0; i < 6 && !gotIt; i++) {
-    if (!(await A.evaluate(`!!phones[0].myRide()`))) { await waitFor(A, `!document.querySelector('[data-book]').disabled`); await A.click('[data-book]'); }
+    if (!(await A.evaluate(`!!phones[0].myRide()`))) { const cp = await A.$('[data-confirm-pickup]'); if (cp) await cp.click(); await waitFor(A, `!document.querySelector('[data-book]').disabled`); await A.click('[data-book]'); }
     gotIt = await waitFor(B, `!!document.querySelector('[data-job="accept"]')`, 4000);
     if (!gotIt) { await A.evaluate(`(() => { const r = phones[0].myRide(); if (r) phones[0].act('cancel', { id: r.id }); phones[0].ride.reqId = null; phones[0].ride.step = 'options'; phones[0].drawRideSheet(); })()`); await A.waitForTimeout(800); }
   }

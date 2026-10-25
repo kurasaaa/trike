@@ -218,3 +218,62 @@ Data files changed: `data/routes.json`, `data/destinations.json`, `data/terminal
 - Real GPS on a moving tricycle has not been tested.
 - The Filipino and Hiligaynon translations have not been reviewed by a native speaker.
 - The driver's "Confirm now (demo only)" button is still self-service.
+
+---
+
+## Addendum: REDO.md customer-centred redesign
+
+**Files changed (and why)**
+
+| File | Why |
+|---|---|
+| `design/redesign.src.html` | All screen changes: Ride landing, pickup source and confirmation, Choose a place for pickup, the "Get a tricycle to this place" action, the Explore filter layout, empty states, welcome/login (Demo access, Show/Hide password, keeping the mobile number), placeholder, new CSS, new translation labels |
+| `design/panaw-redesign.html`, `trikefair_final/trikefair/public/app.html` | Rebuilt by `design/build-redesign.js` |
+| `design/qa/controls.test.js`, `supplement.test.js`, `brgy.test.js`, `picks.test.js`, `online.test.js`, `bug002.js`, `bug003.js`, `crawl.js` | Steps updated to the new flow (pick a destination, then Review fare; confirm the sample pickup before booking; Municipality is a selector; new headline). Every earlier check is still there; 5 checks were added. |
+| `design/qa/redo.test.js` (new), `design/qa/shots.js` (new) | REDO.md acceptance checks at 390×844 and 320 px; screenshots for the audit |
+| `UI_UX_AUDIT_REPORT.md` | Round 2 audit |
+
+**Not changed:**
+- `src/fare.js`, `src/network.js` and `src/hub.js`.
+- `data/*.json` and `server.js`. Checked with `git diff 9e027ae` on these paths, which shows no differences.
+
+**Tests run**
+
+| Suite | Result |
+|---|---|
+| `redo.test.js` (new) | 28/28 |
+| `controls.test.js` | 130/130 |
+| `supplement.test.js` | 10/10 |
+| `brgy.test.js` | 15/15 |
+| `picks.test.js` | 13/13 |
+| `offline-map.js` | PASS |
+| `bug001`–`bug003` | PASS |
+| `online.test.js` (two phones, server copy) | 26/26 |
+| `npm test` | 52/52 |
+| Console/page errors | 0 |
+
+**`redo.test.js` covers:**
+- Welcome actions and hidden demo logins.
+- Show/Hide password, and a login error that keeps the mobile number.
+- The Ride headings and the sample-pickup label.
+- Review fare disabled, with the reason shown.
+- No tourism filters on Ride, and DEMO trikes labelled.
+- A direct ride without Explore, and choosing the pickup from a place.
+- The fare equals the engine quote.
+- Places shown before group trips, and the first place visible without scrolling.
+- The Municipality selector, filters combining, and filters kept after visiting a place.
+- Clear filters.
+- Place to Ride keeps the destination and does not book.
+- Emergency, Share trip and the safety watch on an active ride.
+- No horizontal scroll at 320 px.
+
+**Found and fixed during this pass**
+- A wrong password cleared the typed mobile number. It now keeps the number, never the password.
+- One straight apostrophe inside a single-quoted string broke the page. Caught by the first test run and fixed.
+
+**Builds:** `PANAW.apk` (local mode) and `PANAW-online.apk` (Render) were rebuilt. Both contain the new Ride screen.
+
+**Not verified**
+- Real Android phone: keyboard, system bars and larger text sizes.
+- Screen readers.
+- The online APK against Render. This round has not been pushed, so Render still serves the previous screens.

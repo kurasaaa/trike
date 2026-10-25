@@ -22,3 +22,5 @@ New in the picks pass:
 - `picks.test.js <html>`: language switch, ratings, and offline data kept after a restart.
 - `offline-map.js <html> [shot.png]`: the map draws Guimaras with the network cut.
 - `online.test.js http://localhost:3456`: two phones on one server. Start a **copy** of the server first, because it writes `data/db.json`.
+- `redo.test.js <html>`: REDO.md acceptance checks at phone size (Ride and Explore separation, pickup confirmation, filters, place to Ride).
+- `shots.js <html> <outdir>`: screenshots of the main passenger screens.

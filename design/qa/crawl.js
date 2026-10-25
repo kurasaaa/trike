@@ -55,7 +55,7 @@ fs.mkdirSync(out, { recursive: true });
   await ev(L, `phones[1].host.querySelector('[data-job="complete"]').click()`); await snap(L, 'L-passenger-ride-done', A);
   await ev(L, `phones[0].host.querySelector('[data-ride-new]').click()`);
   // terminal ticket
-  await ev(L, `(() => { const P = phones[0]; P.ride.stops = ['dest_jordan_center']; P.ride.option = 'terminal'; P.ride.step = 'options'; P.drawRideSheet(); P.host.querySelector('[data-book]').click(); })()`);
+  await ev(L, `(() => { const P = phones[0]; P.ride.stops = ['dest_jordan_center']; P.ride.option = 'terminal'; P.ride.step = 'options'; P.drawRideSheet(); P.host.querySelector('[data-confirm-pickup]').click(); P.host.querySelector('[data-book]').click(); })()`);
   await snap(L, 'L-passenger-ticket', A);
   await ev(L, `phones[0].host.querySelector('[data-ride-new]').click()`);
   // vehicles

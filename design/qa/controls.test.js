@@ -51,14 +51,16 @@ const check = (area, name, ok, evidence = '') => { results.push({ area, name, ok
   await click(`${A} [data-ride="home"]`);
   check('Ride', 'search back returns home', await has(`${A} [data-ride="search"]`));
   await click(`${A} [data-ride="search"]`); await click(`${A} [data-pick="d3"]`);
-  check('Ride', 'picking a place opens options', await has(`${A} [data-book]`));
+  check('Ride', 'picking a place sets the destination on the Ride screen', /Hospital/i.test(await text(`${A} .dest-box`)), await text(`${A} .dest-box`));
+  await click(`${A} [data-review]`);
+  check('Ride', 'Review fare opens options', await has(`${A} [data-book]`));
   // stops
-  await click(`${A} [data-ride="search"]`);
-  await click(`${A} [data-add-stop]`); await click(`${A} [data-pick="d2"]`);
+  await click(`${A} [data-ride="home"]`); await click(`${A} [data-ride="search"]`);
+  await click(`${A} [data-add-stop]`); await click(`${A} [data-pick="d2"]`); await click(`${A} [data-review]`);
   check('Ride', 'add a stop (2 legs)', /→/.test(await text(`${A} .summary b`)), await text(`${A} .summary b`));
-  await click(`${A} [data-ride="search"]`); await click(`${A} [data-rm-stop="1"]`);
+  await click(`${A} [data-ride="home"]`); await click(`${A} [data-ride="search"]`); await click(`${A} [data-rm-stop="1"]`);
   check('Ride', 'remove a stop', (await p.$$(`${A} .rf.stop`)).length === 1);
-  await click(`${A} [data-ride="options"]`);
+  await click(`${A} [data-ride="home"]`); await click(`${A} [data-review]`);
   // options and fare
   const fareP = await text(`${A} [data-option="pickup"] .price`), fareT = await text(`${A} [data-option="terminal"] .price`);
   check('Ride', 'regular fare is TODA flat P25 (pickup & terminal)', fareP === '₱25.00' && fareT === '₱25.00', fareP + ' / ' + fareT);
@@ -101,7 +103,7 @@ const check = (area, name, ok, evidence = '') => { results.push({ area, name, ok
   await click(`${B} [data-online="0"]`);
   check('Driver', 'Go offline', /Offline/.test(await text(`${B} [data-online-pill]`)));
   await click(`${B} [data-online="1"]`);
-  await click(`${A} [data-ride="search"]`); await click(`${A} [data-ride="options"]`);
+  await click(`${A} [data-ride="home"]`); await click(`${A} [data-review]`);
   await click(`${A} [data-book]`);
   check('Ride', 'Book sends request', /Finding your trike/.test(await text(`${A} .sheet`)));
   check('Driver', 'request shown with countdown', await waitFor(`!!document.querySelector('#phone-b [data-job="accept"]')`, 5000));
@@ -160,7 +162,7 @@ const check = (area, name, ok, evidence = '') => { results.push({ area, name, ok
   await click(`${A} [data-ride-new]`);
   check('Ride', 'Done returns home', await has(`${A} [data-ride="search"]`));
   /* ================= TERMINAL TICKET ================= */
-  await click(`${A} [data-ride="search"]`); await p.type(`${A} input[data-q]`, 'Jordan'); await click(`${A} [data-pick="dest_jordan_center"]`);
+  await click(`${A} [data-ride="search"]`); await p.type(`${A} input[data-q]`, 'Jordan'); await click(`${A} [data-pick="dest_jordan_center"]`); await click(`${A} [data-review]`);
   await click(`${A} [data-option="terminal"]`);
   check('Ticket', 'outside zone priced as special trip', /Special trip/.test(await text(`${A} .fare-line`)));
   await click(`${A} [data-book]`);
@@ -186,15 +188,18 @@ const check = (area, name, ok, evidence = '') => { results.push({ area, name, ok
   await p.type(`${A} [data-explore-q]`, 'lighthouse');
   check('Explore', 'search filters', (await p.$$(`${A} [data-grid] [data-place]`)).length === 1);
   await p.fill(`${A} [data-explore-q]`, 'qqqq'); await p.dispatchEvent(`${A} [data-explore-q]`, 'input');
-  check('Explore', 'no results message', /No places found/.test(await text(`${A} [data-grid]`)));
+  check('Explore', 'no results message', /No places match/.test(await text(`${A} [data-grid]`)));
+  check('Explore', 'empty state offers Clear filters', await has(`${A} [data-grid] [data-clear-filters]`));
   await p.fill(`${A} [data-explore-q]`, ''); await p.dispatchEvent(`${A} [data-explore-q]`, 'input');
   await click(`${A} [data-cat="Beaches"]`);
   const cats = await p.$$eval(`${A} [data-grid] .list-row .s`, l => l.map(e => e.textContent));
   check('Explore', 'category filter', cats.length && cats.every(s => s.startsWith('Beaches')), cats.join('|'));
-  await click(`${A} [data-cat="All"]`); await click(`${A} [data-muni="sibunag"]`);
+  await click(`${A} [data-cat="All"]`); await pick(`${A} [data-muni-select]`, 'sibunag');
   const towns = await p.$$eval(`${A} [data-grid] .list-row .s`, l => l.map(e => e.textContent));
   check('Explore', 'town filter', towns.length && towns.every(s => /Sibunag/.test(s)), towns.join('|'));
-  await click(`${A} [data-muni="all"]`);
+  check('Explore', 'active filter shown with Clear filters', /Sibunag/.test(await text(`${A} .filter-line`)) && await has(`${A} .filter-line [data-clear-filters]`));
+  await click(`${A} .filter-line [data-clear-filters]`);
+  check('Explore', 'Clear filters returns to All Guimaras', await ev(`phones[0].explore.muni === 'all' && document.querySelector('#phone-a [data-muni-select]').value === 'all'`));
   await click(`${A} [data-hire="van"]`);
   check('Hire', 'Hire a van opens page', /Hire a van/.test(await text(`${A} .page-head`)));
   await click(`${A} [data-hire-type="jeepney"]`);
@@ -210,8 +215,9 @@ const check = (area, name, ok, evidence = '') => { results.push({ area, name, ok
   check('Hire', 'Remove destination', !(await has(`${A} [data-hire-clear]`)));
   await click(`${A} .page [data-back]`);
   await click(`${A} [data-ride-here]`);
-  check('Place', 'Ride here opens Ride options with stop', await ev(`phones[0].tab === 'ride' && phones[0].ride.step === 'options' && phones[0].ride.stops[0] === 'dest_trappist_abbey'`));
-  await click(`${A} [data-ride="search"]`); await click(`${A} [data-ride="home"]`);
+  check('Place', 'Get a tricycle opens the Ride screen with the destination, not a booking', await ev(`phones[0].tab === 'ride' && phones[0].ride.step === 'home' && phones[0].ride.stops[0] === 'dest_trappist_abbey' && !phones[0].myRide()`));
+  check('Place', 'destination is shown on the Ride screen', /Trappist/.test(await text(`${A} .dest-box`)));
+  await click(`${A} [data-clear-dest]`);
   /* ================= LIST YOUR PLACE ================= */
   await click(`${A} [data-go-tab="explore"]`); await click(`${A} .cta [data-page="list"]`);
   await click(`${A} [data-publish]`);
@@ -259,7 +265,7 @@ const check = (area, name, ok, evidence = '') => { results.push({ area, name, ok
   await click(`${A} .page [data-back]`);
   /* ================= OPERATOR ================= */
   await click(`${B} [data-go-tab="account"]`); await click(`${B} [data-logout]`);
-  check('Auth', 'Log out returns to welcome', /Fair tricycle rides/.test(await text(B)));
+  check('Auth', 'Log out returns to welcome', /Clear tricycle fares/.test(await text(B)));
   await click(`${B} [data-auth="login"]`); await fill(`${B} [name="mobile"]`, '09191234567'); await fill(`${B} [name="password"]`, 'bad'); await click(`${B} [data-login]`);
   check('Auth', 'wrong password refused', /Wrong mobile number or password/.test(await text(B)));
   await fill(`${B} [name="mobile"]`, '09191234567'); await fill(`${B} [name="password"]`, 'demo1234'); await click(`${B} [data-login]`);

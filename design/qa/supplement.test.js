@@ -11,15 +11,16 @@ const check = (n, ok, ev = '') => res.push({ n, ok: !!ok, ev: String(ev).slice(0
   const A = '#phone-a', B = '#phone-b', ev = js => p.evaluate(js);
   const waitFor = (js, ms) => p.waitForFunction(js, null, { timeout: ms, polling: 250 }).then(() => true, () => false);
   // quick pick
-  await p.click(`${A} [data-dest="dest_guisi_lighthouse"]`);
-  check('quick pick opens options for that place', await ev(`phones[0].ride.step === 'options' && phones[0].ride.stops[0] === 'dest_guisi_lighthouse'`));
+  await p.click(`${A} [data-dest="dest_nueva_valencia_center"]`);
+  check('common stop sets the destination on the Ride screen', await ev(`phones[0].ride.step === 'home' && phones[0].ride.stops[0] === 'dest_nueva_valencia_center'`));
   // edit stop
   await p.click(`${A} [data-ride="search"]`); await p.click(`${A} [data-add-stop]`); await p.click(`${A} [data-pick="d2"]`);
   await p.click(`${A} [data-ride="search"]`); await p.click(`${A} [data-edit-stop="1"]`);
   check('edit stop reopens that stop for search', await ev(`!!document.querySelector('#phone-a input[data-q]') && phones[0].ride.active === 1`));
   await p.type(`${A} input[data-q]`, 'hosp'); await p.click(`${A} [data-pick="d3"]`);
-  check('edited stop replaced, other stop kept', await ev(`JSON.stringify(phones[0].ride.stops) === '["dest_guisi_lighthouse","d3"]'`), await ev(`JSON.stringify(phones[0].ride.stops)`));
-  await p.click(`${A} [data-ride="search"]`); await p.click(`${A} [data-rm-stop="1"]`); await p.click(`${A} [data-ride="options"]`);
+  check('edited stop replaced, other stop kept', await ev(`JSON.stringify(phones[0].ride.stops) === '["dest_nueva_valencia_center","d3"]'`), await ev(`JSON.stringify(phones[0].ride.stops)`));
+  await p.click(`${A} [data-ride="search"]`); await p.click(`${A} [data-rm-stop="1"]`); await p.click(`${A} [data-ride="home"]`);
+  await p.click(`${A} [data-confirm-pickup]`); await p.click(`${A} [data-review]`);
   // ride to "Alert now" and the directions link
   await p.click(`${B} [data-online="1"]`); await ev(`Object.values(Hub.drivers).filter(d => d.bot).forEach(d => d.status = 'busy')`);
   await waitFor(`!document.querySelector('#phone-a [data-book]').disabled`, 3000);

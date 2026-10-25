@@ -1,4 +1,107 @@
-# UI/UX Audit Report: PANAW redesign
+# UI/UX Audit Report: PANAW
+
+This file holds two audit rounds:
+- **Round 2** (REDO.md, customer-centred redesign) comes first.
+- **Round 1** (the earlier QA and UI pass) follows unchanged.
+
+---
+
+# Round 2: Customer-centred redesign (REDO.md)
+
+## Where the app really lives (Phase A)
+
+**Source:** `design/redesign.src.html` holds the screens. `trikefair_final/trikefair/src/hub.js` holds accounts, rides and safety. `src/fare.js` and `src/network.js` hold fares and routes, and `data/*.json` holds the data.
+
+**Build:** `node design/build-redesign.js` writes two files from that source:
+- `design/panaw-redesign.html`, the laptop demo.
+- `trikefair_final/trikefair/public/app.html`, which the server serves at `/`.
+
+**APK:** `scripts/build-www.js` copies `public/` into `www/` and makes `app.html` the APK's `index.html`.
+- The offline build sets `PANAW_LOCAL`.
+- The online build sets `PANAW_API`.
+
+**Legacy, not edited:** `public/index.html`, `passenger.js`, `app.js`, `booking.html`, `driver.html` and `monitor.html` are the older pages. The APK keeps the old passenger page as `classic.html`; it is not the start page. `www/` and the APK contents are build output and were never edited by hand.
+
+**Presentation vs. logic:**
+- Presentation lives in the `Pp.*` render functions and the CSS in `redesign.src.html`.
+- Business logic (fares, routes, ride steps, safety watch, validation) lives in `hub.js`, `fare.js` and `network.js`. None of these were changed in this round.
+
+**Baseline:** screenshots at 390×844 (welcome, login, Ride, Explore, place, place to Ride). Every existing suite passed before any edit.
+
+## Findings (before)
+
+| # | Screen | Customer problem | Priority |
+|---|---|---|---|
+| F1 | Ride | Opens on a demo coordinate labelled "Near Buenavista New Terminal Market". A customer reads it as "the app thinks I am here". Nothing says it is a sample. | P1 |
+| F2 | Ride | The landing offers "Where to?" plus "Popular in Guimaras", a row of tourist attractions. Ride reads as a tourism browser, not a transport tool. | P1 |
+| F3 | Place detail | "Ride here · ₱990.00" is priced from the demo pickup, so it implies a pickup the customer never chose. One tap jumped straight into fare options. | P1 |
+| F4 | Explore | Group-trip hire cards sit above the places. Two stacked chip rows (categories, towns) fill most of the first screen. | P1 |
+| F5 | Explore | The town filter says "All towns" in a second chip row. There is no summary of active filters and no "clear" action; the empty state is a dead end. | P2 |
+| F6 | Welcome / Login | Demo phone numbers and the shared password are printed in body text on both screens. | P2 |
+| F7 | Login | A wrong password clears the typed mobile number. There is no show/hide password control. | P2 |
+| F8 | Ride | "N trikes online near you" does not say the trikes are DEMO vehicles. | P2 |
+| F9 | Ride | No way to choose the pickup from a known landmark. Only GPS or a map tap. | P3 |
+| F10 | Place detail | A place with no photo shows a large grey block with a small icon, which looks unfinished. | P3 |
+
+## Implemented (Phase B)
+
+| Step | Change | Fixes |
+|---|---|---|
+| 1. Explore and Ride separated | Place pages say **"Get a tricycle to this place"**. It opens the Ride screen with the destination filled in and a toast asking for the pickup. It never jumps to fare options, never books, and is refused while a ride is in progress. Ride's suggestions are now **Recent and common stops** (market, hospital, port, town centres), not tourist attractions. | F2, F3 |
+| 2. Explore | Order: header, then search, then filters, then results, then **"Going as a group?"** (jeepney/van hire), then "List your place". One scrollable **category** row with a check mark on the selected chip, and one **Municipality** selector (All Guimaras plus the five towns). A results line ("12 places · Heritage · Jordan") has **Clear filters**. The empty state explains and offers Clear filters. Filters change in place, so scroll position and search focus survive, and they persist when you open a place and come back. Barangays stay grouped by town. | F4, F5 |
+| 3. Place detail | When no pickup is confirmed, the fare preview is replaced by "You choose your pickup point and see the fare on the Ride screen before booking". With a confirmed pickup it shows the estimate and names that pickup. A place without a photo gets a compact teal placeholder instead of a large grey block. | F3, F10 |
+| 4. Ride | New landing: "Where do you need a ride?", then a **Pickup point** box, then **Where are you going?**, then **Review fare**. Details below. | F1, F8, F9 |
+| 5. Welcome / login / signup | Benefit headline; Create account (primary), Log in, Explore as guest. Demo logins moved into a closed **"Demo access (for testing)"** section; a build can hide it with `window.PANAW_HIDE_DEMO`. Show/Hide password on login and signup (`aria-pressed`). Errors appear in a red box next to the form (`role="alert"`). A wrong password keeps the mobile number but never the password. | F6, F7 |
+| 6. Visual tokens | Same navy/teal system. New pieces use the existing tokens: `.pickup-box`, `.dest-box`, `.filters`, `.muni-pick`, `.filter-line`, `.form-error`, `.demo-access`, and the `.banner.info` teal-50 variant. No gradients or shadows were added. | — |
+| 7. States | "Why disabled" text under Review fare. Demo-pickup banners on Ride and on fare options. Empty Explore state with a way out. DEMO count on nearby trikes. New labels added to the Filipino and Hiligaynon lists. | F5, F8 |
+
+**Ride landing (step 4) in detail:**
+- **Pickup point box:** shows the label and a source tag:
+  - "Sample point for the demo, not your location" (amber)
+  - "From your phone's GPS"
+  - "Pinned by you on the map"
+  - "Place you chose"
+  - "Sample point, confirmed by you"
+- **Pickup controls:** Use GPS, **Choose a place** (new: pick a known landmark as the pickup), or tap the map.
+- **Sample-point notice:** while the sample point is in use, a notice says PANAW has not used your location, with **Use the sample point** as an explicit confirmation.
+- **Review fare:** disabled until a destination is chosen and the pickup is confirmed or changed. The reason is shown under the button.
+- **Fare options:** show the pickup, with Change.
+- **Booking:** "Book trike" and "Get fare ticket" stay disabled while the pickup is an unconfirmed sample.
+- **Nearby trikes:** "6 trikes online near this pickup … (all DEMO)".
+
+## Logic preservation
+
+These are unchanged, byte for byte:
+- `src/fare.js`, `src/network.js`, `src/hub.js` and `data/*.json`.
+- The fare, quote and booking functions.
+- Server endpoints and validation.
+
+The "pickup must be confirmed" rule is presentation only. It disables the existing Book button until the customer acts; the request and its data are unchanged.
+
+GPS is still requested only when the customer taps Use GPS.
+
+Safety features are unchanged and re-tested:
+- Emergency button, Share trip and the live tracking link.
+- The 8-second safety check.
+- Tap-to-send alert text, issue reports and emergency contacts.
+- The silent alarm on the driver's side.
+
+## Recommendations not implemented
+
+| # | Recommendation | Why not now |
+|---|---|---|
+| R1 | Real photos for featured places | No licensed photos; the tourism offices are the planned source. |
+| R2 | A TODA/admin screen to approve drivers, replacing "Confirm now (demo only)" | Changes account behaviour; needs your approval. |
+| R3 | Native-speaker review of the Filipino and Hiligaynon labels | Needs a person. |
+| R4 | Real-phone test: keyboard over forms, system bars, larger text settings | Only a headless browser was available here. |
+| R5 | Hide demo access in a "release" build by default | Kept visible (collapsed) because the panel evaluates with demo accounts; `PANAW_HIDE_DEMO` is ready when wanted. |
+
+Test evidence is in `QA_REPORT.md` (Addendum: REDO.md redesign).
+
+---
+
+# Round 1 (earlier pass)
+
 
 **Scope:** the PANAW passenger / driver / operator app as designed in `design/redesign.src.html`, which builds into `design/panaw-redesign.html`. The design runs the real fare engine (`src/fare.js`), route engine (`src/network.js`) and data files (`data/*.json`) in the browser.
 **Not in scope:** the older pages in `trikefair_final/trikefair/public/`. Their behaviour is covered only by the regression suite (`npm test`).

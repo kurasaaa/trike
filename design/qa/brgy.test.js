@@ -28,11 +28,12 @@ const res = [], errors = [], check = (n, ok, ev = '') => res.push({ n, ok: !!ok,
   await p.click(`${A} [data-brgy-town="jordan"]`); await p.click(`${A} .page [data-place="dest_brgy_jordan_hoskyn"]`);
   check('barangay page: "Barangay Hoskyn · Jordan", PhilAtlas tag', /Barangay Hoskyn · Jordan/.test(await txt(`${A} .page`)) && /Location: PhilAtlas/.test(await txt(`${A} .page`)));
   await p.click(`${A} .page [data-ride-here]`);
-  check('Ride here from a barangay opens fares', await p.evaluate(() => phones[0].tab === 'ride' && phones[0].ride.stops[0] === 'dest_brgy_jordan_hoskyn' && !!document.querySelector('#phone-a [data-book]')));
+  await p.click(`${A} [data-confirm-pickup]`); await p.click(`${A} [data-review]`);
+  check('Get a tricycle from a barangay opens fares', await p.evaluate(() => phones[0].tab === 'ride' && phones[0].ride.stops[0] === 'dest_brgy_jordan_hoskyn' && !!document.querySelector('#phone-a [data-book]')));
   await p.click(`${A} [data-go-tab="explore"]`);
-  await p.click(`${A} [data-muni="san_lorenzo"]`);
+  await p.selectOption(`${A} [data-muni-select]`, "san_lorenzo");
   check('town filter lists that town\'s barangays directly', (await p.$$(`${A} [data-grid] [data-place^="dest_brgy_san_lorenzo"]`)).length === 12);
-  await p.click(`${A} [data-muni="all"]`);
+  await p.selectOption(`${A} [data-muni-select]`, "all");
   await p.fill(`${A} [data-explore-q]`, 'concordia'); await p.dispatchEvent(`${A} [data-explore-q]`, 'input');
   const found = await p.$$eval(`${A} [data-grid] [data-place]`, l => l.map(e => e.dataset.place));
   check('search finds barangays in any town (Concordia Norte + Sur)', found.length === 2, found.join());

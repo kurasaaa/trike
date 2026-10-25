@@ -7,7 +7,7 @@ const { chromium } = require('playwright-core');
   await p.evaluate(() => {
     const [A, B] = phones; B.host.querySelector('[data-online="1"]').click();
     Object.values(Hub.drivers).filter(d => d.bot).forEach(d => d.status = 'busy');
-    A.ride.stops = ['dest_jordan_center']; A.ride.step = 'options'; A.drawRideSheet(); A.host.querySelector('[data-book]').click();
+    A.ride.stops = ['dest_jordan_center']; A.ride.step = 'options'; A.drawRideSheet(); A.host.querySelector('[data-confirm-pickup]').click(); A.host.querySelector('[data-book]').click();
     
     
   });
