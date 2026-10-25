@@ -25,6 +25,26 @@
         "discountRate": 0.2,
         "nightSurchargeRate": 0.15
       }
+    },
+    {
+      "id": "npbtoda_card",
+      "label": "New Poblacion TODA fare card",
+      "status": "TODA FARE CARD",
+      "statusNote": "Regular hire: P25 flat per passenger (P20 student/senior/PWD), as printed on the card. Special trip: P70 for the first 2 km plus P20 per km, fitted to the card's 35 barangay prices by OSRM road distance (R2 0.67, average gap P24). The card price is shown next to each listed barangay.",
+      "lgu": "New Poblacion Buenavista Tricycle Owners and Drivers Association, Zone 6",
+      "ordinance": "TODA fare card (association rate; LGU ordinance number to verify)",
+      "zone": "buenavista",
+      "regularFlatInZoneOnly": true,
+      "rates": {
+        "baseFare": 25,
+        "baseKm": 2,
+        "perKmRate": 0,
+        "specialBaseFare": 70,
+        "specialPerKmRate": 20,
+        "fareStep": 5,
+        "discountRate": 0.2,
+        "nightSurchargeRate": 0.15
+      }
     }
   ]
 }

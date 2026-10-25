@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="color-scheme" content="light dark">
+<meta name="robots" content="noindex">
+<title>PANAW Trip</title>
+<link rel="stylesheet" href="/vendor/leaflet/leaflet.css">
+<style>
+:root{ --navy:#0A3543; --teal:#0E7C86; --ink:#10232B; --muted:#5B6F76; --line:#E3E9EA; --bg:#F4F7F7; --surface:#fff; --red:#C93C3C; --red-50:#FCEDED; --amber:#9A6412; --amber-50:#FFF4E2; }
+@media (prefers-color-scheme: dark){ :root{ --navy:#2B6878; --teal:#14939E; --ink:#E4EDEF; --muted:#9DB0B5; --line:#2A3A40; --bg:#0F1A1E; --surface:#16242A; --red:#F06B6B; --red-50:#3D1E1E; --amber:#E2A84B; --amber-50:#3A2C14; } }
+*{box-sizing:border-box}
+body{margin:0; font-family:Inter,system-ui,-apple-system,'Segoe UI',Roboto,sans-serif; background:var(--bg); color:var(--ink);}
+header{background:var(--navy); color:#fff; padding:14px 16px;}
+header b{font-size:16px} header span{display:block; font-size:12.5px; opacity:.85; margin-top:2px}
+#map{height:55vh; min-height:280px; background:#dfe6e7;}
+main{padding:16px; max-width:640px; margin:0 auto;}
+.card{background:var(--surface); border:1px solid var(--line); border-radius:12px; padding:14px; margin-bottom:12px;}
+.big{font-size:22px; font-weight:700; margin:2px 0 6px;}
+.kv{display:flex; justify-content:space-between; gap:12px; padding:5px 0; font-size:14px;} .kv span:first-child{color:var(--muted)}
+.banner{border-radius:10px; padding:10px 12px; font-size:13.5px; margin-bottom:12px;}
+.bad{background:var(--red-50); color:var(--red); font-weight:600;} .warn{background:var(--amber-50); color:var(--amber);}
+.hint{font-size:12.5px; color:var(--muted); line-height:1.5;}
+</style>
+</head>
+<body>
+<header><b>PANAW trip</b><span id="sub">Loading the trip...</span></header>
+<div id="map"></div>
+<main><div id="info"></div>
+  <p class="hint">This page was shared by a PANAW passenger. It shows the tricycle's last known position, refreshed every 5 seconds, and stops 2 hours after the trip ends. If you think the passenger is in danger, call them or the PNP (911).</p></main>
+<script src="/vendor/leaflet/leaflet.js"></script>
+<script>
+'use strict';
+const share = location.pathname.split('/').pop();
+const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const STATUS = { requested: 'Waiting for a tricycle', nodriver: 'No tricycle found yet', accepted: 'Tricycle on the way to the pickup', arrived: 'At the pickup', ontrip: 'On the trip', completed: 'Trip finished', cancelled: 'Trip cancelled' };
+let map = null, trike = null, line = null, fitted = false;
+function draw(v) {
+  document.getElementById('sub').textContent = `${v.passenger || 'A passenger'} · ${STATUS[v.status] || v.status}`;
+  const age = Math.round((Date.now() - v.at) / 1000);
+  document.getElementById('info').innerHTML = `
+    ${v.alerted ? '<div class="banner bad">The passenger raised a safety alert during this trip.</div>' : ''}
+    ${v.source === 'simulated' ? '<div class="banner warn">SIMULATED position: this tricycle is not reporting phone GPS, so the map shows where PANAW expects it to be.</div>' : ''}
+    <div class="card"><div class="big">${esc(STATUS[v.status] || v.status)}</div>
+      ${v.status === 'ontrip' || v.status === 'accepted' ? `<div class="kv"><span>${v.status === 'ontrip' ? 'Time to destination' : 'Time to pickup'}</span><span>about ${Math.max(1, Math.ceil(v.remainingMin || 0))} min</span></div>` : ''}
+      <div class="kv"><span>From</span><span>${esc(v.from)}</span></div>
+      <div class="kv"><span>To</span><span>${esc(v.to.join(' → '))}</span></div></div>
+    <div class="card"><div class="kv"><span>Tricycle unit</span><span>${esc(v.unit || 'Not assigned yet')}</span></div>
+      <div class="kv"><span>Plate</span><span>${esc(v.plate || '')}</span></div><div class="kv"><span>Driver</span><span>${esc(v.driver || '')}</span></div>
+      <div class="kv"><span>Last update</span><span>${age < 10 ? 'just now' : age + ' s ago'} · ${v.source === 'gps' ? 'phone GPS' : 'SIMULATED'}</span></div></div>`;
+  if (typeof L === 'undefined') return;
+  if (!map) {
+    map = L.map('map', { zoomControl: true }).setView([10.6, 122.6], 11);
+    L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}', { maxZoom: 19,
+      attribution: 'Tiles &copy; Esri &middot; Esri, HERE, Garmin, USGS, OpenStreetMap contributors' }).addTo(map);
+  }
+  const path = v.path.map(p => [p.lat, p.lng]);
+  if (line) line.remove(); line = L.polyline(path, { color: '#0E7C86', weight: 5, opacity: .9 }).addTo(map);
+  if (v.pos) {
+    if (!trike) trike = L.circleMarker([v.pos.lat, v.pos.lng], { radius: 9, color: '#fff', weight: 3, fillColor: '#0A3543', fillOpacity: 1 }).addTo(map);
+    else trike.setLatLng([v.pos.lat, v.pos.lng]);
+  }
+  if (!fitted) { fitted = true; map.fitBounds(v.pos ? path.concat([[v.pos.lat, v.pos.lng]]) : path, { padding: [30, 30], maxZoom: 15 }); }
+}
+async function load() {
+  try {
+    const r = await fetch('/api/track/' + encodeURIComponent(share), { cache: 'no-store' });
+    const v = await r.json();
+    if (!r.ok) { document.getElementById('sub').textContent = v.error || 'Trip not found'; document.getElementById('info').innerHTML = `<div class="card">${esc(v.error || 'Trip not found.')}</div>`; return false; }
+    draw(v); return !['completed', 'cancelled'].includes(v.status);
+  } catch { document.getElementById('sub').textContent = 'No connection. Retrying...'; return true; }
+}
+(async function loop() { if (await load()) setTimeout(loop, 5000); })();
+</script>
+</body>
+</html>

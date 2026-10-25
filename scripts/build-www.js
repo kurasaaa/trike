@@ -124,14 +124,28 @@ if (ONLINE) {
 // must name the file directly.
 const PAGE_LINK = /href="\/(driver|monitor)"/g;
 
-for (const file of fs.readdirSync(WWW).filter(f => f.endsWith('.html'))) {
+/* 4a. the PANAW app (built by design/build-redesign.js) is the start page; the older passenger page stays as classic.html.
+       Offline APK: the app's hub runs on the phone. Online APK: it talks to the hosted server. */
+fs.renameSync(path.join(WWW, 'index.html'), path.join(WWW, 'classic.html'));
+fs.rmSync(path.join(WWW, 'track.html'));   // the tracking page lives on the server only
+{
+  let html = fs.readFileSync(path.join(WWW, 'app.html'), 'utf8');
+  html = mustReplace(html, GOOGLE_FONTS[0], '', 'app.html');
+  if (!GOOGLE_CSS.test(html)) throw new Error('build-www: Google Fonts link not found in app.html');
+  html = html.replace(GOOGLE_CSS, '<link rel="stylesheet" href="/fonts/fonts.css">');
+  const mode = ONLINE ? `<script>window.PANAW_API = ${JSON.stringify(API)};</script>` : '<script>window.PANAW_LOCAL = true;</script>';
+  html = mustReplace(html, '</head>', mode + '</head>', 'app.html');
+  fs.writeFileSync(path.join(WWW, 'index.html'), html);
+  fs.rmSync(path.join(WWW, 'app.html'));
+}
+for (const file of fs.readdirSync(WWW).filter(f => f.endsWith('.html') && f !== 'index.html')) {
   const p = path.join(WWW, file);
   let html = fs.readFileSync(p, 'utf8').replace(/\r\n/g, '\n');
   for (const line of GOOGLE_FONTS) html = mustReplace(html, line, '', file);
   if (!GOOGLE_CSS.test(html)) throw new Error(`build-www: Google Fonts link not found in ${file}`);
   html = html.replace(GOOGLE_CSS, '<link rel="stylesheet" href="/fonts/fonts.css">');
   html = mustReplace(html, '</head>', EMBEDDED_SCRIPTS + '</head>', file);
-  if (file === 'index.html' && !html.includes('href="/driver"')) throw new Error('build-www: driver link not found in index.html');
+  if (file === 'classic.html' && !html.includes('href="/driver"')) throw new Error('build-www: driver link not found in classic.html');
   html = html.replace(PAGE_LINK, 'href="/$1.html"');
   fs.writeFileSync(p, html);
 }

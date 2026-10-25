@@ -41,7 +41,13 @@
       "name": "Brgy. Getulio",
       "municipality": "buenavista",
       "nodeId": "d6",
-      "dataStatus": "existing"
+      "dataStatus": "existing",
+      "todaCard": {
+        "special": 180,
+        "source": "New Poblacion Buenavista TODA fare card (Zone 6), photo provided by the user 2026-10-25"
+      },
+      "barangay": "Getulio",
+      "barangaySource": "https://www.philatlas.com/visayas/r06/guimaras/buenavista/getulio.html"
     },
     {
       "id": "d7",
@@ -62,7 +68,9 @@
       "name": "Buenavista Poblacion (New Poblacion terminal area)",
       "municipality": "buenavista",
       "nodeId": "terminal_buenavista_poblacion",
-      "dataStatus": "existing"
+      "dataStatus": "existing",
+      "barangay": "New Poblacion (Calingao)",
+      "barangaySource": "https://www.philatlas.com/visayas/r06/guimaras/buenavista/new-poblacion.html"
     },
     {
       "id": "dest_jordan_center",
@@ -203,6 +211,1106 @@
       "nodeId": "osm_sebaste_port",
       "dataStatus": "osm",
       "category": "Ports"
+    },
+    {
+      "id": "dest_brgy_tacay",
+      "name": "Brgy. Tacay, Buenavista",
+      "municipality": "buenavista",
+      "nodeId": "brgy_bv_tacay",
+      "dataStatus": "osm",
+      "category": "Barangays",
+      "todaCard": {
+        "special": 100,
+        "source": "New Poblacion Buenavista TODA fare card (Zone 6), photo provided by the user 2026-10-25"
+      },
+      "barangay": "Tacay",
+      "barangaySource": "https://www.philatlas.com/visayas/r06/guimaras/buenavista/tacay.html"
+    },
+    {
+      "id": "dest_brgy_taminla",
+      "name": "Brgy. Taminla, Buenavista",
+      "municipality": "buenavista",
+      "nodeId": "brgy_bv_taminla",
+      "dataStatus": "osm",
+      "category": "Barangays",
+      "todaCard": {
+        "special": 100,
+        "source": "New Poblacion Buenavista TODA fare card (Zone 6), photo provided by the user 2026-10-25"
+      },
+      "barangay": "Taminla",
+      "barangaySource": "https://www.philatlas.com/visayas/r06/guimaras/buenavista/taminla.html"
+    },
+    {
+      "id": "dest_brgy_sto_rosario",
+      "name": "Brgy. Sto. Rosario, Buenavista",
+      "municipality": "buenavista",
+      "nodeId": "brgy_bv_sto_rosario",
+      "dataStatus": "osm",
+      "category": "Barangays",
+      "todaCard": {
+        "special": 100,
+        "source": "New Poblacion Buenavista TODA fare card (Zone 6), photo provided by the user 2026-10-25"
+      },
+      "barangay": "Santo Rosario",
+      "barangaySource": "https://www.philatlas.com/visayas/r06/guimaras/buenavista/santo-rosario.html"
+    },
+    {
+      "id": "dest_brgy_salvacion",
+      "name": "Brgy. Salvacion, Buenavista",
+      "municipality": "buenavista",
+      "nodeId": "brgy_bv_salvacion",
+      "dataStatus": "osm",
+      "category": "Barangays",
+      "todaCard": {
+        "special": 80,
+        "source": "New Poblacion Buenavista TODA fare card (Zone 6), photo provided by the user 2026-10-25"
+      },
+      "barangay": "Salvacion",
+      "barangaySource": "https://www.philatlas.com/visayas/r06/guimaras/buenavista/salvacion.html"
+    },
+    {
+      "id": "dest_brgy_san_roque",
+      "name": "Brgy. San Roque, Buenavista",
+      "municipality": "buenavista",
+      "nodeId": "brgy_bv_san_roque",
+      "dataStatus": "osm",
+      "category": "Barangays",
+      "todaCard": {
+        "special": 80,
+        "source": "New Poblacion Buenavista TODA fare card (Zone 6), photo provided by the user 2026-10-25"
+      },
+      "barangay": "San Roque",
+      "barangaySource": "https://www.philatlas.com/visayas/r06/guimaras/buenavista/san-roque.html"
+    },
+    {
+      "id": "dest_brgy_tastasan",
+      "name": "Brgy. Tastasan, Buenavista",
+      "municipality": "buenavista",
+      "nodeId": "brgy_bv_tastasan",
+      "dataStatus": "osm",
+      "category": "Barangays",
+      "todaCard": {
+        "special": 80,
+        "source": "New Poblacion Buenavista TODA fare card (Zone 6), photo provided by the user 2026-10-25"
+      },
+      "barangay": "Tastasan",
+      "barangaySource": "https://www.philatlas.com/visayas/r06/guimaras/buenavista/tastasan.html"
+    },
+    {
+      "id": "dest_brgy_tinadtaran",
+      "name": "Brgy. Tinadtaran, Buenavista",
+      "municipality": "buenavista",
+      "nodeId": "brgy_bv_tinadtaran",
+      "dataStatus": "osm",
+      "category": "Barangays",
+      "todaCard": {
+        "special": 140,
+        "source": "New Poblacion Buenavista TODA fare card (Zone 6), photo provided by the user 2026-10-25"
+      },
+      "barangay": "Tinadtaran",
+      "barangaySource": "https://www.philatlas.com/visayas/r06/guimaras/buenavista/tinadtaran.html"
+    },
+    {
+      "id": "dest_brgy_mclain",
+      "name": "Brgy. McLain, Buenavista",
+      "municipality": "buenavista",
+      "nodeId": "brgy_bv_mclain",
+      "dataStatus": "osm",
+      "category": "Barangays",
+      "todaCard": {
+        "special": 80,
+        "source": "New Poblacion Buenavista TODA fare card (Zone 6), photo provided by the user 2026-10-25"
+      },
+      "barangay": "Mclain",
+      "barangaySource": "https://www.philatlas.com/visayas/r06/guimaras/buenavista/mclain.html"
+    },
+    {
+      "id": "dest_brgy_supang",
+      "name": "Brgy. Supang, Buenavista",
+      "municipality": "buenavista",
+      "nodeId": "brgy_bv_supang",
+      "dataStatus": "osm",
+      "category": "Barangays",
+      "todaCard": {
+        "special": 80,
+        "source": "New Poblacion Buenavista TODA fare card (Zone 6), photo provided by the user 2026-10-25"
+      },
+      "barangay": "Supang",
+      "barangaySource": "https://www.philatlas.com/visayas/r06/guimaras/buenavista/supang.html"
+    },
+    {
+      "id": "dest_brgy_san_nicolas",
+      "name": "Brgy. San Nicolas, Buenavista",
+      "municipality": "buenavista",
+      "nodeId": "brgy_bv_san_nicolas",
+      "dataStatus": "osm",
+      "category": "Barangays",
+      "todaCard": {
+        "special": 120,
+        "source": "New Poblacion Buenavista TODA fare card (Zone 6), photo provided by the user 2026-10-25"
+      },
+      "barangay": "San Nicolas",
+      "barangaySource": "https://www.philatlas.com/visayas/r06/guimaras/buenavista/san-nicolas.html"
+    },
+    {
+      "id": "dest_brgy_cansilayan",
+      "name": "Brgy. Cansilayan, Buenavista",
+      "municipality": "buenavista",
+      "nodeId": "brgy_bv_cansilayan",
+      "dataStatus": "osm",
+      "category": "Barangays",
+      "todaCard": {
+        "special": 150,
+        "source": "New Poblacion Buenavista TODA fare card (Zone 6), photo provided by the user 2026-10-25"
+      },
+      "barangay": "Cansilayan",
+      "barangaySource": "https://www.philatlas.com/visayas/r06/guimaras/buenavista/cansilayan.html"
+    },
+    {
+      "id": "dest_brgy_avila",
+      "name": "Brgy. Avila, Buenavista",
+      "municipality": "buenavista",
+      "nodeId": "brgy_bv_avila",
+      "dataStatus": "osm",
+      "category": "Barangays",
+      "todaCard": {
+        "special": 250,
+        "source": "New Poblacion Buenavista TODA fare card (Zone 6), photo provided by the user 2026-10-25"
+      },
+      "barangay": "Avila",
+      "barangaySource": "https://www.philatlas.com/visayas/r06/guimaras/buenavista/avila.html"
+    },
+    {
+      "id": "dest_brgy_east_valencia",
+      "name": "Brgy. East Valencia, Buenavista",
+      "municipality": "buenavista",
+      "nodeId": "brgy_bv_east_valencia",
+      "dataStatus": "osm",
+      "category": "Barangays",
+      "todaCard": {
+        "special": 300,
+        "source": "New Poblacion Buenavista TODA fare card (Zone 6), photo provided by the user 2026-10-25"
+      },
+      "barangay": "East Valencia",
+      "barangaySource": "https://www.philatlas.com/visayas/r06/guimaras/buenavista/east-valencia.html"
+    },
+    {
+      "id": "dest_brgy_navalas",
+      "name": "Brgy. Navalas, Buenavista",
+      "municipality": "buenavista",
+      "nodeId": "brgy_bv_navalas",
+      "dataStatus": "osm",
+      "category": "Barangays",
+      "todaCard": {
+        "special": 150,
+        "source": "New Poblacion Buenavista TODA fare card (Zone 6), photo provided by the user 2026-10-25"
+      },
+      "barangay": "Navalas",
+      "barangaySource": "https://www.philatlas.com/visayas/r06/guimaras/buenavista/navalas.html"
+    },
+    {
+      "id": "dest_brgy_agsanayan",
+      "name": "Brgy. Agsanayan, Buenavista",
+      "municipality": "buenavista",
+      "nodeId": "brgy_bv_agsanayan",
+      "dataStatus": "osm",
+      "category": "Barangays",
+      "todaCard": {
+        "special": 150,
+        "source": "New Poblacion Buenavista TODA fare card (Zone 6), photo provided by the user 2026-10-25"
+      },
+      "barangay": "Agsanayan",
+      "barangaySource": "https://www.philatlas.com/visayas/r06/guimaras/buenavista/agsanayan.html"
+    },
+    {
+      "id": "dest_brgy_mabini",
+      "name": "Brgy. Mabini, Buenavista",
+      "municipality": "buenavista",
+      "nodeId": "brgy_bv_mabini",
+      "dataStatus": "osm",
+      "category": "Barangays",
+      "todaCard": {
+        "special": 80,
+        "source": "New Poblacion Buenavista TODA fare card (Zone 6), photo provided by the user 2026-10-25"
+      },
+      "barangay": "Mabini",
+      "barangaySource": "https://www.philatlas.com/visayas/r06/guimaras/buenavista/mabini.html"
+    },
+    {
+      "id": "dest_brgy_san_miguel",
+      "name": "Brgy. San Miguel, Buenavista",
+      "municipality": "buenavista",
+      "nodeId": "brgy_bv_san_miguel",
+      "dataStatus": "osm",
+      "category": "Barangays",
+      "todaCard": {
+        "special": 150,
+        "source": "New Poblacion Buenavista TODA fare card (Zone 6), photo provided by the user 2026-10-25"
+      },
+      "barangay": "San Miguel",
+      "barangaySource": "https://www.philatlas.com/visayas/r06/guimaras/buenavista/san-miguel.html"
+    },
+    {
+      "id": "dest_brgy_san_pedro",
+      "name": "Brgy. San Pedro, Buenavista",
+      "municipality": "buenavista",
+      "nodeId": "brgy_bv_san_pedro",
+      "dataStatus": "osm",
+      "category": "Barangays",
+      "todaCard": {
+        "special": 100,
+        "source": "New Poblacion Buenavista TODA fare card (Zone 6), photo provided by the user 2026-10-25"
+      },
+      "barangay": "San Pedro",
+      "barangaySource": "https://www.philatlas.com/visayas/r06/guimaras/buenavista/san-pedro.html"
+    },
+    {
+      "id": "dest_brgy_san_fernando",
+      "name": "Brgy. San Fernando, Buenavista",
+      "municipality": "buenavista",
+      "nodeId": "brgy_bv_san_fernando",
+      "dataStatus": "osm",
+      "category": "Barangays",
+      "todaCard": {
+        "special": 100,
+        "source": "New Poblacion Buenavista TODA fare card (Zone 6), photo provided by the user 2026-10-25"
+      },
+      "barangay": "San Fernando",
+      "barangaySource": "https://www.philatlas.com/visayas/r06/guimaras/buenavista/san-fernando.html"
+    },
+    {
+      "id": "dest_brgy_tanag",
+      "name": "Brgy. Tanag, Buenavista",
+      "municipality": "buenavista",
+      "nodeId": "brgy_bv_tanag",
+      "dataStatus": "osm",
+      "category": "Barangays",
+      "todaCard": {
+        "special": 150,
+        "source": "New Poblacion Buenavista TODA fare card (Zone 6), photo provided by the user 2026-10-25"
+      },
+      "barangay": "Tanag",
+      "barangaySource": "https://www.philatlas.com/visayas/r06/guimaras/buenavista/tanag.html"
+    },
+    {
+      "id": "dest_brgy_umilig",
+      "name": "Brgy. Umilig, Buenavista",
+      "municipality": "buenavista",
+      "nodeId": "brgy_bv_umilig",
+      "dataStatus": "osm",
+      "category": "Barangays",
+      "todaCard": {
+        "special": 250,
+        "source": "New Poblacion Buenavista TODA fare card (Zone 6), photo provided by the user 2026-10-25"
+      },
+      "barangay": "Umilig",
+      "barangaySource": "https://www.philatlas.com/visayas/r06/guimaras/buenavista/umilig.html"
+    },
+    {
+      "id": "dest_brgy_dagsaan",
+      "name": "Brgy. Dagsaan, Buenavista",
+      "municipality": "buenavista",
+      "nodeId": "brgy_bv_dagsaan",
+      "dataStatus": "osm",
+      "category": "Barangays",
+      "todaCard": {
+        "special": 120,
+        "source": "New Poblacion Buenavista TODA fare card (Zone 6), photo provided by the user 2026-10-25"
+      },
+      "barangay": "Dagsa-an",
+      "barangaySource": "https://www.philatlas.com/visayas/r06/guimaras/buenavista/dagsa-an.html"
+    },
+    {
+      "id": "dest_brgy_rizal",
+      "name": "Brgy. Rizal, Buenavista",
+      "municipality": "buenavista",
+      "nodeId": "brgy_bv_rizal",
+      "dataStatus": "osm",
+      "category": "Barangays",
+      "todaCard": {
+        "special": 120,
+        "source": "New Poblacion Buenavista TODA fare card (Zone 6), photo provided by the user 2026-10-25"
+      },
+      "barangay": "Rizal",
+      "barangaySource": "https://www.philatlas.com/visayas/r06/guimaras/buenavista/rizal.html"
+    },
+    {
+      "id": "dest_brgy_montpiller",
+      "name": "Brgy. Montpiller, Buenavista",
+      "municipality": "buenavista",
+      "nodeId": "brgy_bv_montpiller",
+      "dataStatus": "osm",
+      "category": "Barangays",
+      "todaCard": {
+        "special": 200,
+        "source": "New Poblacion Buenavista TODA fare card (Zone 6), photo provided by the user 2026-10-25"
+      },
+      "barangay": "Montpiller",
+      "barangaySource": "https://www.philatlas.com/visayas/r06/guimaras/buenavista/montpiller.html"
+    },
+    {
+      "id": "dest_brgy_daragan",
+      "name": "Brgy. Daragan, Buenavista",
+      "municipality": "buenavista",
+      "nodeId": "brgy_bv_daragan",
+      "dataStatus": "osm",
+      "category": "Barangays",
+      "todaCard": {
+        "special": 200,
+        "source": "New Poblacion Buenavista TODA fare card (Zone 6), photo provided by the user 2026-10-25"
+      },
+      "barangay": "Daragan",
+      "barangaySource": "https://www.philatlas.com/visayas/r06/guimaras/buenavista/daragan.html"
+    },
+    {
+      "id": "dest_brgy_nazaret",
+      "name": "Brgy. Nazaret, Buenavista",
+      "municipality": "buenavista",
+      "nodeId": "brgy_bv_nazaret",
+      "dataStatus": "osm",
+      "category": "Barangays",
+      "todaCard": {
+        "special": 100,
+        "source": "New Poblacion Buenavista TODA fare card (Zone 6), photo provided by the user 2026-10-25"
+      },
+      "barangay": "Nazaret",
+      "barangaySource": "https://www.philatlas.com/visayas/r06/guimaras/buenavista/nazaret.html"
+    },
+    {
+      "id": "dest_brgy_san_isidro",
+      "name": "Brgy. San Isidro, Buenavista",
+      "municipality": "buenavista",
+      "nodeId": "brgy_bv_san_isidro",
+      "dataStatus": "osm",
+      "category": "Barangays",
+      "todaCard": {
+        "special": 120,
+        "source": "New Poblacion Buenavista TODA fare card (Zone 6), photo provided by the user 2026-10-25"
+      },
+      "barangay": "San Isidro",
+      "barangaySource": "https://www.philatlas.com/visayas/r06/guimaras/buenavista/san-isidro.html"
+    },
+    {
+      "id": "dest_brgy_old_poblacion",
+      "name": "Brgy. Old Poblacion, Buenavista",
+      "municipality": "buenavista",
+      "nodeId": "brgy_bv_old_poblacion",
+      "dataStatus": "osm",
+      "category": "Barangays",
+      "todaCard": {
+        "special": 120,
+        "source": "New Poblacion Buenavista TODA fare card (Zone 6), photo provided by the user 2026-10-25"
+      },
+      "barangay": "Old Poblacion",
+      "barangaySource": "https://www.philatlas.com/visayas/r06/guimaras/buenavista/old-poblacion.html"
+    },
+    {
+      "id": "dest_brgy_sawang",
+      "name": "Brgy. Sawang, Buenavista",
+      "municipality": "buenavista",
+      "nodeId": "brgy_bv_sawang",
+      "dataStatus": "osm",
+      "category": "Barangays",
+      "todaCard": {
+        "special": 250,
+        "source": "New Poblacion Buenavista TODA fare card (Zone 6), photo provided by the user 2026-10-25"
+      },
+      "barangay": "Sawang",
+      "barangaySource": "https://www.philatlas.com/visayas/r06/guimaras/buenavista/sawang.html"
+    },
+    {
+      "id": "dest_brgy_bacjao",
+      "name": "Brgy. Bacjao, Buenavista",
+      "municipality": "buenavista",
+      "nodeId": "brgy_bv_bacjao",
+      "dataStatus": "osm",
+      "category": "Barangays",
+      "todaCard": {
+        "special": 150,
+        "source": "New Poblacion Buenavista TODA fare card (Zone 6), photo provided by the user 2026-10-25"
+      },
+      "barangay": "Bacjao (Calumingan)",
+      "barangaySource": "https://www.philatlas.com/visayas/r06/guimaras/buenavista/bacjao.html"
+    },
+    {
+      "id": "dest_brgy_banban",
+      "name": "Brgy. Banban, Buenavista",
+      "municipality": "buenavista",
+      "nodeId": "brgy_bv_banban",
+      "dataStatus": "osm",
+      "category": "Barangays",
+      "todaCard": {
+        "special": 120,
+        "source": "New Poblacion Buenavista TODA fare card (Zone 6), photo provided by the user 2026-10-25"
+      },
+      "barangay": "Banban",
+      "barangaySource": "https://www.philatlas.com/visayas/r06/guimaras/buenavista/banban.html"
+    },
+    {
+      "id": "dest_brgy_magsaysay",
+      "name": "Brgy. Magsaysay, Buenavista",
+      "municipality": "buenavista",
+      "nodeId": "brgy_bv_magsaysay",
+      "dataStatus": "osm",
+      "category": "Barangays",
+      "todaCard": {
+        "special": 120,
+        "source": "New Poblacion Buenavista TODA fare card (Zone 6), photo provided by the user 2026-10-25"
+      },
+      "barangay": "Magsaysay",
+      "barangaySource": "https://www.philatlas.com/visayas/r06/guimaras/buenavista/magsaysay.html"
+    },
+    {
+      "id": "dest_brgy_pina",
+      "name": "Brgy. Piña, Buenavista",
+      "municipality": "buenavista",
+      "nodeId": "brgy_bv_pina",
+      "dataStatus": "osm",
+      "category": "Barangays",
+      "todaCard": {
+        "special": 200,
+        "source": "New Poblacion Buenavista TODA fare card (Zone 6), photo provided by the user 2026-10-25"
+      },
+      "barangay": "Piña",
+      "barangaySource": "https://www.philatlas.com/visayas/r06/guimaras/buenavista/pina.html"
+    },
+    {
+      "id": "dest_brgy_zaldivar",
+      "name": "Brgy. Zaldivar, Buenavista",
+      "municipality": "buenavista",
+      "nodeId": "brgy_bv_zaldivar",
+      "dataStatus": "osm",
+      "category": "Barangays",
+      "todaCard": {
+        "special": 120,
+        "source": "New Poblacion Buenavista TODA fare card (Zone 6), photo provided by the user 2026-10-25"
+      },
+      "barangay": "Zaldivar",
+      "barangaySource": "https://www.philatlas.com/visayas/r06/guimaras/buenavista/zaldivar.html"
+    },
+    {
+      "id": "dest_brgy_jordan_alaguisoc",
+      "name": "Brgy. Alaguisoc, Jordan",
+      "municipality": "jordan",
+      "nodeId": "brgy_jordan_alaguisoc",
+      "dataStatus": "reference",
+      "category": "Barangays",
+      "barangay": "Alaguisoc",
+      "barangaySource": "https://www.philatlas.com/visayas/r06/guimaras/jordan/alaguisoc.html"
+    },
+    {
+      "id": "dest_brgy_jordan_balcon_maravilla",
+      "name": "Brgy. Balcon Maravilla, Jordan",
+      "municipality": "jordan",
+      "nodeId": "brgy_jordan_balcon_maravilla",
+      "dataStatus": "reference",
+      "category": "Barangays",
+      "barangay": "Balcon Maravilla",
+      "barangaySource": "https://www.philatlas.com/visayas/r06/guimaras/jordan/balcon-maravilla.html"
+    },
+    {
+      "id": "dest_brgy_jordan_balcon_melliza",
+      "name": "Brgy. Balcon Melliza, Jordan",
+      "municipality": "jordan",
+      "nodeId": "brgy_jordan_balcon_melliza",
+      "dataStatus": "reference",
+      "category": "Barangays",
+      "barangay": "Balcon Melliza",
+      "barangaySource": "https://www.philatlas.com/visayas/r06/guimaras/jordan/balcon-melliza.html"
+    },
+    {
+      "id": "dest_brgy_jordan_bugnay",
+      "name": "Brgy. Bugnay, Jordan",
+      "municipality": "jordan",
+      "nodeId": "brgy_jordan_bugnay",
+      "dataStatus": "reference",
+      "category": "Barangays",
+      "barangay": "Bugnay",
+      "barangaySource": "https://www.philatlas.com/visayas/r06/guimaras/jordan/bugnay.html"
+    },
+    {
+      "id": "dest_brgy_jordan_buluangan",
+      "name": "Brgy. Buluangan, Jordan",
+      "municipality": "jordan",
+      "nodeId": "brgy_jordan_buluangan",
+      "dataStatus": "reference",
+      "category": "Barangays",
+      "barangay": "Buluangan",
+      "barangaySource": "https://www.philatlas.com/visayas/r06/guimaras/jordan/buluangan.html"
+    },
+    {
+      "id": "dest_brgy_jordan_espinosa",
+      "name": "Brgy. Espinosa, Jordan",
+      "municipality": "jordan",
+      "nodeId": "brgy_jordan_espinosa",
+      "dataStatus": "reference",
+      "category": "Barangays",
+      "barangay": "Espinosa",
+      "barangaySource": "https://www.philatlas.com/visayas/r06/guimaras/jordan/espinosa.html"
+    },
+    {
+      "id": "dest_brgy_jordan_hoskyn",
+      "name": "Brgy. Hoskyn, Jordan",
+      "municipality": "jordan",
+      "nodeId": "brgy_jordan_hoskyn",
+      "dataStatus": "reference",
+      "category": "Barangays",
+      "barangay": "Hoskyn",
+      "barangaySource": "https://www.philatlas.com/visayas/r06/guimaras/jordan/hoskyn.html"
+    },
+    {
+      "id": "dest_brgy_jordan_lawi",
+      "name": "Brgy. Lawi, Jordan",
+      "municipality": "jordan",
+      "nodeId": "brgy_jordan_lawi",
+      "dataStatus": "reference",
+      "category": "Barangays",
+      "barangay": "Lawi",
+      "barangaySource": "https://www.philatlas.com/visayas/r06/guimaras/jordan/lawi.html"
+    },
+    {
+      "id": "dest_brgy_jordan_morobuan",
+      "name": "Brgy. Morobuan, Jordan",
+      "municipality": "jordan",
+      "nodeId": "brgy_jordan_morobuan",
+      "dataStatus": "reference",
+      "category": "Barangays",
+      "barangay": "Morobuan",
+      "barangaySource": "https://www.philatlas.com/visayas/r06/guimaras/jordan/morobuan.html"
+    },
+    {
+      "id": "dest_brgy_jordan_poblacion",
+      "name": "Brgy. Poblacion, Jordan",
+      "municipality": "jordan",
+      "nodeId": "brgy_jordan_poblacion",
+      "dataStatus": "reference",
+      "category": "Barangays",
+      "barangay": "Poblacion",
+      "barangaySource": "https://www.philatlas.com/visayas/r06/guimaras/jordan/poblacion.html"
+    },
+    {
+      "id": "dest_brgy_jordan_rizal",
+      "name": "Brgy. Rizal, Jordan",
+      "municipality": "jordan",
+      "nodeId": "brgy_jordan_rizal",
+      "dataStatus": "reference",
+      "category": "Barangays",
+      "barangay": "Rizal",
+      "barangaySource": "https://www.philatlas.com/visayas/r06/guimaras/jordan/rizal.html"
+    },
+    {
+      "id": "dest_brgy_jordan_san_miguel",
+      "name": "Brgy. San Miguel, Jordan",
+      "municipality": "jordan",
+      "nodeId": "brgy_jordan_san_miguel",
+      "dataStatus": "reference",
+      "category": "Barangays",
+      "barangay": "San Miguel",
+      "barangaySource": "https://www.philatlas.com/visayas/r06/guimaras/jordan/san-miguel.html"
+    },
+    {
+      "id": "dest_brgy_jordan_santa_teresa",
+      "name": "Brgy. Santa Teresa, Jordan",
+      "municipality": "jordan",
+      "nodeId": "brgy_jordan_santa_teresa",
+      "dataStatus": "reference",
+      "category": "Barangays",
+      "barangay": "Santa Teresa",
+      "barangaySource": "https://www.philatlas.com/visayas/r06/guimaras/jordan/santa-teresa.html"
+    },
+    {
+      "id": "dest_brgy_jordan_sinapsapan",
+      "name": "Brgy. Sinapsapan, Jordan",
+      "municipality": "jordan",
+      "nodeId": "brgy_jordan_sinapsapan",
+      "dataStatus": "reference",
+      "category": "Barangays",
+      "barangay": "Sinapsapan",
+      "barangaySource": "https://www.philatlas.com/visayas/r06/guimaras/jordan/sinapsapan.html"
+    },
+    {
+      "id": "dest_brgy_nueva_valencia_cabalagnan",
+      "name": "Brgy. Cabalagnan, Nueva Valencia",
+      "municipality": "nueva_valencia",
+      "nodeId": "brgy_nueva_valencia_cabalagnan",
+      "dataStatus": "reference",
+      "category": "Barangays",
+      "barangay": "Cabalagnan",
+      "barangaySource": "https://www.philatlas.com/visayas/r06/guimaras/nueva-valencia/cabalagnan.html"
+    },
+    {
+      "id": "dest_brgy_nueva_valencia_calaya",
+      "name": "Brgy. Calaya, Nueva Valencia",
+      "municipality": "nueva_valencia",
+      "nodeId": "brgy_nueva_valencia_calaya",
+      "dataStatus": "reference",
+      "category": "Barangays",
+      "barangay": "Calaya",
+      "barangaySource": "https://www.philatlas.com/visayas/r06/guimaras/nueva-valencia/calaya.html"
+    },
+    {
+      "id": "dest_brgy_nueva_valencia_canhawan",
+      "name": "Brgy. Canhawan, Nueva Valencia",
+      "municipality": "nueva_valencia",
+      "nodeId": "brgy_nueva_valencia_canhawan",
+      "dataStatus": "reference",
+      "category": "Barangays",
+      "barangay": "Canhawan",
+      "barangaySource": "https://www.philatlas.com/visayas/r06/guimaras/nueva-valencia/canhawan.html"
+    },
+    {
+      "id": "dest_brgy_nueva_valencia_concordia_sur",
+      "name": "Brgy. Concordia Sur, Nueva Valencia",
+      "municipality": "nueva_valencia",
+      "nodeId": "brgy_nueva_valencia_concordia_sur",
+      "dataStatus": "osm",
+      "category": "Barangays",
+      "barangay": "Concordia Sur",
+      "barangaySource": "https://www.philatlas.com/visayas/r06/guimaras/nueva-valencia/concordia-sur.html"
+    },
+    {
+      "id": "dest_brgy_nueva_valencia_dolores",
+      "name": "Brgy. Dolores, Nueva Valencia",
+      "municipality": "nueva_valencia",
+      "nodeId": "brgy_nueva_valencia_dolores",
+      "dataStatus": "reference",
+      "category": "Barangays",
+      "barangay": "Dolores",
+      "barangaySource": "https://www.philatlas.com/visayas/r06/guimaras/nueva-valencia/dolores.html"
+    },
+    {
+      "id": "dest_brgy_nueva_valencia_guiwanon",
+      "name": "Brgy. Guiwanon, Nueva Valencia",
+      "municipality": "nueva_valencia",
+      "nodeId": "brgy_nueva_valencia_guiwanon",
+      "dataStatus": "reference",
+      "category": "Barangays",
+      "barangay": "Guiwanon",
+      "barangaySource": "https://www.philatlas.com/visayas/r06/guimaras/nueva-valencia/guiwanon.html",
+      "note": "No road within 1.5 km of the barangay location (island or coast). No tricycle route is configured."
+    },
+    {
+      "id": "dest_brgy_nueva_valencia_igang",
+      "name": "Brgy. Igang, Nueva Valencia",
+      "municipality": "nueva_valencia",
+      "nodeId": "brgy_nueva_valencia_igang",
+      "dataStatus": "reference",
+      "category": "Barangays",
+      "barangay": "Igang",
+      "barangaySource": "https://www.philatlas.com/visayas/r06/guimaras/nueva-valencia/igang.html"
+    },
+    {
+      "id": "dest_brgy_nueva_valencia_igdarapdap",
+      "name": "Brgy. Igdarapdap, Nueva Valencia",
+      "municipality": "nueva_valencia",
+      "nodeId": "brgy_nueva_valencia_igdarapdap",
+      "dataStatus": "reference",
+      "category": "Barangays",
+      "barangay": "Igdarapdap",
+      "barangaySource": "https://www.philatlas.com/visayas/r06/guimaras/nueva-valencia/igdarapdap.html"
+    },
+    {
+      "id": "dest_brgy_nueva_valencia_la_paz",
+      "name": "Brgy. La Paz, Nueva Valencia",
+      "municipality": "nueva_valencia",
+      "nodeId": "brgy_nueva_valencia_la_paz",
+      "dataStatus": "reference",
+      "category": "Barangays",
+      "barangay": "La Paz",
+      "barangaySource": "https://www.philatlas.com/visayas/r06/guimaras/nueva-valencia/la-paz.html"
+    },
+    {
+      "id": "dest_brgy_nueva_valencia_lanipe",
+      "name": "Brgy. Lanipe, Nueva Valencia",
+      "municipality": "nueva_valencia",
+      "nodeId": "brgy_nueva_valencia_lanipe",
+      "dataStatus": "reference",
+      "category": "Barangays",
+      "barangay": "Lanipe",
+      "barangaySource": "https://www.philatlas.com/visayas/r06/guimaras/nueva-valencia/lanipe.html"
+    },
+    {
+      "id": "dest_brgy_nueva_valencia_lucmayan",
+      "name": "Brgy. Lucmayan, Nueva Valencia",
+      "municipality": "nueva_valencia",
+      "nodeId": "brgy_nueva_valencia_lucmayan",
+      "dataStatus": "reference",
+      "category": "Barangays",
+      "barangay": "Lucmayan",
+      "barangaySource": "https://www.philatlas.com/visayas/r06/guimaras/nueva-valencia/lucmayan.html"
+    },
+    {
+      "id": "dest_brgy_nueva_valencia_magamay",
+      "name": "Brgy. Magamay, Nueva Valencia",
+      "municipality": "nueva_valencia",
+      "nodeId": "brgy_nueva_valencia_magamay",
+      "dataStatus": "reference",
+      "category": "Barangays",
+      "barangay": "Magamay",
+      "barangaySource": "https://www.philatlas.com/visayas/r06/guimaras/nueva-valencia/magamay.html"
+    },
+    {
+      "id": "dest_brgy_nueva_valencia_napandong",
+      "name": "Brgy. Napandong, Nueva Valencia",
+      "municipality": "nueva_valencia",
+      "nodeId": "brgy_nueva_valencia_napandong",
+      "dataStatus": "reference",
+      "category": "Barangays",
+      "barangay": "Napandong",
+      "barangaySource": "https://www.philatlas.com/visayas/r06/guimaras/nueva-valencia/napandong.html"
+    },
+    {
+      "id": "dest_brgy_nueva_valencia_oracon_sur",
+      "name": "Brgy. Oracon Sur, Nueva Valencia",
+      "municipality": "nueva_valencia",
+      "nodeId": "brgy_nueva_valencia_oracon_sur",
+      "dataStatus": "osm",
+      "category": "Barangays",
+      "barangay": "Oracon Sur",
+      "barangaySource": "https://www.philatlas.com/visayas/r06/guimaras/nueva-valencia/oracon-sur.html"
+    },
+    {
+      "id": "dest_brgy_nueva_valencia_pandaraonan",
+      "name": "Brgy. Pandaraonan, Nueva Valencia",
+      "municipality": "nueva_valencia",
+      "nodeId": "brgy_nueva_valencia_pandaraonan",
+      "dataStatus": "reference",
+      "category": "Barangays",
+      "barangay": "Pandaraonan",
+      "barangaySource": "https://www.philatlas.com/visayas/r06/guimaras/nueva-valencia/pandaraonan.html"
+    },
+    {
+      "id": "dest_brgy_nueva_valencia_panobolon",
+      "name": "Brgy. Panobolon, Nueva Valencia",
+      "municipality": "nueva_valencia",
+      "nodeId": "brgy_nueva_valencia_panobolon",
+      "dataStatus": "reference",
+      "category": "Barangays",
+      "barangay": "Panobolon",
+      "barangaySource": "https://www.philatlas.com/visayas/r06/guimaras/nueva-valencia/panobolon.html",
+      "note": "No road within 1.5 km of the barangay location (island or coast). No tricycle route is configured."
+    },
+    {
+      "id": "dest_brgy_nueva_valencia_poblacion",
+      "name": "Brgy. Poblacion, Nueva Valencia",
+      "municipality": "nueva_valencia",
+      "nodeId": "center_nueva_valencia",
+      "dataStatus": "reference",
+      "category": "Barangays",
+      "barangay": "Poblacion",
+      "barangaySource": "https://www.philatlas.com/visayas/r06/guimaras/nueva-valencia/poblacion.html",
+      "note": "Same point as the town centre."
+    },
+    {
+      "id": "dest_brgy_nueva_valencia_salvacion",
+      "name": "Brgy. Salvacion, Nueva Valencia",
+      "municipality": "nueva_valencia",
+      "nodeId": "brgy_nueva_valencia_salvacion",
+      "dataStatus": "reference",
+      "category": "Barangays",
+      "barangay": "Salvacion",
+      "barangaySource": "https://www.philatlas.com/visayas/r06/guimaras/nueva-valencia/salvacion.html"
+    },
+    {
+      "id": "dest_brgy_nueva_valencia_san_antonio",
+      "name": "Brgy. San Antonio, Nueva Valencia",
+      "municipality": "nueva_valencia",
+      "nodeId": "brgy_nueva_valencia_san_antonio",
+      "dataStatus": "reference",
+      "category": "Barangays",
+      "barangay": "San Antonio",
+      "barangaySource": "https://www.philatlas.com/visayas/r06/guimaras/nueva-valencia/san-antonio.html"
+    },
+    {
+      "id": "dest_brgy_nueva_valencia_san_roque",
+      "name": "Brgy. San Roque, Nueva Valencia",
+      "municipality": "nueva_valencia",
+      "nodeId": "brgy_nueva_valencia_san_roque",
+      "dataStatus": "reference",
+      "category": "Barangays",
+      "barangay": "San Roque",
+      "barangaySource": "https://www.philatlas.com/visayas/r06/guimaras/nueva-valencia/san-roque.html"
+    },
+    {
+      "id": "dest_brgy_nueva_valencia_santo_domingo",
+      "name": "Brgy. Santo Domingo, Nueva Valencia",
+      "municipality": "nueva_valencia",
+      "nodeId": "brgy_nueva_valencia_santo_domingo",
+      "dataStatus": "reference",
+      "category": "Barangays",
+      "barangay": "Santo Domingo",
+      "barangaySource": "https://www.philatlas.com/visayas/r06/guimaras/nueva-valencia/santo-domingo.html"
+    },
+    {
+      "id": "dest_brgy_nueva_valencia_tando",
+      "name": "Brgy. Tando, Nueva Valencia",
+      "municipality": "nueva_valencia",
+      "nodeId": "brgy_nueva_valencia_tando",
+      "dataStatus": "reference",
+      "category": "Barangays",
+      "barangay": "Tando",
+      "barangaySource": "https://www.philatlas.com/visayas/r06/guimaras/nueva-valencia/tando.html"
+    },
+    {
+      "id": "dest_brgy_san_lorenzo_aguilar",
+      "name": "Brgy. Aguilar, San Lorenzo",
+      "municipality": "san_lorenzo",
+      "nodeId": "brgy_san_lorenzo_aguilar",
+      "dataStatus": "reference",
+      "category": "Barangays",
+      "barangay": "Aguilar",
+      "barangaySource": "https://www.philatlas.com/visayas/r06/guimaras/san-lorenzo/aguilar.html"
+    },
+    {
+      "id": "dest_brgy_san_lorenzo_cabano",
+      "name": "Brgy. Cabano, San Lorenzo",
+      "municipality": "san_lorenzo",
+      "nodeId": "brgy_san_lorenzo_cabano",
+      "dataStatus": "reference",
+      "category": "Barangays",
+      "barangay": "Cabano",
+      "barangaySource": "https://www.philatlas.com/visayas/r06/guimaras/san-lorenzo/cabano.html"
+    },
+    {
+      "id": "dest_brgy_san_lorenzo_cabungahan",
+      "name": "Brgy. Cabungahan, San Lorenzo",
+      "municipality": "san_lorenzo",
+      "nodeId": "brgy_san_lorenzo_cabungahan",
+      "dataStatus": "reference",
+      "category": "Barangays",
+      "barangay": "Cabungahan",
+      "barangaySource": "https://www.philatlas.com/visayas/r06/guimaras/san-lorenzo/cabungahan.html"
+    },
+    {
+      "id": "dest_brgy_san_lorenzo_constancia",
+      "name": "Brgy. Constancia, San Lorenzo",
+      "municipality": "san_lorenzo",
+      "nodeId": "brgy_san_lorenzo_constancia",
+      "dataStatus": "reference",
+      "category": "Barangays",
+      "barangay": "Constancia",
+      "barangaySource": "https://www.philatlas.com/visayas/r06/guimaras/san-lorenzo/constancia.html"
+    },
+    {
+      "id": "dest_brgy_san_lorenzo_gaban",
+      "name": "Brgy. Gaban, San Lorenzo",
+      "municipality": "san_lorenzo",
+      "nodeId": "brgy_san_lorenzo_gaban",
+      "dataStatus": "reference",
+      "category": "Barangays",
+      "barangay": "Gaban",
+      "barangaySource": "https://www.philatlas.com/visayas/r06/guimaras/san-lorenzo/gaban.html"
+    },
+    {
+      "id": "dest_brgy_san_lorenzo_igcawayan",
+      "name": "Brgy. Igcawayan, San Lorenzo",
+      "municipality": "san_lorenzo",
+      "nodeId": "brgy_san_lorenzo_igcawayan",
+      "dataStatus": "reference",
+      "category": "Barangays",
+      "barangay": "Igcawayan",
+      "barangaySource": "https://www.philatlas.com/visayas/r06/guimaras/san-lorenzo/igcawayan.html"
+    },
+    {
+      "id": "dest_brgy_san_lorenzo_m_chavez",
+      "name": "Brgy. M. Chavez, San Lorenzo",
+      "municipality": "san_lorenzo",
+      "nodeId": "brgy_san_lorenzo_m_chavez",
+      "dataStatus": "reference",
+      "category": "Barangays",
+      "barangay": "M. Chavez",
+      "barangaySource": "https://www.philatlas.com/visayas/r06/guimaras/san-lorenzo/m-chavez.html"
+    },
+    {
+      "id": "dest_brgy_san_lorenzo_san_enrique",
+      "name": "Brgy. San Enrique (Lebas), San Lorenzo",
+      "municipality": "san_lorenzo",
+      "nodeId": "brgy_san_lorenzo_san_enrique",
+      "dataStatus": "reference",
+      "category": "Barangays",
+      "barangay": "San Enrique (Lebas)",
+      "barangaySource": "https://www.philatlas.com/visayas/r06/guimaras/san-lorenzo/san-enrique.html"
+    },
+    {
+      "id": "dest_brgy_san_lorenzo_sapal",
+      "name": "Brgy. Sapal, San Lorenzo",
+      "municipality": "san_lorenzo",
+      "nodeId": "brgy_san_lorenzo_sapal",
+      "dataStatus": "reference",
+      "category": "Barangays",
+      "barangay": "Sapal",
+      "barangaySource": "https://www.philatlas.com/visayas/r06/guimaras/san-lorenzo/sapal.html"
+    },
+    {
+      "id": "dest_brgy_san_lorenzo_sebario",
+      "name": "Brgy. Sebario, San Lorenzo",
+      "municipality": "san_lorenzo",
+      "nodeId": "brgy_san_lorenzo_sebario",
+      "dataStatus": "reference",
+      "category": "Barangays",
+      "barangay": "Sebario",
+      "barangaySource": "https://www.philatlas.com/visayas/r06/guimaras/san-lorenzo/sebario.html"
+    },
+    {
+      "id": "dest_brgy_san_lorenzo_suclaran",
+      "name": "Brgy. Suclaran, San Lorenzo",
+      "municipality": "san_lorenzo",
+      "nodeId": "brgy_san_lorenzo_suclaran",
+      "dataStatus": "reference",
+      "category": "Barangays",
+      "barangay": "Suclaran",
+      "barangaySource": "https://www.philatlas.com/visayas/r06/guimaras/san-lorenzo/suclaran.html"
+    },
+    {
+      "id": "dest_brgy_san_lorenzo_tamborong",
+      "name": "Brgy. Tamborong, San Lorenzo",
+      "municipality": "san_lorenzo",
+      "nodeId": "brgy_san_lorenzo_tamborong",
+      "dataStatus": "reference",
+      "category": "Barangays",
+      "barangay": "Tamborong",
+      "barangaySource": "https://www.philatlas.com/visayas/r06/guimaras/san-lorenzo/tamborong.html"
+    },
+    {
+      "id": "dest_brgy_sibunag_alegria",
+      "name": "Brgy. Alegria, Sibunag",
+      "municipality": "sibunag",
+      "nodeId": "brgy_sibunag_alegria",
+      "dataStatus": "reference",
+      "category": "Barangays",
+      "barangay": "Alegria",
+      "barangaySource": "https://www.philatlas.com/visayas/r06/guimaras/sibunag/alegria.html"
+    },
+    {
+      "id": "dest_brgy_sibunag_ayangan",
+      "name": "Brgy. Ayangan, Sibunag",
+      "municipality": "sibunag",
+      "nodeId": "brgy_sibunag_ayangan",
+      "dataStatus": "reference",
+      "category": "Barangays",
+      "barangay": "Ayangan",
+      "barangaySource": "https://www.philatlas.com/visayas/r06/guimaras/sibunag/ayangan.html"
+    },
+    {
+      "id": "dest_brgy_sibunag_bubog",
+      "name": "Brgy. Bubog, Sibunag",
+      "municipality": "sibunag",
+      "nodeId": "brgy_sibunag_bubog",
+      "dataStatus": "reference",
+      "category": "Barangays",
+      "barangay": "Bubog",
+      "barangaySource": "https://www.philatlas.com/visayas/r06/guimaras/sibunag/bubog.html"
+    },
+    {
+      "id": "dest_brgy_sibunag_concordia_norte",
+      "name": "Brgy. Concordia Norte, Sibunag",
+      "municipality": "sibunag",
+      "nodeId": "brgy_sibunag_concordia_norte",
+      "dataStatus": "reference",
+      "category": "Barangays",
+      "barangay": "Concordia Norte",
+      "barangaySource": "https://www.philatlas.com/visayas/r06/guimaras/sibunag/concordia-norte.html"
+    },
+    {
+      "id": "dest_brgy_sibunag_dasal",
+      "name": "Brgy. Dasal, Sibunag",
+      "municipality": "sibunag",
+      "nodeId": "brgy_sibunag_dasal",
+      "dataStatus": "reference",
+      "category": "Barangays",
+      "barangay": "Dasal",
+      "barangaySource": "https://www.philatlas.com/visayas/r06/guimaras/sibunag/dasal.html"
+    },
+    {
+      "id": "dest_brgy_sibunag_inampologan",
+      "name": "Brgy. Inampologan, Sibunag",
+      "municipality": "sibunag",
+      "nodeId": "brgy_sibunag_inampologan",
+      "dataStatus": "reference",
+      "category": "Barangays",
+      "barangay": "Inampologan",
+      "barangaySource": "https://www.philatlas.com/visayas/r06/guimaras/sibunag/inampologan.html",
+      "note": "No road within 1.5 km of the barangay location (island or coast). No tricycle route is configured."
+    },
+    {
+      "id": "dest_brgy_sibunag_maabay",
+      "name": "Brgy. Maabay, Sibunag",
+      "municipality": "sibunag",
+      "nodeId": "brgy_sibunag_maabay",
+      "dataStatus": "reference",
+      "category": "Barangays",
+      "barangay": "Maabay",
+      "barangaySource": "https://www.philatlas.com/visayas/r06/guimaras/sibunag/maabay.html"
+    },
+    {
+      "id": "dest_brgy_sibunag_millan",
+      "name": "Brgy. Millan, Sibunag",
+      "municipality": "sibunag",
+      "nodeId": "brgy_sibunag_millan",
+      "dataStatus": "reference",
+      "category": "Barangays",
+      "barangay": "Millan",
+      "barangaySource": "https://www.philatlas.com/visayas/r06/guimaras/sibunag/millan.html"
+    },
+    {
+      "id": "dest_brgy_sibunag_oracon_norte",
+      "name": "Brgy. Oracon Norte, Sibunag",
+      "municipality": "sibunag",
+      "nodeId": "brgy_sibunag_oracon_norte",
+      "dataStatus": "reference",
+      "category": "Barangays",
+      "barangay": "Oracon Norte",
+      "barangaySource": "https://www.philatlas.com/visayas/r06/guimaras/sibunag/oracon-norte.html"
+    },
+    {
+      "id": "dest_brgy_sibunag_ravina",
+      "name": "Brgy. Ravina, Sibunag",
+      "municipality": "sibunag",
+      "nodeId": "brgy_sibunag_ravina",
+      "dataStatus": "reference",
+      "category": "Barangays",
+      "barangay": "Ravina",
+      "barangaySource": "https://www.philatlas.com/visayas/r06/guimaras/sibunag/ravina.html"
+    },
+    {
+      "id": "dest_brgy_sibunag_sabang",
+      "name": "Brgy. Sabang, Sibunag",
+      "municipality": "sibunag",
+      "nodeId": "brgy_sibunag_sabang",
+      "dataStatus": "reference",
+      "category": "Barangays",
+      "barangay": "Sabang",
+      "barangaySource": "https://www.philatlas.com/visayas/r06/guimaras/sibunag/sabang.html"
+    },
+    {
+      "id": "dest_brgy_sibunag_san_isidro",
+      "name": "Brgy. San Isidro, Sibunag",
+      "municipality": "sibunag",
+      "nodeId": "brgy_sibunag_san_isidro",
+      "dataStatus": "reference",
+      "category": "Barangays",
+      "barangay": "San Isidro",
+      "barangaySource": "https://www.philatlas.com/visayas/r06/guimaras/sibunag/san-isidro.html"
+    },
+    {
+      "id": "dest_brgy_sibunag_sebaste",
+      "name": "Brgy. Sebaste, Sibunag",
+      "municipality": "sibunag",
+      "nodeId": "brgy_sibunag_sebaste",
+      "dataStatus": "reference",
+      "category": "Barangays",
+      "barangay": "Sebaste",
+      "barangaySource": "https://www.philatlas.com/visayas/r06/guimaras/sibunag/sebaste.html"
+    },
+    {
+      "id": "dest_brgy_sibunag_tanglad",
+      "name": "Brgy. Tanglad, Sibunag",
+      "municipality": "sibunag",
+      "nodeId": "brgy_sibunag_tanglad",
+      "dataStatus": "reference",
+      "category": "Barangays",
+      "barangay": "Tanglad",
+      "barangaySource": "https://www.philatlas.com/visayas/r06/guimaras/sibunag/tanglad.html"
     }
   ]
 }

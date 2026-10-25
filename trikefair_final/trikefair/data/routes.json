@@ -268,6 +268,956 @@
       "lng": 122.6758128,
       "category": "Ports",
       "source": "OpenStreetMap way/483126757 (via Nominatim, retrieved 2026-10-24, ODbL)"
+    },
+    {
+      "id": "brgy_bv_tacay",
+      "name": "Brgy. Tacay",
+      "type": "destination",
+      "municipality": "buenavista",
+      "lat": 10.7320286,
+      "lng": 122.6518537,
+      "category": "Barangays",
+      "source": "OpenStreetMap node/6376389109 (via Nominatim, retrieved 2026-10-25, ODbL)"
+    },
+    {
+      "id": "brgy_bv_taminla",
+      "name": "Brgy. Taminla",
+      "type": "destination",
+      "municipality": "buenavista",
+      "lat": 10.7284564,
+      "lng": 122.6458997,
+      "category": "Barangays",
+      "source": "OpenStreetMap node/6369859197 (via Nominatim, retrieved 2026-10-25, ODbL)"
+    },
+    {
+      "id": "brgy_bv_sto_rosario",
+      "name": "Brgy. Sto. Rosario",
+      "type": "destination",
+      "municipality": "buenavista",
+      "lat": 10.6877988,
+      "lng": 122.6179871,
+      "category": "Barangays",
+      "source": "OpenStreetMap node/6369859037 (via Nominatim, retrieved 2026-10-25, ODbL)"
+    },
+    {
+      "id": "brgy_bv_salvacion",
+      "name": "Brgy. Salvacion",
+      "type": "destination",
+      "municipality": "buenavista",
+      "lat": 10.6945194,
+      "lng": 122.6350012,
+      "category": "Barangays",
+      "source": "OpenStreetMap node/6369859070 (via Nominatim, retrieved 2026-10-25, ODbL)"
+    },
+    {
+      "id": "brgy_bv_san_roque",
+      "name": "Brgy. San Roque",
+      "type": "destination",
+      "municipality": "buenavista",
+      "lat": 10.6788655,
+      "lng": 122.6561632,
+      "category": "Barangays",
+      "source": "OpenStreetMap node/6375706924 (via Nominatim, retrieved 2026-10-25, ODbL)"
+    },
+    {
+      "id": "brgy_bv_tastasan",
+      "name": "Brgy. Tastasan",
+      "type": "destination",
+      "municipality": "buenavista",
+      "lat": 10.6860191,
+      "lng": 122.6462693,
+      "category": "Barangays",
+      "source": "OpenStreetMap node/6375706896 (via Nominatim, retrieved 2026-10-25, ODbL)"
+    },
+    {
+      "id": "brgy_bv_tinadtaran",
+      "name": "Brgy. Tinadtaran",
+      "type": "destination",
+      "municipality": "buenavista",
+      "lat": 10.6613888,
+      "lng": 122.6772487,
+      "category": "Barangays",
+      "source": "OpenStreetMap node/6375707091 (via Nominatim, retrieved 2026-10-25, ODbL)"
+    },
+    {
+      "id": "brgy_bv_mclain",
+      "name": "Brgy. McLain",
+      "type": "destination",
+      "municipality": "buenavista",
+      "lat": 10.7014256,
+      "lng": 122.6541807,
+      "category": "Barangays",
+      "source": "OpenStreetMap node/6375706834 (via Nominatim, retrieved 2026-10-25, ODbL)"
+    },
+    {
+      "id": "brgy_bv_supang",
+      "name": "Brgy. Supang",
+      "type": "destination",
+      "municipality": "buenavista",
+      "lat": 10.7043412,
+      "lng": 122.6710121,
+      "category": "Barangays",
+      "source": "OpenStreetMap node/6376388480 (via Nominatim, retrieved 2026-10-25, ODbL)"
+    },
+    {
+      "id": "brgy_bv_san_nicolas",
+      "name": "Brgy. San Nicolas",
+      "type": "destination",
+      "municipality": "buenavista",
+      "lat": 10.6978855,
+      "lng": 122.6843086,
+      "category": "Barangays",
+      "source": "OpenStreetMap node/6376388464 (via Nominatim, retrieved 2026-10-25, ODbL)"
+    },
+    {
+      "id": "brgy_bv_cansilayan",
+      "name": "Brgy. Cansilayan",
+      "type": "destination",
+      "municipality": "buenavista",
+      "lat": 10.7054486,
+      "lng": 122.6951806,
+      "category": "Barangays",
+      "source": "OpenStreetMap node/6376389046 (via Nominatim, retrieved 2026-10-25, ODbL)"
+    },
+    {
+      "id": "brgy_bv_avila",
+      "name": "Brgy. Avila",
+      "type": "destination",
+      "municipality": "buenavista",
+      "lat": 10.6924295,
+      "lng": 122.7094014,
+      "category": "Barangays",
+      "source": "OpenStreetMap node/6376388434 (via Nominatim, retrieved 2026-10-25, ODbL)"
+    },
+    {
+      "id": "brgy_bv_east_valencia",
+      "name": "Brgy. East Valencia",
+      "type": "destination",
+      "municipality": "buenavista",
+      "lat": 10.6669832,
+      "lng": 122.7159823,
+      "category": "Barangays",
+      "source": "OpenStreetMap node/6375707112 (via Nominatim, retrieved 2026-10-25, ODbL)"
+    },
+    {
+      "id": "brgy_bv_navalas",
+      "name": "Brgy. Navalas",
+      "type": "destination",
+      "municipality": "buenavista",
+      "lat": 10.7331217,
+      "lng": 122.6829902,
+      "category": "Barangays",
+      "source": "OpenStreetMap node/6376389064 (via Nominatim, retrieved 2026-10-25, ODbL)"
+    },
+    {
+      "id": "brgy_bv_agsanayan",
+      "name": "Brgy. Agsanayan",
+      "type": "destination",
+      "municipality": "buenavista",
+      "lat": 10.6634785,
+      "lng": 122.6489478,
+      "category": "Barangays",
+      "source": "OpenStreetMap node/6375707031 (via Nominatim, retrieved 2026-10-25, ODbL)"
+    },
+    {
+      "id": "brgy_bv_mabini",
+      "name": "Brgy. Mabini",
+      "type": "destination",
+      "municipality": "buenavista",
+      "lat": 10.7098459,
+      "lng": 122.6501197,
+      "category": "Barangays",
+      "source": "OpenStreetMap node/6376389123 (via Nominatim, retrieved 2026-10-25, ODbL)"
+    },
+    {
+      "id": "brgy_bv_san_miguel",
+      "name": "Brgy. San Miguel",
+      "type": "destination",
+      "municipality": "buenavista",
+      "lat": 10.7399893,
+      "lng": 122.6753747,
+      "category": "Barangays",
+      "source": "OpenStreetMap node/5956148925 (via Nominatim, retrieved 2026-10-25, ODbL)"
+    },
+    {
+      "id": "brgy_bv_san_pedro",
+      "name": "Brgy. San Pedro",
+      "type": "destination",
+      "municipality": "buenavista",
+      "lat": 10.7167584,
+      "lng": 122.6708161,
+      "category": "Barangays",
+      "source": "OpenStreetMap node/6376389118 (via Nominatim, retrieved 2026-10-25, ODbL)"
+    },
+    {
+      "id": "brgy_bv_san_fernando",
+      "name": "Brgy. San Fernando",
+      "type": "destination",
+      "municipality": "buenavista",
+      "lat": 10.6919587,
+      "lng": 122.675176,
+      "category": "Barangays",
+      "source": "OpenStreetMap node/6376388996 (via Nominatim, retrieved 2026-10-25, ODbL)"
+    },
+    {
+      "id": "brgy_bv_tanag",
+      "name": "Brgy. Tanag",
+      "type": "destination",
+      "municipality": "buenavista",
+      "lat": 10.719529,
+      "lng": 122.6985128,
+      "category": "Barangays",
+      "source": "OpenStreetMap node/6376389057 (via Nominatim, retrieved 2026-10-25, ODbL)"
+    },
+    {
+      "id": "brgy_bv_umilig",
+      "name": "Brgy. Umilig",
+      "type": "destination",
+      "municipality": "buenavista",
+      "lat": 10.7041954,
+      "lng": 122.7120142,
+      "category": "Barangays",
+      "source": "OpenStreetMap node/6376389037 (via Nominatim, retrieved 2026-10-25, ODbL)"
+    },
+    {
+      "id": "brgy_bv_dagsaan",
+      "name": "Brgy. Dagsaan",
+      "type": "destination",
+      "municipality": "buenavista",
+      "lat": 10.7178372,
+      "lng": 122.6244014,
+      "category": "Barangays",
+      "source": "OpenStreetMap node/6369859080 (via Nominatim, retrieved 2026-10-25, ODbL)"
+    },
+    {
+      "id": "brgy_bv_rizal",
+      "name": "Brgy. Rizal",
+      "type": "destination",
+      "municipality": "buenavista",
+      "lat": 10.6857872,
+      "lng": 122.6158366,
+      "category": "Barangays",
+      "source": "OpenStreetMap node/9494148235 (via Nominatim, retrieved 2026-10-25, ODbL)"
+    },
+    {
+      "id": "brgy_bv_montpiller",
+      "name": "Brgy. Montpiller",
+      "type": "destination",
+      "municipality": "buenavista",
+      "lat": 10.6773393,
+      "lng": 122.6105037,
+      "category": "Barangays",
+      "source": "OpenStreetMap node/6369858936 (via Nominatim, retrieved 2026-10-25, ODbL)"
+    },
+    {
+      "id": "brgy_bv_daragan",
+      "name": "Brgy. Daragan",
+      "type": "destination",
+      "municipality": "buenavista",
+      "lat": 10.6692454,
+      "lng": 122.6201711,
+      "category": "Barangays",
+      "source": "OpenStreetMap node/6369858957 (via Nominatim, retrieved 2026-10-25, ODbL)"
+    },
+    {
+      "id": "brgy_bv_nazaret",
+      "name": "Brgy. Nazaret",
+      "type": "destination",
+      "municipality": "buenavista",
+      "lat": 10.6808235,
+      "lng": 122.6741276,
+      "category": "Barangays",
+      "source": "OpenStreetMap node/6376389032 (via Nominatim, retrieved 2026-10-25, ODbL)"
+    },
+    {
+      "id": "brgy_bv_san_isidro",
+      "name": "Brgy. San Isidro",
+      "type": "destination",
+      "municipality": "buenavista",
+      "lat": 10.6759558,
+      "lng": 122.6365157,
+      "category": "Barangays",
+      "source": "OpenStreetMap node/6375706963 (via Nominatim, retrieved 2026-10-25, ODbL)"
+    },
+    {
+      "id": "brgy_bv_old_poblacion",
+      "name": "Brgy. Old Poblacion",
+      "type": "destination",
+      "municipality": "buenavista",
+      "lat": 10.6847573,
+      "lng": 122.6258095,
+      "category": "Barangays",
+      "source": "OpenStreetMap node/6369859050 (via Nominatim, retrieved 2026-10-25, ODbL)"
+    },
+    {
+      "id": "brgy_bv_sawang",
+      "name": "Brgy. Sawang",
+      "type": "destination",
+      "municipality": "buenavista",
+      "lat": 10.7092928,
+      "lng": 122.6137204,
+      "category": "Barangays",
+      "source": "OpenStreetMap node/6369859079 (via Nominatim, retrieved 2026-10-25, ODbL)"
+    },
+    {
+      "id": "brgy_bv_bacjao",
+      "name": "Brgy. Bacjao",
+      "type": "destination",
+      "municipality": "buenavista",
+      "lat": 10.7236241,
+      "lng": 122.6846802,
+      "category": "Barangays",
+      "source": "OpenStreetMap node/5956156464 (via Nominatim, retrieved 2026-10-25, ODbL)"
+    },
+    {
+      "id": "brgy_bv_banban",
+      "name": "Brgy. Banban",
+      "type": "destination",
+      "municipality": "buenavista",
+      "lat": 10.7101881,
+      "lng": 122.6861635,
+      "category": "Barangays",
+      "source": "OpenStreetMap node/13459601701 (via Nominatim, retrieved 2026-10-25, ODbL)"
+    },
+    {
+      "id": "brgy_bv_magsaysay",
+      "name": "Brgy. Magsaysay",
+      "type": "destination",
+      "municipality": "buenavista",
+      "lat": 10.6914793,
+      "lng": 122.6157968,
+      "category": "Barangays",
+      "source": "OpenStreetMap node/6369859049 (via Nominatim, retrieved 2026-10-25, ODbL)"
+    },
+    {
+      "id": "brgy_bv_pina",
+      "name": "Brgy. Piña",
+      "type": "destination",
+      "municipality": "buenavista",
+      "lat": 10.6391534,
+      "lng": 122.6388881,
+      "category": "Barangays",
+      "source": "OpenStreetMap node/6375707071 (via Nominatim, retrieved 2026-10-25, ODbL)"
+    },
+    {
+      "id": "brgy_bv_zaldivar",
+      "name": "Brgy. Zaldivar",
+      "type": "destination",
+      "municipality": "buenavista",
+      "lat": 10.6964514,
+      "lng": 122.6166487,
+      "category": "Barangays",
+      "source": "OpenStreetMap node/6369859040 (via Nominatim, retrieved 2026-10-25, ODbL)"
+    },
+    {
+      "id": "brgy_jordan_alaguisoc",
+      "name": "Brgy. Alaguisoc",
+      "type": "destination",
+      "municipality": "jordan",
+      "lat": 10.6221,
+      "lng": 122.5957,
+      "category": "Barangays",
+      "source": "PhilAtlas approximate barangay location (https://www.philatlas.com/visayas/r06/guimaras/jordan/alaguisoc.html, retrieved 2026-10-25)"
+    },
+    {
+      "id": "brgy_jordan_balcon_maravilla",
+      "name": "Brgy. Balcon Maravilla",
+      "type": "destination",
+      "municipality": "jordan",
+      "lat": 10.6301,
+      "lng": 122.572,
+      "category": "Barangays",
+      "source": "PhilAtlas approximate barangay location (https://www.philatlas.com/visayas/r06/guimaras/jordan/balcon-maravilla.html, retrieved 2026-10-25)"
+    },
+    {
+      "id": "brgy_jordan_balcon_melliza",
+      "name": "Brgy. Balcon Melliza",
+      "type": "destination",
+      "municipality": "jordan",
+      "lat": 10.64,
+      "lng": 122.5785,
+      "category": "Barangays",
+      "source": "PhilAtlas approximate barangay location (https://www.philatlas.com/visayas/r06/guimaras/jordan/balcon-melliza.html, retrieved 2026-10-25)"
+    },
+    {
+      "id": "brgy_jordan_bugnay",
+      "name": "Brgy. Bugnay",
+      "type": "destination",
+      "municipality": "jordan",
+      "lat": 10.594,
+      "lng": 122.6205,
+      "category": "Barangays",
+      "source": "PhilAtlas approximate barangay location (https://www.philatlas.com/visayas/r06/guimaras/jordan/bugnay.html, retrieved 2026-10-25)"
+    },
+    {
+      "id": "brgy_jordan_buluangan",
+      "name": "Brgy. Buluangan",
+      "type": "destination",
+      "municipality": "jordan",
+      "lat": 10.5558,
+      "lng": 122.5479,
+      "category": "Barangays",
+      "source": "PhilAtlas approximate barangay location (https://www.philatlas.com/visayas/r06/guimaras/jordan/buluangan.html, retrieved 2026-10-25)"
+    },
+    {
+      "id": "brgy_jordan_espinosa",
+      "name": "Brgy. Espinosa",
+      "type": "destination",
+      "municipality": "jordan",
+      "lat": 10.6052,
+      "lng": 122.5439,
+      "category": "Barangays",
+      "source": "PhilAtlas approximate barangay location (https://www.philatlas.com/visayas/r06/guimaras/jordan/espinosa.html, retrieved 2026-10-25)"
+    },
+    {
+      "id": "brgy_jordan_hoskyn",
+      "name": "Brgy. Hoskyn",
+      "type": "destination",
+      "municipality": "jordan",
+      "lat": 10.6579,
+      "lng": 122.5784,
+      "category": "Barangays",
+      "source": "PhilAtlas approximate barangay location (https://www.philatlas.com/visayas/r06/guimaras/jordan/hoskyn.html, retrieved 2026-10-25)"
+    },
+    {
+      "id": "brgy_jordan_lawi",
+      "name": "Brgy. Lawi",
+      "type": "destination",
+      "municipality": "jordan",
+      "lat": 10.5577,
+      "lng": 122.5368,
+      "category": "Barangays",
+      "source": "PhilAtlas approximate barangay location (https://www.philatlas.com/visayas/r06/guimaras/jordan/lawi.html, retrieved 2026-10-25)"
+    },
+    {
+      "id": "brgy_jordan_morobuan",
+      "name": "Brgy. Morobuan",
+      "type": "destination",
+      "municipality": "jordan",
+      "lat": 10.6186,
+      "lng": 122.5667,
+      "category": "Barangays",
+      "source": "PhilAtlas approximate barangay location (https://www.philatlas.com/visayas/r06/guimaras/jordan/morobuan.html, retrieved 2026-10-25)"
+    },
+    {
+      "id": "brgy_jordan_poblacion",
+      "name": "Brgy. Poblacion",
+      "type": "destination",
+      "municipality": "jordan",
+      "lat": 10.6556,
+      "lng": 122.5916,
+      "category": "Barangays",
+      "source": "PhilAtlas approximate barangay location (https://www.philatlas.com/visayas/r06/guimaras/jordan/poblacion.html, retrieved 2026-10-25)"
+    },
+    {
+      "id": "brgy_jordan_rizal",
+      "name": "Brgy. Rizal",
+      "type": "destination",
+      "municipality": "jordan",
+      "lat": 10.6645,
+      "lng": 122.5908,
+      "category": "Barangays",
+      "source": "PhilAtlas approximate barangay location (https://www.philatlas.com/visayas/r06/guimaras/jordan/rizal.html, retrieved 2026-10-25)"
+    },
+    {
+      "id": "brgy_jordan_san_miguel",
+      "name": "Brgy. San Miguel",
+      "type": "destination",
+      "municipality": "jordan",
+      "lat": 10.596,
+      "lng": 122.5878,
+      "category": "Barangays",
+      "source": "PhilAtlas approximate barangay location (https://www.philatlas.com/visayas/r06/guimaras/jordan/san-miguel.html, retrieved 2026-10-25)"
+    },
+    {
+      "id": "brgy_jordan_santa_teresa",
+      "name": "Brgy. Santa Teresa",
+      "type": "destination",
+      "municipality": "jordan",
+      "lat": 10.5891,
+      "lng": 122.5568,
+      "category": "Barangays",
+      "source": "PhilAtlas approximate barangay location (https://www.philatlas.com/visayas/r06/guimaras/jordan/santa-teresa.html, retrieved 2026-10-25)"
+    },
+    {
+      "id": "brgy_jordan_sinapsapan",
+      "name": "Brgy. Sinapsapan",
+      "type": "destination",
+      "municipality": "jordan",
+      "lat": 10.5784,
+      "lng": 122.5201,
+      "category": "Barangays",
+      "source": "PhilAtlas approximate barangay location (https://www.philatlas.com/visayas/r06/guimaras/jordan/sinapsapan.html, retrieved 2026-10-25)"
+    },
+    {
+      "id": "brgy_nueva_valencia_cabalagnan",
+      "name": "Brgy. Cabalagnan",
+      "type": "destination",
+      "municipality": "nueva_valencia",
+      "lat": 10.4154,
+      "lng": 122.5474,
+      "category": "Barangays",
+      "source": "PhilAtlas approximate barangay location (https://www.philatlas.com/visayas/r06/guimaras/nueva-valencia/cabalagnan.html, retrieved 2026-10-25)"
+    },
+    {
+      "id": "brgy_nueva_valencia_calaya",
+      "name": "Brgy. Calaya",
+      "type": "destination",
+      "municipality": "nueva_valencia",
+      "lat": 10.4769,
+      "lng": 122.5834,
+      "category": "Barangays",
+      "source": "PhilAtlas approximate barangay location (https://www.philatlas.com/visayas/r06/guimaras/nueva-valencia/calaya.html, retrieved 2026-10-25)"
+    },
+    {
+      "id": "brgy_nueva_valencia_canhawan",
+      "name": "Brgy. Canhawan",
+      "type": "destination",
+      "municipality": "nueva_valencia",
+      "lat": 10.4254,
+      "lng": 122.5566,
+      "category": "Barangays",
+      "source": "PhilAtlas approximate barangay location (https://www.philatlas.com/visayas/r06/guimaras/nueva-valencia/canhawan.html, retrieved 2026-10-25)"
+    },
+    {
+      "id": "brgy_nueva_valencia_concordia_sur",
+      "name": "Brgy. Concordia Sur",
+      "type": "destination",
+      "municipality": "nueva_valencia",
+      "lat": 10.5140002,
+      "lng": 122.5551371,
+      "category": "Barangays",
+      "source": "OpenStreetMap node (Nominatim), retrieved 2026-10-25, ODbL (PhilAtlas lists no coordinates)"
+    },
+    {
+      "id": "brgy_nueva_valencia_dolores",
+      "name": "Brgy. Dolores",
+      "type": "destination",
+      "municipality": "nueva_valencia",
+      "lat": 10.4915,
+      "lng": 122.4851,
+      "category": "Barangays",
+      "source": "PhilAtlas approximate barangay location (https://www.philatlas.com/visayas/r06/guimaras/nueva-valencia/dolores.html, retrieved 2026-10-25)"
+    },
+    {
+      "id": "brgy_nueva_valencia_guiwanon",
+      "name": "Brgy. Guiwanon",
+      "type": "destination",
+      "municipality": "nueva_valencia",
+      "lat": 10.3967,
+      "lng": 122.6005,
+      "category": "Barangays",
+      "source": "PhilAtlas approximate barangay location (https://www.philatlas.com/visayas/r06/guimaras/nueva-valencia/guiwanon.html, retrieved 2026-10-25)"
+    },
+    {
+      "id": "brgy_nueva_valencia_igang",
+      "name": "Brgy. Igang",
+      "type": "destination",
+      "municipality": "nueva_valencia",
+      "lat": 10.5134,
+      "lng": 122.5217,
+      "category": "Barangays",
+      "source": "PhilAtlas approximate barangay location (https://www.philatlas.com/visayas/r06/guimaras/nueva-valencia/igang.html, retrieved 2026-10-25)"
+    },
+    {
+      "id": "brgy_nueva_valencia_igdarapdap",
+      "name": "Brgy. Igdarapdap",
+      "type": "destination",
+      "municipality": "nueva_valencia",
+      "lat": 10.4334,
+      "lng": 122.562,
+      "category": "Barangays",
+      "source": "PhilAtlas approximate barangay location (https://www.philatlas.com/visayas/r06/guimaras/nueva-valencia/igdarapdap.html, retrieved 2026-10-25)"
+    },
+    {
+      "id": "brgy_nueva_valencia_la_paz",
+      "name": "Brgy. La Paz",
+      "type": "destination",
+      "municipality": "nueva_valencia",
+      "lat": 10.4202,
+      "lng": 122.5241,
+      "category": "Barangays",
+      "source": "PhilAtlas approximate barangay location (https://www.philatlas.com/visayas/r06/guimaras/nueva-valencia/la-paz.html, retrieved 2026-10-25)"
+    },
+    {
+      "id": "brgy_nueva_valencia_lanipe",
+      "name": "Brgy. Lanipe",
+      "type": "destination",
+      "municipality": "nueva_valencia",
+      "lat": 10.4602,
+      "lng": 122.5527,
+      "category": "Barangays",
+      "source": "PhilAtlas approximate barangay location (https://www.philatlas.com/visayas/r06/guimaras/nueva-valencia/lanipe.html, retrieved 2026-10-25)"
+    },
+    {
+      "id": "brgy_nueva_valencia_lucmayan",
+      "name": "Brgy. Lucmayan",
+      "type": "destination",
+      "municipality": "nueva_valencia",
+      "lat": 10.4726,
+      "lng": 122.5186,
+      "category": "Barangays",
+      "source": "PhilAtlas approximate barangay location (https://www.philatlas.com/visayas/r06/guimaras/nueva-valencia/lucmayan.html, retrieved 2026-10-25)"
+    },
+    {
+      "id": "brgy_nueva_valencia_magamay",
+      "name": "Brgy. Magamay",
+      "type": "destination",
+      "municipality": "nueva_valencia",
+      "lat": 10.5038,
+      "lng": 122.5129,
+      "category": "Barangays",
+      "source": "PhilAtlas approximate barangay location (https://www.philatlas.com/visayas/r06/guimaras/nueva-valencia/magamay.html, retrieved 2026-10-25)"
+    },
+    {
+      "id": "brgy_nueva_valencia_napandong",
+      "name": "Brgy. Napandong",
+      "type": "destination",
+      "municipality": "nueva_valencia",
+      "lat": 10.4853,
+      "lng": 122.5154,
+      "category": "Barangays",
+      "source": "PhilAtlas approximate barangay location (https://www.philatlas.com/visayas/r06/guimaras/nueva-valencia/napandong.html, retrieved 2026-10-25)"
+    },
+    {
+      "id": "brgy_nueva_valencia_oracon_sur",
+      "name": "Brgy. Oracon Sur",
+      "type": "destination",
+      "municipality": "nueva_valencia",
+      "lat": 10.5019434,
+      "lng": 122.5640954,
+      "category": "Barangays",
+      "source": "OpenStreetMap place (Nominatim), retrieved 2026-10-25, ODbL (PhilAtlas lists no coordinates)"
+    },
+    {
+      "id": "brgy_nueva_valencia_pandaraonan",
+      "name": "Brgy. Pandaraonan",
+      "type": "destination",
+      "municipality": "nueva_valencia",
+      "lat": 10.4984,
+      "lng": 122.4983,
+      "category": "Barangays",
+      "source": "PhilAtlas approximate barangay location (https://www.philatlas.com/visayas/r06/guimaras/nueva-valencia/pandaraonan.html, retrieved 2026-10-25)"
+    },
+    {
+      "id": "brgy_nueva_valencia_panobolon",
+      "name": "Brgy. Panobolon",
+      "type": "destination",
+      "municipality": "nueva_valencia",
+      "lat": 10.4049,
+      "lng": 122.5758,
+      "category": "Barangays",
+      "source": "PhilAtlas approximate barangay location (https://www.philatlas.com/visayas/r06/guimaras/nueva-valencia/panobolon.html, retrieved 2026-10-25)"
+    },
+    {
+      "id": "brgy_nueva_valencia_salvacion",
+      "name": "Brgy. Salvacion",
+      "type": "destination",
+      "municipality": "nueva_valencia",
+      "lat": 10.4431,
+      "lng": 122.534,
+      "category": "Barangays",
+      "source": "PhilAtlas approximate barangay location (https://www.philatlas.com/visayas/r06/guimaras/nueva-valencia/salvacion.html, retrieved 2026-10-25)"
+    },
+    {
+      "id": "brgy_nueva_valencia_san_antonio",
+      "name": "Brgy. San Antonio",
+      "type": "destination",
+      "municipality": "nueva_valencia",
+      "lat": 10.4566,
+      "lng": 122.5915,
+      "category": "Barangays",
+      "source": "PhilAtlas approximate barangay location (https://www.philatlas.com/visayas/r06/guimaras/nueva-valencia/san-antonio.html, retrieved 2026-10-25)"
+    },
+    {
+      "id": "brgy_nueva_valencia_san_roque",
+      "name": "Brgy. San Roque",
+      "type": "destination",
+      "municipality": "nueva_valencia",
+      "lat": 10.4369,
+      "lng": 122.514,
+      "category": "Barangays",
+      "source": "PhilAtlas approximate barangay location (https://www.philatlas.com/visayas/r06/guimaras/nueva-valencia/san-roque.html, retrieved 2026-10-25)"
+    },
+    {
+      "id": "brgy_nueva_valencia_santo_domingo",
+      "name": "Brgy. Santo Domingo",
+      "type": "destination",
+      "municipality": "nueva_valencia",
+      "lat": 10.5006,
+      "lng": 122.5227,
+      "category": "Barangays",
+      "source": "PhilAtlas approximate barangay location (https://www.philatlas.com/visayas/r06/guimaras/nueva-valencia/santo-domingo.html, retrieved 2026-10-25)"
+    },
+    {
+      "id": "brgy_nueva_valencia_tando",
+      "name": "Brgy. Tando",
+      "type": "destination",
+      "municipality": "nueva_valencia",
+      "lat": 10.4679,
+      "lng": 122.4898,
+      "category": "Barangays",
+      "source": "PhilAtlas approximate barangay location (https://www.philatlas.com/visayas/r06/guimaras/nueva-valencia/tando.html, retrieved 2026-10-25)"
+    },
+    {
+      "id": "brgy_san_lorenzo_aguilar",
+      "name": "Brgy. Aguilar",
+      "type": "destination",
+      "municipality": "san_lorenzo",
+      "lat": 10.6276,
+      "lng": 122.6548,
+      "category": "Barangays",
+      "source": "PhilAtlas approximate barangay location (https://www.philatlas.com/visayas/r06/guimaras/san-lorenzo/aguilar.html, retrieved 2026-10-25)"
+    },
+    {
+      "id": "brgy_san_lorenzo_cabano",
+      "name": "Brgy. Cabano",
+      "type": "destination",
+      "municipality": "san_lorenzo",
+      "lat": 10.5866,
+      "lng": 122.7013,
+      "category": "Barangays",
+      "source": "PhilAtlas approximate barangay location (https://www.philatlas.com/visayas/r06/guimaras/san-lorenzo/cabano.html, retrieved 2026-10-25)"
+    },
+    {
+      "id": "brgy_san_lorenzo_cabungahan",
+      "name": "Brgy. Cabungahan",
+      "type": "destination",
+      "municipality": "san_lorenzo",
+      "lat": 10.6165,
+      "lng": 122.6963,
+      "category": "Barangays",
+      "source": "PhilAtlas approximate barangay location (https://www.philatlas.com/visayas/r06/guimaras/san-lorenzo/cabungahan.html, retrieved 2026-10-25)"
+    },
+    {
+      "id": "brgy_san_lorenzo_constancia",
+      "name": "Brgy. Constancia",
+      "type": "destination",
+      "municipality": "san_lorenzo",
+      "lat": 10.5935,
+      "lng": 122.6408,
+      "category": "Barangays",
+      "source": "PhilAtlas approximate barangay location (https://www.philatlas.com/visayas/r06/guimaras/san-lorenzo/constancia.html, retrieved 2026-10-25)"
+    },
+    {
+      "id": "brgy_san_lorenzo_gaban",
+      "name": "Brgy. Gaban",
+      "type": "destination",
+      "municipality": "san_lorenzo",
+      "lat": 10.6238,
+      "lng": 122.68,
+      "category": "Barangays",
+      "source": "PhilAtlas approximate barangay location (https://www.philatlas.com/visayas/r06/guimaras/san-lorenzo/gaban.html, retrieved 2026-10-25)"
+    },
+    {
+      "id": "brgy_san_lorenzo_igcawayan",
+      "name": "Brgy. Igcawayan",
+      "type": "destination",
+      "municipality": "san_lorenzo",
+      "lat": 10.5411,
+      "lng": 122.6875,
+      "category": "Barangays",
+      "source": "PhilAtlas approximate barangay location (https://www.philatlas.com/visayas/r06/guimaras/san-lorenzo/igcawayan.html, retrieved 2026-10-25)"
+    },
+    {
+      "id": "brgy_san_lorenzo_m_chavez",
+      "name": "Brgy. M. Chavez",
+      "type": "destination",
+      "municipality": "san_lorenzo",
+      "lat": 10.5991,
+      "lng": 122.7076,
+      "category": "Barangays",
+      "source": "PhilAtlas approximate barangay location (https://www.philatlas.com/visayas/r06/guimaras/san-lorenzo/m-chavez.html, retrieved 2026-10-25)"
+    },
+    {
+      "id": "brgy_san_lorenzo_san_enrique",
+      "name": "Brgy. San Enrique (Lebas)",
+      "type": "destination",
+      "municipality": "san_lorenzo",
+      "lat": 10.6389,
+      "lng": 122.7202,
+      "category": "Barangays",
+      "source": "PhilAtlas approximate barangay location (https://www.philatlas.com/visayas/r06/guimaras/san-lorenzo/san-enrique.html, retrieved 2026-10-25)"
+    },
+    {
+      "id": "brgy_san_lorenzo_sapal",
+      "name": "Brgy. Sapal",
+      "type": "destination",
+      "municipality": "san_lorenzo",
+      "lat": 10.5528,
+      "lng": 122.6488,
+      "category": "Barangays",
+      "source": "PhilAtlas approximate barangay location (https://www.philatlas.com/visayas/r06/guimaras/san-lorenzo/sapal.html, retrieved 2026-10-25)"
+    },
+    {
+      "id": "brgy_san_lorenzo_sebario",
+      "name": "Brgy. Sebario",
+      "type": "destination",
+      "municipality": "san_lorenzo",
+      "lat": 10.5276,
+      "lng": 122.6789,
+      "category": "Barangays",
+      "source": "PhilAtlas approximate barangay location (https://www.philatlas.com/visayas/r06/guimaras/san-lorenzo/sebario.html, retrieved 2026-10-25)"
+    },
+    {
+      "id": "brgy_san_lorenzo_suclaran",
+      "name": "Brgy. Suclaran",
+      "type": "destination",
+      "municipality": "san_lorenzo",
+      "lat": 10.613,
+      "lng": 122.7146,
+      "category": "Barangays",
+      "source": "PhilAtlas approximate barangay location (https://www.philatlas.com/visayas/r06/guimaras/san-lorenzo/suclaran.html, retrieved 2026-10-25)"
+    },
+    {
+      "id": "brgy_san_lorenzo_tamborong",
+      "name": "Brgy. Tamborong",
+      "type": "destination",
+      "municipality": "san_lorenzo",
+      "lat": 10.6344,
+      "lng": 122.6212,
+      "category": "Barangays",
+      "source": "PhilAtlas approximate barangay location (https://www.philatlas.com/visayas/r06/guimaras/san-lorenzo/tamborong.html, retrieved 2026-10-25)"
+    },
+    {
+      "id": "brgy_sibunag_alegria",
+      "name": "Brgy. Alegria",
+      "type": "destination",
+      "municipality": "sibunag",
+      "lat": 10.4472,
+      "lng": 122.6176,
+      "category": "Barangays",
+      "source": "PhilAtlas approximate barangay location (https://www.philatlas.com/visayas/r06/guimaras/sibunag/alegria.html, retrieved 2026-10-25)"
+    },
+    {
+      "id": "brgy_sibunag_ayangan",
+      "name": "Brgy. Ayangan",
+      "type": "destination",
+      "municipality": "sibunag",
+      "lat": 10.5259,
+      "lng": 122.5879,
+      "category": "Barangays",
+      "source": "PhilAtlas approximate barangay location (https://www.philatlas.com/visayas/r06/guimaras/sibunag/ayangan.html, retrieved 2026-10-25)"
+    },
+    {
+      "id": "brgy_sibunag_bubog",
+      "name": "Brgy. Bubog",
+      "type": "destination",
+      "municipality": "sibunag",
+      "lat": 10.4982,
+      "lng": 122.6649,
+      "category": "Barangays",
+      "source": "PhilAtlas approximate barangay location (https://www.philatlas.com/visayas/r06/guimaras/sibunag/bubog.html, retrieved 2026-10-25)"
+    },
+    {
+      "id": "brgy_sibunag_concordia_norte",
+      "name": "Brgy. Concordia Norte",
+      "type": "destination",
+      "municipality": "sibunag",
+      "lat": 10.5292,
+      "lng": 122.5626,
+      "category": "Barangays",
+      "source": "PhilAtlas approximate barangay location (https://www.philatlas.com/visayas/r06/guimaras/sibunag/concordia-norte.html, retrieved 2026-10-25)"
+    },
+    {
+      "id": "brgy_sibunag_dasal",
+      "name": "Brgy. Dasal",
+      "type": "destination",
+      "municipality": "sibunag",
+      "lat": 10.4918,
+      "lng": 122.6281,
+      "category": "Barangays",
+      "source": "PhilAtlas approximate barangay location (https://www.philatlas.com/visayas/r06/guimaras/sibunag/dasal.html, retrieved 2026-10-25)"
+    },
+    {
+      "id": "brgy_sibunag_inampologan",
+      "name": "Brgy. Inampologan",
+      "type": "destination",
+      "municipality": "sibunag",
+      "lat": 10.4521,
+      "lng": 122.7245,
+      "category": "Barangays",
+      "source": "PhilAtlas approximate barangay location (https://www.philatlas.com/visayas/r06/guimaras/sibunag/inampologan.html, retrieved 2026-10-25)"
+    },
+    {
+      "id": "brgy_sibunag_maabay",
+      "name": "Brgy. Maabay",
+      "type": "destination",
+      "municipality": "sibunag",
+      "lat": 10.5228,
+      "lng": 122.6313,
+      "category": "Barangays",
+      "source": "PhilAtlas approximate barangay location (https://www.philatlas.com/visayas/r06/guimaras/sibunag/maabay.html, retrieved 2026-10-25)"
+    },
+    {
+      "id": "brgy_sibunag_millan",
+      "name": "Brgy. Millan",
+      "type": "destination",
+      "municipality": "sibunag",
+      "lat": 10.551,
+      "lng": 122.6104,
+      "category": "Barangays",
+      "source": "PhilAtlas approximate barangay location (https://www.philatlas.com/visayas/r06/guimaras/sibunag/millan.html, retrieved 2026-10-25)"
+    },
+    {
+      "id": "brgy_sibunag_oracon_norte",
+      "name": "Brgy. Oracon Norte",
+      "type": "destination",
+      "municipality": "sibunag",
+      "lat": 10.5087,
+      "lng": 122.5779,
+      "category": "Barangays",
+      "source": "PhilAtlas approximate barangay location (https://www.philatlas.com/visayas/r06/guimaras/sibunag/oracon-norte.html, retrieved 2026-10-25)"
+    },
+    {
+      "id": "brgy_sibunag_ravina",
+      "name": "Brgy. Ravina",
+      "type": "destination",
+      "municipality": "sibunag",
+      "lat": 10.5502,
+      "lng": 122.559,
+      "category": "Barangays",
+      "source": "PhilAtlas approximate barangay location (https://www.philatlas.com/visayas/r06/guimaras/sibunag/ravina.html, retrieved 2026-10-25)"
+    },
+    {
+      "id": "brgy_sibunag_sabang",
+      "name": "Brgy. Sabang",
+      "type": "destination",
+      "municipality": "sibunag",
+      "lat": 10.4868,
+      "lng": 122.6564,
+      "category": "Barangays",
+      "source": "PhilAtlas approximate barangay location (https://www.philatlas.com/visayas/r06/guimaras/sibunag/sabang.html, retrieved 2026-10-25)"
+    },
+    {
+      "id": "brgy_sibunag_san_isidro",
+      "name": "Brgy. San Isidro",
+      "type": "destination",
+      "municipality": "sibunag",
+      "lat": 10.4582,
+      "lng": 122.6375,
+      "category": "Barangays",
+      "source": "PhilAtlas approximate barangay location (https://www.philatlas.com/visayas/r06/guimaras/sibunag/san-isidro.html, retrieved 2026-10-25)"
+    },
+    {
+      "id": "brgy_sibunag_sebaste",
+      "name": "Brgy. Sebaste",
+      "type": "destination",
+      "municipality": "sibunag",
+      "lat": 10.5025,
+      "lng": 122.6695,
+      "category": "Barangays",
+      "source": "PhilAtlas approximate barangay location (https://www.philatlas.com/visayas/r06/guimaras/sibunag/sebaste.html, retrieved 2026-10-25)"
+    },
+    {
+      "id": "brgy_sibunag_tanglad",
+      "name": "Brgy. Tanglad",
+      "type": "destination",
+      "municipality": "sibunag",
+      "lat": 10.5574,
+      "lng": 122.5887,
+      "category": "Barangays",
+      "source": "PhilAtlas approximate barangay location (https://www.philatlas.com/visayas/r06/guimaras/sibunag/tanglad.html, retrieved 2026-10-25)"
     }
   ],
   "edges": [
@@ -682,6 +1632,1386 @@
       "available": true,
       "dataStatus": "osm",
       "source": "OSRM road distance over OpenStreetMap (router.project-osrm.org, retrieved 2026-10-24). Minutes use the assumed tricycle speed."
+    },
+    {
+      "id": "e_bv_tacay",
+      "from": "terminal_buenavista_poblacion",
+      "to": "brgy_bv_tacay",
+      "distance_km": 4.6,
+      "estimated_minutes": 14,
+      "route_type": "municipal road",
+      "transport_modes": [
+        "tricycle"
+      ],
+      "bidirectional": true,
+      "available": true,
+      "dataStatus": "osm",
+      "source": "OSRM road distance over OpenStreetMap (router.project-osrm.org, retrieved 2026-10-25). Minutes use the assumed tricycle speed."
+    },
+    {
+      "id": "e_bv_taminla",
+      "from": "terminal_buenavista_poblacion",
+      "to": "brgy_bv_taminla",
+      "distance_km": 4.6,
+      "estimated_minutes": 14,
+      "route_type": "municipal road",
+      "transport_modes": [
+        "tricycle"
+      ],
+      "bidirectional": true,
+      "available": true,
+      "dataStatus": "osm",
+      "source": "OSRM road distance over OpenStreetMap (router.project-osrm.org, retrieved 2026-10-25). Minutes use the assumed tricycle speed."
+    },
+    {
+      "id": "e_bv_sto_rosario",
+      "from": "terminal_buenavista_poblacion",
+      "to": "brgy_bv_sto_rosario",
+      "distance_km": 3.5,
+      "estimated_minutes": 11,
+      "route_type": "municipal road",
+      "transport_modes": [
+        "tricycle"
+      ],
+      "bidirectional": true,
+      "available": true,
+      "dataStatus": "osm",
+      "source": "OSRM road distance over OpenStreetMap (router.project-osrm.org, retrieved 2026-10-25). Minutes use the assumed tricycle speed."
+    },
+    {
+      "id": "e_bv_salvacion",
+      "from": "terminal_buenavista_poblacion",
+      "to": "brgy_bv_salvacion",
+      "distance_km": 1.4,
+      "estimated_minutes": 4,
+      "route_type": "municipal road",
+      "transport_modes": [
+        "tricycle"
+      ],
+      "bidirectional": true,
+      "available": true,
+      "dataStatus": "osm",
+      "source": "OSRM road distance over OpenStreetMap (router.project-osrm.org, retrieved 2026-10-25). Minutes use the assumed tricycle speed."
+    },
+    {
+      "id": "e_bv_san_roque",
+      "from": "terminal_buenavista_poblacion",
+      "to": "brgy_bv_san_roque",
+      "distance_km": 3.5,
+      "estimated_minutes": 11,
+      "route_type": "municipal road",
+      "transport_modes": [
+        "tricycle"
+      ],
+      "bidirectional": true,
+      "available": true,
+      "dataStatus": "osm",
+      "source": "OSRM road distance over OpenStreetMap (router.project-osrm.org, retrieved 2026-10-25). Minutes use the assumed tricycle speed."
+    },
+    {
+      "id": "e_bv_tastasan",
+      "from": "terminal_buenavista_poblacion",
+      "to": "brgy_bv_tastasan",
+      "distance_km": 2.1,
+      "estimated_minutes": 6,
+      "route_type": "municipal road",
+      "transport_modes": [
+        "tricycle"
+      ],
+      "bidirectional": true,
+      "available": true,
+      "dataStatus": "osm",
+      "source": "OSRM road distance over OpenStreetMap (router.project-osrm.org, retrieved 2026-10-25). Minutes use the assumed tricycle speed."
+    },
+    {
+      "id": "e_bv_tinadtaran",
+      "from": "terminal_buenavista_poblacion",
+      "to": "brgy_bv_tinadtaran",
+      "distance_km": 6.6,
+      "estimated_minutes": 20,
+      "route_type": "municipal road",
+      "transport_modes": [
+        "tricycle"
+      ],
+      "bidirectional": true,
+      "available": true,
+      "dataStatus": "osm",
+      "source": "OSRM road distance over OpenStreetMap (router.project-osrm.org, retrieved 2026-10-25). Minutes use the assumed tricycle speed."
+    },
+    {
+      "id": "e_bv_mclain",
+      "from": "terminal_buenavista_poblacion",
+      "to": "brgy_bv_mclain",
+      "distance_km": 1.2,
+      "estimated_minutes": 4,
+      "route_type": "municipal road",
+      "transport_modes": [
+        "tricycle"
+      ],
+      "bidirectional": true,
+      "available": true,
+      "dataStatus": "osm",
+      "source": "OSRM road distance over OpenStreetMap (router.project-osrm.org, retrieved 2026-10-25). Minutes use the assumed tricycle speed."
+    },
+    {
+      "id": "e_bv_supang",
+      "from": "terminal_buenavista_poblacion",
+      "to": "brgy_bv_supang",
+      "distance_km": 3.3,
+      "estimated_minutes": 10,
+      "route_type": "municipal road",
+      "transport_modes": [
+        "tricycle"
+      ],
+      "bidirectional": true,
+      "available": true,
+      "dataStatus": "osm",
+      "source": "OSRM road distance over OpenStreetMap (router.project-osrm.org, retrieved 2026-10-25). Minutes use the assumed tricycle speed."
+    },
+    {
+      "id": "e_bv_san_nicolas",
+      "from": "terminal_buenavista_poblacion",
+      "to": "brgy_bv_san_nicolas",
+      "distance_km": 5.9,
+      "estimated_minutes": 18,
+      "route_type": "municipal road",
+      "transport_modes": [
+        "tricycle"
+      ],
+      "bidirectional": true,
+      "available": true,
+      "dataStatus": "osm",
+      "source": "OSRM road distance over OpenStreetMap (router.project-osrm.org, retrieved 2026-10-25). Minutes use the assumed tricycle speed."
+    },
+    {
+      "id": "e_bv_cansilayan",
+      "from": "terminal_buenavista_poblacion",
+      "to": "brgy_bv_cansilayan",
+      "distance_km": 6.1,
+      "estimated_minutes": 18,
+      "route_type": "municipal road",
+      "transport_modes": [
+        "tricycle"
+      ],
+      "bidirectional": true,
+      "available": true,
+      "dataStatus": "osm",
+      "source": "OSRM road distance over OpenStreetMap (router.project-osrm.org, retrieved 2026-10-25). Minutes use the assumed tricycle speed."
+    },
+    {
+      "id": "e_bv_avila",
+      "from": "terminal_buenavista_poblacion",
+      "to": "brgy_bv_avila",
+      "distance_km": 8.6,
+      "estimated_minutes": 26,
+      "route_type": "municipal road",
+      "transport_modes": [
+        "tricycle"
+      ],
+      "bidirectional": true,
+      "available": true,
+      "dataStatus": "osm",
+      "source": "OSRM road distance over OpenStreetMap (router.project-osrm.org, retrieved 2026-10-25). Minutes use the assumed tricycle speed."
+    },
+    {
+      "id": "e_bv_east_valencia",
+      "from": "terminal_buenavista_poblacion",
+      "to": "brgy_bv_east_valencia",
+      "distance_km": 12,
+      "estimated_minutes": 36,
+      "route_type": "municipal road",
+      "transport_modes": [
+        "tricycle"
+      ],
+      "bidirectional": true,
+      "available": true,
+      "dataStatus": "osm",
+      "source": "OSRM road distance over OpenStreetMap (router.project-osrm.org, retrieved 2026-10-25). Minutes use the assumed tricycle speed."
+    },
+    {
+      "id": "e_bv_navalas",
+      "from": "terminal_buenavista_poblacion",
+      "to": "brgy_bv_navalas",
+      "distance_km": 7.7,
+      "estimated_minutes": 23,
+      "route_type": "municipal road",
+      "transport_modes": [
+        "tricycle"
+      ],
+      "bidirectional": true,
+      "available": true,
+      "dataStatus": "osm",
+      "source": "OSRM road distance over OpenStreetMap (router.project-osrm.org, retrieved 2026-10-25). Minutes use the assumed tricycle speed."
+    },
+    {
+      "id": "e_bv_agsanayan",
+      "from": "terminal_buenavista_poblacion",
+      "to": "brgy_bv_agsanayan",
+      "distance_km": 6.2,
+      "estimated_minutes": 19,
+      "route_type": "municipal road",
+      "transport_modes": [
+        "tricycle"
+      ],
+      "bidirectional": true,
+      "available": true,
+      "dataStatus": "osm",
+      "source": "OSRM road distance over OpenStreetMap (router.project-osrm.org, retrieved 2026-10-25). Minutes use the assumed tricycle speed."
+    },
+    {
+      "id": "e_bv_mabini",
+      "from": "terminal_buenavista_poblacion",
+      "to": "brgy_bv_mabini",
+      "distance_km": 1.6,
+      "estimated_minutes": 5,
+      "route_type": "municipal road",
+      "transport_modes": [
+        "tricycle"
+      ],
+      "bidirectional": true,
+      "available": true,
+      "dataStatus": "osm",
+      "source": "OSRM road distance over OpenStreetMap (router.project-osrm.org, retrieved 2026-10-25). Minutes use the assumed tricycle speed."
+    },
+    {
+      "id": "e_bv_san_miguel",
+      "from": "terminal_buenavista_poblacion",
+      "to": "brgy_bv_san_miguel",
+      "distance_km": 8.9,
+      "estimated_minutes": 27,
+      "route_type": "municipal road",
+      "transport_modes": [
+        "tricycle"
+      ],
+      "bidirectional": true,
+      "available": true,
+      "dataStatus": "osm",
+      "source": "OSRM road distance over OpenStreetMap (router.project-osrm.org, retrieved 2026-10-25). Minutes use the assumed tricycle speed."
+    },
+    {
+      "id": "e_bv_san_pedro",
+      "from": "terminal_buenavista_poblacion",
+      "to": "brgy_bv_san_pedro",
+      "distance_km": 4.9,
+      "estimated_minutes": 15,
+      "route_type": "municipal road",
+      "transport_modes": [
+        "tricycle"
+      ],
+      "bidirectional": true,
+      "available": true,
+      "dataStatus": "osm",
+      "source": "OSRM road distance over OpenStreetMap (router.project-osrm.org, retrieved 2026-10-25). Minutes use the assumed tricycle speed."
+    },
+    {
+      "id": "e_bv_san_fernando",
+      "from": "terminal_buenavista_poblacion",
+      "to": "brgy_bv_san_fernando",
+      "distance_km": 5,
+      "estimated_minutes": 15,
+      "route_type": "municipal road",
+      "transport_modes": [
+        "tricycle"
+      ],
+      "bidirectional": true,
+      "available": true,
+      "dataStatus": "osm",
+      "source": "OSRM road distance over OpenStreetMap (router.project-osrm.org, retrieved 2026-10-25). Minutes use the assumed tricycle speed."
+    },
+    {
+      "id": "e_bv_tanag",
+      "from": "terminal_buenavista_poblacion",
+      "to": "brgy_bv_tanag",
+      "distance_km": 7.2,
+      "estimated_minutes": 22,
+      "route_type": "municipal road",
+      "transport_modes": [
+        "tricycle"
+      ],
+      "bidirectional": true,
+      "available": true,
+      "dataStatus": "osm",
+      "source": "OSRM road distance over OpenStreetMap (router.project-osrm.org, retrieved 2026-10-25). Minutes use the assumed tricycle speed."
+    },
+    {
+      "id": "e_bv_umilig",
+      "from": "terminal_buenavista_poblacion",
+      "to": "brgy_bv_umilig",
+      "distance_km": 8.3,
+      "estimated_minutes": 25,
+      "route_type": "municipal road",
+      "transport_modes": [
+        "tricycle"
+      ],
+      "bidirectional": true,
+      "available": true,
+      "dataStatus": "osm",
+      "source": "OSRM road distance over OpenStreetMap (router.project-osrm.org, retrieved 2026-10-25). Minutes use the assumed tricycle speed."
+    },
+    {
+      "id": "e_bv_dagsaan",
+      "from": "terminal_buenavista_poblacion",
+      "to": "brgy_bv_dagsaan",
+      "distance_km": 4.3,
+      "estimated_minutes": 13,
+      "route_type": "municipal road",
+      "transport_modes": [
+        "tricycle"
+      ],
+      "bidirectional": true,
+      "available": true,
+      "dataStatus": "osm",
+      "source": "OSRM road distance over OpenStreetMap (router.project-osrm.org, retrieved 2026-10-25). Minutes use the assumed tricycle speed."
+    },
+    {
+      "id": "e_bv_rizal",
+      "from": "terminal_buenavista_poblacion",
+      "to": "brgy_bv_rizal",
+      "distance_km": 4,
+      "estimated_minutes": 12,
+      "route_type": "municipal road",
+      "transport_modes": [
+        "tricycle"
+      ],
+      "bidirectional": true,
+      "available": true,
+      "dataStatus": "osm",
+      "source": "OSRM road distance over OpenStreetMap (router.project-osrm.org, retrieved 2026-10-25). Minutes use the assumed tricycle speed."
+    },
+    {
+      "id": "e_bv_montpiller",
+      "from": "terminal_buenavista_poblacion",
+      "to": "brgy_bv_montpiller",
+      "distance_km": 5.3,
+      "estimated_minutes": 16,
+      "route_type": "municipal road",
+      "transport_modes": [
+        "tricycle"
+      ],
+      "bidirectional": true,
+      "available": true,
+      "dataStatus": "osm",
+      "source": "OSRM road distance over OpenStreetMap (router.project-osrm.org, retrieved 2026-10-25). Minutes use the assumed tricycle speed."
+    },
+    {
+      "id": "e_bv_daragan",
+      "from": "terminal_buenavista_poblacion",
+      "to": "brgy_bv_daragan",
+      "distance_km": 6.6,
+      "estimated_minutes": 20,
+      "route_type": "municipal road",
+      "transport_modes": [
+        "tricycle"
+      ],
+      "bidirectional": true,
+      "available": true,
+      "dataStatus": "osm",
+      "source": "OSRM road distance over OpenStreetMap (router.project-osrm.org, retrieved 2026-10-25). Minutes use the assumed tricycle speed."
+    },
+    {
+      "id": "e_bv_nazaret",
+      "from": "terminal_buenavista_poblacion",
+      "to": "brgy_bv_nazaret",
+      "distance_km": 6.1,
+      "estimated_minutes": 18,
+      "route_type": "municipal road",
+      "transport_modes": [
+        "tricycle"
+      ],
+      "bidirectional": true,
+      "available": true,
+      "dataStatus": "osm",
+      "source": "OSRM road distance over OpenStreetMap (router.project-osrm.org, retrieved 2026-10-25). Minutes use the assumed tricycle speed."
+    },
+    {
+      "id": "e_bv_san_isidro",
+      "from": "terminal_buenavista_poblacion",
+      "to": "brgy_bv_san_isidro",
+      "distance_km": 4.2,
+      "estimated_minutes": 13,
+      "route_type": "municipal road",
+      "transport_modes": [
+        "tricycle"
+      ],
+      "bidirectional": true,
+      "available": true,
+      "dataStatus": "osm",
+      "source": "OSRM road distance over OpenStreetMap (router.project-osrm.org, retrieved 2026-10-25). Minutes use the assumed tricycle speed."
+    },
+    {
+      "id": "e_bv_old_poblacion",
+      "from": "terminal_buenavista_poblacion",
+      "to": "brgy_bv_old_poblacion",
+      "distance_km": 4.7,
+      "estimated_minutes": 14,
+      "route_type": "municipal road",
+      "transport_modes": [
+        "tricycle"
+      ],
+      "bidirectional": true,
+      "available": true,
+      "dataStatus": "osm",
+      "source": "OSRM road distance over OpenStreetMap (router.project-osrm.org, retrieved 2026-10-25). Minutes use the assumed tricycle speed."
+    },
+    {
+      "id": "e_bv_sawang",
+      "from": "terminal_buenavista_poblacion",
+      "to": "brgy_bv_sawang",
+      "distance_km": 6,
+      "estimated_minutes": 18,
+      "route_type": "municipal road",
+      "transport_modes": [
+        "tricycle"
+      ],
+      "bidirectional": true,
+      "available": true,
+      "dataStatus": "osm",
+      "source": "OSRM road distance over OpenStreetMap (router.project-osrm.org, retrieved 2026-10-25). Minutes use the assumed tricycle speed."
+    },
+    {
+      "id": "e_bv_bacjao",
+      "from": "terminal_buenavista_poblacion",
+      "to": "brgy_bv_bacjao",
+      "distance_km": 6.4,
+      "estimated_minutes": 19,
+      "route_type": "municipal road",
+      "transport_modes": [
+        "tricycle"
+      ],
+      "bidirectional": true,
+      "available": true,
+      "dataStatus": "osm",
+      "source": "OSRM road distance over OpenStreetMap (router.project-osrm.org, retrieved 2026-10-25). Minutes use the assumed tricycle speed."
+    },
+    {
+      "id": "e_bv_banban",
+      "from": "terminal_buenavista_poblacion",
+      "to": "brgy_bv_banban",
+      "distance_km": 5.6,
+      "estimated_minutes": 17,
+      "route_type": "municipal road",
+      "transport_modes": [
+        "tricycle"
+      ],
+      "bidirectional": true,
+      "available": true,
+      "dataStatus": "osm",
+      "source": "OSRM road distance over OpenStreetMap (router.project-osrm.org, retrieved 2026-10-25). Minutes use the assumed tricycle speed."
+    },
+    {
+      "id": "e_bv_magsaysay",
+      "from": "terminal_buenavista_poblacion",
+      "to": "brgy_bv_magsaysay",
+      "distance_km": 4.4,
+      "estimated_minutes": 13,
+      "route_type": "municipal road",
+      "transport_modes": [
+        "tricycle"
+      ],
+      "bidirectional": true,
+      "available": true,
+      "dataStatus": "osm",
+      "source": "OSRM road distance over OpenStreetMap (router.project-osrm.org, retrieved 2026-10-25). Minutes use the assumed tricycle speed."
+    },
+    {
+      "id": "e_bv_pina",
+      "from": "terminal_buenavista_poblacion",
+      "to": "brgy_bv_pina",
+      "distance_km": 10,
+      "estimated_minutes": 30,
+      "route_type": "municipal road",
+      "transport_modes": [
+        "tricycle"
+      ],
+      "bidirectional": true,
+      "available": true,
+      "dataStatus": "osm",
+      "source": "OSRM road distance over OpenStreetMap (router.project-osrm.org, retrieved 2026-10-25). Minutes use the assumed tricycle speed."
+    },
+    {
+      "id": "e_bv_zaldivar",
+      "from": "terminal_buenavista_poblacion",
+      "to": "brgy_bv_zaldivar",
+      "distance_km": 4.3,
+      "estimated_minutes": 13,
+      "route_type": "municipal road",
+      "transport_modes": [
+        "tricycle"
+      ],
+      "bidirectional": true,
+      "available": true,
+      "dataStatus": "osm",
+      "source": "OSRM road distance over OpenStreetMap (router.project-osrm.org, retrieved 2026-10-25). Minutes use the assumed tricycle speed."
+    },
+    {
+      "id": "e_jordan_alaguisoc",
+      "from": "center_jordan",
+      "to": "brgy_jordan_alaguisoc",
+      "distance_km": 6.1,
+      "estimated_minutes": 18,
+      "route_type": "municipal road",
+      "transport_modes": [
+        "tricycle"
+      ],
+      "bidirectional": true,
+      "available": true,
+      "dataStatus": "osm",
+      "source": "OSRM road distance over OpenStreetMap (router.project-osrm.org, retrieved 2026-10-25). Minutes use the assumed tricycle speed."
+    },
+    {
+      "id": "e_jordan_balcon_maravilla",
+      "from": "center_jordan",
+      "to": "brgy_jordan_balcon_maravilla",
+      "distance_km": 5.2,
+      "estimated_minutes": 16,
+      "route_type": "municipal road",
+      "transport_modes": [
+        "tricycle"
+      ],
+      "bidirectional": true,
+      "available": true,
+      "dataStatus": "osm",
+      "source": "OSRM road distance over OpenStreetMap (router.project-osrm.org, retrieved 2026-10-25). Minutes use the assumed tricycle speed."
+    },
+    {
+      "id": "e_jordan_balcon_melliza",
+      "from": "center_jordan",
+      "to": "brgy_jordan_balcon_melliza",
+      "distance_km": 4.2,
+      "estimated_minutes": 13,
+      "route_type": "municipal road",
+      "transport_modes": [
+        "tricycle"
+      ],
+      "bidirectional": true,
+      "available": true,
+      "dataStatus": "osm",
+      "source": "OSRM road distance over OpenStreetMap (router.project-osrm.org, retrieved 2026-10-25). Minutes use the assumed tricycle speed."
+    },
+    {
+      "id": "e_jordan_bugnay",
+      "from": "center_jordan",
+      "to": "brgy_jordan_bugnay",
+      "distance_km": 13.2,
+      "estimated_minutes": 40,
+      "route_type": "municipal road",
+      "transport_modes": [
+        "tricycle"
+      ],
+      "bidirectional": true,
+      "available": true,
+      "dataStatus": "osm",
+      "source": "OSRM road distance over OpenStreetMap (router.project-osrm.org, retrieved 2026-10-25). Minutes use the assumed tricycle speed."
+    },
+    {
+      "id": "e_jordan_buluangan",
+      "from": "center_jordan",
+      "to": "brgy_jordan_buluangan",
+      "distance_km": 16.4,
+      "estimated_minutes": 49,
+      "route_type": "municipal road",
+      "transport_modes": [
+        "tricycle"
+      ],
+      "bidirectional": true,
+      "available": true,
+      "dataStatus": "osm",
+      "source": "OSRM road distance over OpenStreetMap (router.project-osrm.org, retrieved 2026-10-25). Minutes use the assumed tricycle speed."
+    },
+    {
+      "id": "e_jordan_espinosa",
+      "from": "center_jordan",
+      "to": "brgy_jordan_espinosa",
+      "distance_km": 15.5,
+      "estimated_minutes": 47,
+      "route_type": "municipal road",
+      "transport_modes": [
+        "tricycle"
+      ],
+      "bidirectional": true,
+      "available": true,
+      "dataStatus": "osm",
+      "source": "OSRM road distance over OpenStreetMap (router.project-osrm.org, retrieved 2026-10-25). Minutes use the assumed tricycle speed."
+    },
+    {
+      "id": "e_jordan_hoskyn",
+      "from": "center_jordan",
+      "to": "brgy_jordan_hoskyn",
+      "distance_km": 2,
+      "estimated_minutes": 6,
+      "route_type": "municipal road",
+      "transport_modes": [
+        "tricycle"
+      ],
+      "bidirectional": true,
+      "available": true,
+      "dataStatus": "osm",
+      "source": "OSRM road distance over OpenStreetMap (router.project-osrm.org, retrieved 2026-10-25). Minutes use the assumed tricycle speed."
+    },
+    {
+      "id": "e_jordan_lawi",
+      "from": "center_jordan",
+      "to": "brgy_jordan_lawi",
+      "distance_km": 17.1,
+      "estimated_minutes": 51,
+      "route_type": "municipal road",
+      "transport_modes": [
+        "tricycle"
+      ],
+      "bidirectional": true,
+      "available": true,
+      "dataStatus": "osm",
+      "source": "OSRM road distance over OpenStreetMap (router.project-osrm.org, retrieved 2026-10-25). Minutes use the assumed tricycle speed."
+    },
+    {
+      "id": "e_jordan_morobuan",
+      "from": "center_jordan",
+      "to": "brgy_jordan_morobuan",
+      "distance_km": 7.3,
+      "estimated_minutes": 22,
+      "route_type": "municipal road",
+      "transport_modes": [
+        "tricycle"
+      ],
+      "bidirectional": true,
+      "available": true,
+      "dataStatus": "osm",
+      "source": "OSRM road distance over OpenStreetMap (router.project-osrm.org, retrieved 2026-10-25). Minutes use the assumed tricycle speed."
+    },
+    {
+      "id": "e_jordan_poblacion",
+      "from": "center_jordan",
+      "to": "brgy_jordan_poblacion",
+      "distance_km": 1.2,
+      "estimated_minutes": 4,
+      "route_type": "municipal road",
+      "transport_modes": [
+        "tricycle"
+      ],
+      "bidirectional": true,
+      "available": true,
+      "dataStatus": "osm",
+      "source": "OSRM road distance over OpenStreetMap (router.project-osrm.org, retrieved 2026-10-25). Minutes use the assumed tricycle speed."
+    },
+    {
+      "id": "e_jordan_rizal",
+      "from": "center_jordan",
+      "to": "brgy_jordan_rizal",
+      "distance_km": 0.4,
+      "estimated_minutes": 1,
+      "route_type": "municipal road",
+      "transport_modes": [
+        "tricycle"
+      ],
+      "bidirectional": true,
+      "available": true,
+      "dataStatus": "osm",
+      "source": "OSRM road distance over OpenStreetMap (router.project-osrm.org, retrieved 2026-10-25). Minutes use the assumed tricycle speed."
+    },
+    {
+      "id": "e_jordan_san_miguel",
+      "from": "center_jordan",
+      "to": "brgy_jordan_san_miguel",
+      "distance_km": 8.8,
+      "estimated_minutes": 26,
+      "route_type": "municipal road",
+      "transport_modes": [
+        "tricycle"
+      ],
+      "bidirectional": true,
+      "available": true,
+      "dataStatus": "osm",
+      "source": "OSRM road distance over OpenStreetMap (router.project-osrm.org, retrieved 2026-10-25). Minutes use the assumed tricycle speed."
+    },
+    {
+      "id": "e_jordan_santa_teresa",
+      "from": "center_jordan",
+      "to": "brgy_jordan_santa_teresa",
+      "distance_km": 12.7,
+      "estimated_minutes": 38,
+      "route_type": "municipal road",
+      "transport_modes": [
+        "tricycle"
+      ],
+      "bidirectional": true,
+      "available": true,
+      "dataStatus": "osm",
+      "source": "OSRM road distance over OpenStreetMap (router.project-osrm.org, retrieved 2026-10-25). Minutes use the assumed tricycle speed."
+    },
+    {
+      "id": "e_jordan_sinapsapan",
+      "from": "center_jordan",
+      "to": "brgy_jordan_sinapsapan",
+      "distance_km": 17.9,
+      "estimated_minutes": 54,
+      "route_type": "municipal road",
+      "transport_modes": [
+        "tricycle"
+      ],
+      "bidirectional": true,
+      "available": true,
+      "dataStatus": "osm",
+      "source": "OSRM road distance over OpenStreetMap (router.project-osrm.org, retrieved 2026-10-25). Minutes use the assumed tricycle speed."
+    },
+    {
+      "id": "e_nueva_valencia_cabalagnan",
+      "from": "center_nueva_valencia",
+      "to": "brgy_nueva_valencia_cabalagnan",
+      "distance_km": 18.2,
+      "estimated_minutes": 55,
+      "route_type": "municipal road",
+      "transport_modes": [
+        "tricycle"
+      ],
+      "bidirectional": true,
+      "available": true,
+      "dataStatus": "osm",
+      "source": "OSRM road distance over OpenStreetMap (router.project-osrm.org, retrieved 2026-10-25). Minutes use the assumed tricycle speed."
+    },
+    {
+      "id": "e_nueva_valencia_calaya",
+      "from": "center_nueva_valencia",
+      "to": "brgy_nueva_valencia_calaya",
+      "distance_km": 9.9,
+      "estimated_minutes": 30,
+      "route_type": "municipal road",
+      "transport_modes": [
+        "tricycle"
+      ],
+      "bidirectional": true,
+      "available": true,
+      "dataStatus": "osm",
+      "source": "OSRM road distance over OpenStreetMap (router.project-osrm.org, retrieved 2026-10-25). Minutes use the assumed tricycle speed."
+    },
+    {
+      "id": "e_nueva_valencia_canhawan",
+      "from": "center_nueva_valencia",
+      "to": "brgy_nueva_valencia_canhawan",
+      "distance_km": 19.9,
+      "estimated_minutes": 60,
+      "route_type": "municipal road",
+      "transport_modes": [
+        "tricycle"
+      ],
+      "bidirectional": true,
+      "available": true,
+      "dataStatus": "osm",
+      "source": "OSRM road distance over OpenStreetMap (router.project-osrm.org, retrieved 2026-10-25). Minutes use the assumed tricycle speed."
+    },
+    {
+      "id": "e_nueva_valencia_concordia_sur",
+      "from": "center_nueva_valencia",
+      "to": "brgy_nueva_valencia_concordia_sur",
+      "distance_km": 2.7,
+      "estimated_minutes": 8,
+      "route_type": "municipal road",
+      "transport_modes": [
+        "tricycle"
+      ],
+      "bidirectional": true,
+      "available": true,
+      "dataStatus": "osm",
+      "source": "OSRM road distance over OpenStreetMap (router.project-osrm.org, retrieved 2026-10-25). Minutes use the assumed tricycle speed."
+    },
+    {
+      "id": "e_nueva_valencia_dolores",
+      "from": "center_nueva_valencia",
+      "to": "brgy_nueva_valencia_dolores",
+      "distance_km": 8.2,
+      "estimated_minutes": 25,
+      "route_type": "municipal road",
+      "transport_modes": [
+        "tricycle"
+      ],
+      "bidirectional": true,
+      "available": true,
+      "dataStatus": "osm",
+      "source": "OSRM road distance over OpenStreetMap (router.project-osrm.org, retrieved 2026-10-25). Minutes use the assumed tricycle speed."
+    },
+    {
+      "id": "e_nueva_valencia_igang",
+      "from": "center_nueva_valencia",
+      "to": "brgy_nueva_valencia_igang",
+      "distance_km": 2.8,
+      "estimated_minutes": 8,
+      "route_type": "municipal road",
+      "transport_modes": [
+        "tricycle"
+      ],
+      "bidirectional": true,
+      "available": true,
+      "dataStatus": "osm",
+      "source": "OSRM road distance over OpenStreetMap (router.project-osrm.org, retrieved 2026-10-25). Minutes use the assumed tricycle speed."
+    },
+    {
+      "id": "e_nueva_valencia_igdarapdap",
+      "from": "center_nueva_valencia",
+      "to": "brgy_nueva_valencia_igdarapdap",
+      "distance_km": 13.8,
+      "estimated_minutes": 41,
+      "route_type": "municipal road",
+      "transport_modes": [
+        "tricycle"
+      ],
+      "bidirectional": true,
+      "available": true,
+      "dataStatus": "osm",
+      "source": "OSRM road distance over OpenStreetMap (router.project-osrm.org, retrieved 2026-10-25). Minutes use the assumed tricycle speed."
+    },
+    {
+      "id": "e_nueva_valencia_la_paz",
+      "from": "center_nueva_valencia",
+      "to": "brgy_nueva_valencia_la_paz",
+      "distance_km": 16.1,
+      "estimated_minutes": 48,
+      "route_type": "municipal road",
+      "transport_modes": [
+        "tricycle"
+      ],
+      "bidirectional": true,
+      "available": true,
+      "dataStatus": "osm",
+      "source": "OSRM road distance over OpenStreetMap (router.project-osrm.org, retrieved 2026-10-25). Minutes use the assumed tricycle speed."
+    },
+    {
+      "id": "e_nueva_valencia_lanipe",
+      "from": "center_nueva_valencia",
+      "to": "brgy_nueva_valencia_lanipe",
+      "distance_km": 10,
+      "estimated_minutes": 30,
+      "route_type": "municipal road",
+      "transport_modes": [
+        "tricycle"
+      ],
+      "bidirectional": true,
+      "available": true,
+      "dataStatus": "osm",
+      "source": "OSRM road distance over OpenStreetMap (router.project-osrm.org, retrieved 2026-10-25). Minutes use the assumed tricycle speed."
+    },
+    {
+      "id": "e_nueva_valencia_lucmayan",
+      "from": "center_nueva_valencia",
+      "to": "brgy_nueva_valencia_lucmayan",
+      "distance_km": 8,
+      "estimated_minutes": 24,
+      "route_type": "municipal road",
+      "transport_modes": [
+        "tricycle"
+      ],
+      "bidirectional": true,
+      "available": true,
+      "dataStatus": "osm",
+      "source": "OSRM road distance over OpenStreetMap (router.project-osrm.org, retrieved 2026-10-25). Minutes use the assumed tricycle speed."
+    },
+    {
+      "id": "e_nueva_valencia_magamay",
+      "from": "center_nueva_valencia",
+      "to": "brgy_nueva_valencia_magamay",
+      "distance_km": 4.6,
+      "estimated_minutes": 14,
+      "route_type": "municipal road",
+      "transport_modes": [
+        "tricycle"
+      ],
+      "bidirectional": true,
+      "available": true,
+      "dataStatus": "osm",
+      "source": "OSRM road distance over OpenStreetMap (router.project-osrm.org, retrieved 2026-10-25). Minutes use the assumed tricycle speed."
+    },
+    {
+      "id": "e_nueva_valencia_napandong",
+      "from": "center_nueva_valencia",
+      "to": "brgy_nueva_valencia_napandong",
+      "distance_km": 6.4,
+      "estimated_minutes": 19,
+      "route_type": "municipal road",
+      "transport_modes": [
+        "tricycle"
+      ],
+      "bidirectional": true,
+      "available": true,
+      "dataStatus": "osm",
+      "source": "OSRM road distance over OpenStreetMap (router.project-osrm.org, retrieved 2026-10-25). Minutes use the assumed tricycle speed."
+    },
+    {
+      "id": "e_nueva_valencia_oracon_sur",
+      "from": "center_nueva_valencia",
+      "to": "brgy_nueva_valencia_oracon_sur",
+      "distance_km": 4.6,
+      "estimated_minutes": 14,
+      "route_type": "municipal road",
+      "transport_modes": [
+        "tricycle"
+      ],
+      "bidirectional": true,
+      "available": true,
+      "dataStatus": "osm",
+      "source": "OSRM road distance over OpenStreetMap (router.project-osrm.org, retrieved 2026-10-25). Minutes use the assumed tricycle speed."
+    },
+    {
+      "id": "e_nueva_valencia_pandaraonan",
+      "from": "center_nueva_valencia",
+      "to": "brgy_nueva_valencia_pandaraonan",
+      "distance_km": 6.5,
+      "estimated_minutes": 20,
+      "route_type": "municipal road",
+      "transport_modes": [
+        "tricycle"
+      ],
+      "bidirectional": true,
+      "available": true,
+      "dataStatus": "osm",
+      "source": "OSRM road distance over OpenStreetMap (router.project-osrm.org, retrieved 2026-10-25). Minutes use the assumed tricycle speed."
+    },
+    {
+      "id": "e_nueva_valencia_salvacion",
+      "from": "center_nueva_valencia",
+      "to": "brgy_nueva_valencia_salvacion",
+      "distance_km": 13,
+      "estimated_minutes": 39,
+      "route_type": "municipal road",
+      "transport_modes": [
+        "tricycle"
+      ],
+      "bidirectional": true,
+      "available": true,
+      "dataStatus": "osm",
+      "source": "OSRM road distance over OpenStreetMap (router.project-osrm.org, retrieved 2026-10-25). Minutes use the assumed tricycle speed."
+    },
+    {
+      "id": "e_nueva_valencia_san_antonio",
+      "from": "center_nueva_valencia",
+      "to": "brgy_nueva_valencia_san_antonio",
+      "distance_km": 11.4,
+      "estimated_minutes": 34,
+      "route_type": "municipal road",
+      "transport_modes": [
+        "tricycle"
+      ],
+      "bidirectional": true,
+      "available": true,
+      "dataStatus": "osm",
+      "source": "OSRM road distance over OpenStreetMap (router.project-osrm.org, retrieved 2026-10-25). Minutes use the assumed tricycle speed."
+    },
+    {
+      "id": "e_nueva_valencia_san_roque",
+      "from": "center_nueva_valencia",
+      "to": "brgy_nueva_valencia_san_roque",
+      "distance_km": 12.5,
+      "estimated_minutes": 38,
+      "route_type": "municipal road",
+      "transport_modes": [
+        "tricycle"
+      ],
+      "bidirectional": true,
+      "available": true,
+      "dataStatus": "osm",
+      "source": "OSRM road distance over OpenStreetMap (router.project-osrm.org, retrieved 2026-10-25). Minutes use the assumed tricycle speed."
+    },
+    {
+      "id": "e_nueva_valencia_santo_domingo",
+      "from": "center_nueva_valencia",
+      "to": "brgy_nueva_valencia_santo_domingo",
+      "distance_km": 4.5,
+      "estimated_minutes": 14,
+      "route_type": "municipal road",
+      "transport_modes": [
+        "tricycle"
+      ],
+      "bidirectional": true,
+      "available": true,
+      "dataStatus": "osm",
+      "source": "OSRM road distance over OpenStreetMap (router.project-osrm.org, retrieved 2026-10-25). Minutes use the assumed tricycle speed."
+    },
+    {
+      "id": "e_nueva_valencia_tando",
+      "from": "center_nueva_valencia",
+      "to": "brgy_nueva_valencia_tando",
+      "distance_km": 11.1,
+      "estimated_minutes": 33,
+      "route_type": "municipal road",
+      "transport_modes": [
+        "tricycle"
+      ],
+      "bidirectional": true,
+      "available": true,
+      "dataStatus": "osm",
+      "source": "OSRM road distance over OpenStreetMap (router.project-osrm.org, retrieved 2026-10-25). Minutes use the assumed tricycle speed."
+    },
+    {
+      "id": "e_san_lorenzo_aguilar",
+      "from": "center_san_lorenzo",
+      "to": "brgy_san_lorenzo_aguilar",
+      "distance_km": 9.8,
+      "estimated_minutes": 29,
+      "route_type": "municipal road",
+      "transport_modes": [
+        "tricycle"
+      ],
+      "bidirectional": true,
+      "available": true,
+      "dataStatus": "osm",
+      "source": "OSRM road distance over OpenStreetMap (router.project-osrm.org, retrieved 2026-10-25). Minutes use the assumed tricycle speed."
+    },
+    {
+      "id": "e_san_lorenzo_cabano",
+      "from": "center_san_lorenzo",
+      "to": "brgy_san_lorenzo_cabano",
+      "distance_km": 0.6,
+      "estimated_minutes": 2,
+      "route_type": "municipal road",
+      "transport_modes": [
+        "tricycle"
+      ],
+      "bidirectional": true,
+      "available": true,
+      "dataStatus": "osm",
+      "source": "OSRM road distance over OpenStreetMap (router.project-osrm.org, retrieved 2026-10-25). Minutes use the assumed tricycle speed."
+    },
+    {
+      "id": "e_san_lorenzo_cabungahan",
+      "from": "center_san_lorenzo",
+      "to": "brgy_san_lorenzo_cabungahan",
+      "distance_km": 3.4,
+      "estimated_minutes": 10,
+      "route_type": "municipal road",
+      "transport_modes": [
+        "tricycle"
+      ],
+      "bidirectional": true,
+      "available": true,
+      "dataStatus": "osm",
+      "source": "OSRM road distance over OpenStreetMap (router.project-osrm.org, retrieved 2026-10-25). Minutes use the assumed tricycle speed."
+    },
+    {
+      "id": "e_san_lorenzo_constancia",
+      "from": "center_san_lorenzo",
+      "to": "brgy_san_lorenzo_constancia",
+      "distance_km": 9.5,
+      "estimated_minutes": 29,
+      "route_type": "municipal road",
+      "transport_modes": [
+        "tricycle"
+      ],
+      "bidirectional": true,
+      "available": true,
+      "dataStatus": "osm",
+      "source": "OSRM road distance over OpenStreetMap (router.project-osrm.org, retrieved 2026-10-25). Minutes use the assumed tricycle speed."
+    },
+    {
+      "id": "e_san_lorenzo_gaban",
+      "from": "center_san_lorenzo",
+      "to": "brgy_san_lorenzo_gaban",
+      "distance_km": 6.9,
+      "estimated_minutes": 21,
+      "route_type": "municipal road",
+      "transport_modes": [
+        "tricycle"
+      ],
+      "bidirectional": true,
+      "available": true,
+      "dataStatus": "osm",
+      "source": "OSRM road distance over OpenStreetMap (router.project-osrm.org, retrieved 2026-10-25). Minutes use the assumed tricycle speed."
+    },
+    {
+      "id": "e_san_lorenzo_igcawayan",
+      "from": "center_san_lorenzo",
+      "to": "brgy_san_lorenzo_igcawayan",
+      "distance_km": 10.2,
+      "estimated_minutes": 31,
+      "route_type": "municipal road",
+      "transport_modes": [
+        "tricycle"
+      ],
+      "bidirectional": true,
+      "available": true,
+      "dataStatus": "osm",
+      "source": "OSRM road distance over OpenStreetMap (router.project-osrm.org, retrieved 2026-10-25). Minutes use the assumed tricycle speed."
+    },
+    {
+      "id": "e_san_lorenzo_m_chavez",
+      "from": "center_san_lorenzo",
+      "to": "brgy_san_lorenzo_m_chavez",
+      "distance_km": 1,
+      "estimated_minutes": 3,
+      "route_type": "municipal road",
+      "transport_modes": [
+        "tricycle"
+      ],
+      "bidirectional": true,
+      "available": true,
+      "dataStatus": "osm",
+      "source": "OSRM road distance over OpenStreetMap (router.project-osrm.org, retrieved 2026-10-25). Minutes use the assumed tricycle speed."
+    },
+    {
+      "id": "e_san_lorenzo_san_enrique",
+      "from": "center_san_lorenzo",
+      "to": "brgy_san_lorenzo_san_enrique",
+      "distance_km": 5.7,
+      "estimated_minutes": 17,
+      "route_type": "municipal road",
+      "transport_modes": [
+        "tricycle"
+      ],
+      "bidirectional": true,
+      "available": true,
+      "dataStatus": "osm",
+      "source": "OSRM road distance over OpenStreetMap (router.project-osrm.org, retrieved 2026-10-25). Minutes use the assumed tricycle speed."
+    },
+    {
+      "id": "e_san_lorenzo_sapal",
+      "from": "center_san_lorenzo",
+      "to": "brgy_san_lorenzo_sapal",
+      "distance_km": 9.5,
+      "estimated_minutes": 29,
+      "route_type": "municipal road",
+      "transport_modes": [
+        "tricycle"
+      ],
+      "bidirectional": true,
+      "available": true,
+      "dataStatus": "osm",
+      "source": "OSRM road distance over OpenStreetMap (router.project-osrm.org, retrieved 2026-10-25). Minutes use the assumed tricycle speed."
+    },
+    {
+      "id": "e_san_lorenzo_sebario",
+      "from": "center_san_lorenzo",
+      "to": "brgy_san_lorenzo_sebario",
+      "distance_km": 15.2,
+      "estimated_minutes": 46,
+      "route_type": "municipal road",
+      "transport_modes": [
+        "tricycle"
+      ],
+      "bidirectional": true,
+      "available": true,
+      "dataStatus": "osm",
+      "source": "OSRM road distance over OpenStreetMap (router.project-osrm.org, retrieved 2026-10-25). Minutes use the assumed tricycle speed."
+    },
+    {
+      "id": "e_san_lorenzo_suclaran",
+      "from": "center_san_lorenzo",
+      "to": "brgy_san_lorenzo_suclaran",
+      "distance_km": 2.8,
+      "estimated_minutes": 8,
+      "route_type": "municipal road",
+      "transport_modes": [
+        "tricycle"
+      ],
+      "bidirectional": true,
+      "available": true,
+      "dataStatus": "osm",
+      "source": "OSRM road distance over OpenStreetMap (router.project-osrm.org, retrieved 2026-10-25). Minutes use the assumed tricycle speed."
+    },
+    {
+      "id": "e_san_lorenzo_tamborong",
+      "from": "center_san_lorenzo",
+      "to": "brgy_san_lorenzo_tamborong",
+      "distance_km": 16.3,
+      "estimated_minutes": 49,
+      "route_type": "municipal road",
+      "transport_modes": [
+        "tricycle"
+      ],
+      "bidirectional": true,
+      "available": true,
+      "dataStatus": "osm",
+      "source": "OSRM road distance over OpenStreetMap (router.project-osrm.org, retrieved 2026-10-25). Minutes use the assumed tricycle speed."
+    },
+    {
+      "id": "e_sibunag_alegria",
+      "from": "center_sibunag",
+      "to": "brgy_sibunag_alegria",
+      "distance_km": 9.7,
+      "estimated_minutes": 29,
+      "route_type": "municipal road",
+      "transport_modes": [
+        "tricycle"
+      ],
+      "bidirectional": true,
+      "available": true,
+      "dataStatus": "osm",
+      "source": "OSRM road distance over OpenStreetMap (router.project-osrm.org, retrieved 2026-10-25). Minutes use the assumed tricycle speed."
+    },
+    {
+      "id": "e_sibunag_ayangan",
+      "from": "center_sibunag",
+      "to": "brgy_sibunag_ayangan",
+      "distance_km": 8.9,
+      "estimated_minutes": 27,
+      "route_type": "municipal road",
+      "transport_modes": [
+        "tricycle"
+      ],
+      "bidirectional": true,
+      "available": true,
+      "dataStatus": "osm",
+      "source": "OSRM road distance over OpenStreetMap (router.project-osrm.org, retrieved 2026-10-25). Minutes use the assumed tricycle speed."
+    },
+    {
+      "id": "e_sibunag_bubog",
+      "from": "center_sibunag",
+      "to": "brgy_sibunag_bubog",
+      "distance_km": 5.9,
+      "estimated_minutes": 18,
+      "route_type": "municipal road",
+      "transport_modes": [
+        "tricycle"
+      ],
+      "bidirectional": true,
+      "available": true,
+      "dataStatus": "osm",
+      "source": "OSRM road distance over OpenStreetMap (router.project-osrm.org, retrieved 2026-10-25). Minutes use the assumed tricycle speed."
+    },
+    {
+      "id": "e_sibunag_concordia_norte",
+      "from": "center_sibunag",
+      "to": "brgy_sibunag_concordia_norte",
+      "distance_km": 13.3,
+      "estimated_minutes": 40,
+      "route_type": "municipal road",
+      "transport_modes": [
+        "tricycle"
+      ],
+      "bidirectional": true,
+      "available": true,
+      "dataStatus": "osm",
+      "source": "OSRM road distance over OpenStreetMap (router.project-osrm.org, retrieved 2026-10-25). Minutes use the assumed tricycle speed."
+    },
+    {
+      "id": "e_sibunag_dasal",
+      "from": "center_sibunag",
+      "to": "brgy_sibunag_dasal",
+      "distance_km": 1.4,
+      "estimated_minutes": 4,
+      "route_type": "municipal road",
+      "transport_modes": [
+        "tricycle"
+      ],
+      "bidirectional": true,
+      "available": true,
+      "dataStatus": "osm",
+      "source": "OSRM road distance over OpenStreetMap (router.project-osrm.org, retrieved 2026-10-25). Minutes use the assumed tricycle speed."
+    },
+    {
+      "id": "e_sibunag_maabay",
+      "from": "center_sibunag",
+      "to": "brgy_sibunag_maabay",
+      "distance_km": 2.8,
+      "estimated_minutes": 8,
+      "route_type": "municipal road",
+      "transport_modes": [
+        "tricycle"
+      ],
+      "bidirectional": true,
+      "available": true,
+      "dataStatus": "osm",
+      "source": "OSRM road distance over OpenStreetMap (router.project-osrm.org, retrieved 2026-10-25). Minutes use the assumed tricycle speed."
+    },
+    {
+      "id": "e_sibunag_millan",
+      "from": "center_sibunag",
+      "to": "brgy_sibunag_millan",
+      "distance_km": 7.5,
+      "estimated_minutes": 23,
+      "route_type": "municipal road",
+      "transport_modes": [
+        "tricycle"
+      ],
+      "bidirectional": true,
+      "available": true,
+      "dataStatus": "osm",
+      "source": "OSRM road distance over OpenStreetMap (router.project-osrm.org, retrieved 2026-10-25). Minutes use the assumed tricycle speed."
+    },
+    {
+      "id": "e_sibunag_oracon_norte",
+      "from": "center_sibunag",
+      "to": "brgy_sibunag_oracon_norte",
+      "distance_km": 9,
+      "estimated_minutes": 27,
+      "route_type": "municipal road",
+      "transport_modes": [
+        "tricycle"
+      ],
+      "bidirectional": true,
+      "available": true,
+      "dataStatus": "osm",
+      "source": "OSRM road distance over OpenStreetMap (router.project-osrm.org, retrieved 2026-10-25). Minutes use the assumed tricycle speed."
+    },
+    {
+      "id": "e_sibunag_ravina",
+      "from": "center_sibunag",
+      "to": "brgy_sibunag_ravina",
+      "distance_km": 20,
+      "estimated_minutes": 60,
+      "route_type": "municipal road",
+      "transport_modes": [
+        "tricycle"
+      ],
+      "bidirectional": true,
+      "available": true,
+      "dataStatus": "osm",
+      "source": "OSRM road distance over OpenStreetMap (router.project-osrm.org, retrieved 2026-10-25). Minutes use the assumed tricycle speed."
+    },
+    {
+      "id": "e_sibunag_sabang",
+      "from": "center_sibunag",
+      "to": "brgy_sibunag_sabang",
+      "distance_km": 4.3,
+      "estimated_minutes": 13,
+      "route_type": "municipal road",
+      "transport_modes": [
+        "tricycle"
+      ],
+      "bidirectional": true,
+      "available": true,
+      "dataStatus": "osm",
+      "source": "OSRM road distance over OpenStreetMap (router.project-osrm.org, retrieved 2026-10-25). Minutes use the assumed tricycle speed."
+    },
+    {
+      "id": "e_sibunag_san_isidro",
+      "from": "center_sibunag",
+      "to": "brgy_sibunag_san_isidro",
+      "distance_km": 6.4,
+      "estimated_minutes": 19,
+      "route_type": "municipal road",
+      "transport_modes": [
+        "tricycle"
+      ],
+      "bidirectional": true,
+      "available": true,
+      "dataStatus": "osm",
+      "source": "OSRM road distance over OpenStreetMap (router.project-osrm.org, retrieved 2026-10-25). Minutes use the assumed tricycle speed."
+    },
+    {
+      "id": "e_sibunag_sebaste",
+      "from": "center_sibunag",
+      "to": "brgy_sibunag_sebaste",
+      "distance_km": 6.3,
+      "estimated_minutes": 19,
+      "route_type": "municipal road",
+      "transport_modes": [
+        "tricycle"
+      ],
+      "bidirectional": true,
+      "available": true,
+      "dataStatus": "osm",
+      "source": "OSRM road distance over OpenStreetMap (router.project-osrm.org, retrieved 2026-10-25). Minutes use the assumed tricycle speed."
+    },
+    {
+      "id": "e_sibunag_tanglad",
+      "from": "center_sibunag",
+      "to": "brgy_sibunag_tanglad",
+      "distance_km": 11.5,
+      "estimated_minutes": 35,
+      "route_type": "municipal road",
+      "transport_modes": [
+        "tricycle"
+      ],
+      "bidirectional": true,
+      "available": true,
+      "dataStatus": "osm",
+      "source": "OSRM road distance over OpenStreetMap (router.project-osrm.org, retrieved 2026-10-25). Minutes use the assumed tricycle speed."
     }
   ]
 }

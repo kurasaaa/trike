@@ -367,7 +367,7 @@ const stripTime = f => { const c = { ...f }; delete c.computedAt; return c; };
       await post('/api/admin/rules', { nightSurchargeEnabled: false, simulateNight: false });
     });
     await test('API', 'pages and the shared route engine are served', async () => {
-      for (const p of ['/', '/booking.html', '/passenger.js', '/vendor/leaflet/leaflet.js', '/driver', '/monitor', '/lib/network.js', '/lib/fare.js', '/netmap.js', '/r/x']) {
+      for (const p of ['/', '/classic', '/booking.html', '/passenger.js', '/vendor/leaflet/leaflet.js', '/driver', '/monitor', '/lib/network.js', '/lib/fare.js', '/netmap.js', '/r/x']) {
         const r = await get(p); assert.strictEqual(r.status, 200, p);
       }
     });
@@ -423,6 +423,33 @@ const stripTime = f => { const c = { ...f }; delete c.computedAt; return c; };
       const again = await post('/api/places', good);
       assert.strictEqual((await post(`/api/admin/places/${again.body.id}/remove`)).status, 200);
       assert.strictEqual((await get('/api/places')).body.places.length, 0);
+    });
+    await test('API', 'app accounts: sign-up, hashed password, token, view, logout', async () => {
+      const s = await post('/api/hub/signup', { role: 'passenger', name: 'Test Rider', mobile: '09990001111', password: 'secret123' });
+      assert.strictEqual(s.status, 200); assert.ok(s.body.token && s.body.view.me.name === 'Test Rider');
+      assert.ok(!JSON.stringify(s.body).includes('secret123') && !JSON.stringify(s.body).includes('scrypt'));
+      assert.strictEqual((await post('/api/hub/signup', { role: 'passenger', name: 'Again', mobile: '09990001111', password: 'secret123' })).status, 400);
+      const stored = JSON.stringify(JSON.parse(fs.readFileSync(path.join(tmp, 'data', 'db.json'), 'utf8')).hub.accounts);
+      assert.ok(!stored.includes('secret123') && stored.includes('scrypt:'), 'password stored as a hash only');
+      const auth = { Authorization: 'Bearer ' + s.body.token };
+      assert.strictEqual((await get('/api/hub/view', auth)).status, 200);
+      assert.strictEqual((await post('/api/hub/login', { mobile: '09990001111', password: 'wrongpass' })).status, 400);
+      await post('/api/hub/logout', {}, auth);
+      assert.strictEqual((await get('/api/hub/view', auth)).status, 401);
+    });
+    await test('API', 'app ride: fare priced on the server, tracking link public, driver view silent', async () => {
+      const a = (await post('/api/hub/login', { mobile: '09171234567', password: 'demo1234' })).body.token;
+      const r = await post('/api/hub/book', { pickup: { lat: 10.695, lng: 122.64, label: 'Test' }, stops: ['d6'], opts: { pax: 1, hire: 'regular', disc: 'none' },
+        quote: { total: 1 } }, { Authorization: 'Bearer ' + a });
+      assert.strictEqual(r.status, 200, JSON.stringify(r.body));
+      const ride = r.body.view.requests.find(x => x.id === r.body.result.id);
+      assert.ok(ride.quote.total > 1, 'a fare sent by the phone is ignored');
+      const t = await get('/api/track/' + ride.share);
+      assert.strictEqual(t.status, 200); assert.strictEqual(t.body.passenger, 'Ana'); assert.ok(!('contacts' in t.body));
+      assert.strictEqual((await get('/api/track/nope')).status, 404);
+      assert.strictEqual((await get('/t/' + ride.share)).status, 200);
+      assert.strictEqual((await post('/api/hub/book', { pickup: { lat: 10.695, lng: 122.64 }, stops: ['d6'], opts: {} })).status, 400, 'booking needs a login');
+      await post('/api/hub/cancel', { id: ride.id }, { Authorization: 'Bearer ' + a });
     });
     await test('API', 'reset clears trips, vehicles and segment overrides', async () => {
       await post('/api/admin/network', { edgeId: 'e_bv_jordan', available: false });

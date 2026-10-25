@@ -1,0 +1,1604 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<title>PANAW Redesign</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>/*@LEAFLET_CSS@*/</style>
+<style>
+:root{
+  --navy:#0A3543; --teal:#0E7C86; --teal-50:#E8F4F5; --teal-700:#0B6870;
+  --ink:#10232B; --muted:#5B6F76; --faint:#6B7F85; --line:#E3E9EA; --bg:#F4F7F7; --surface:#FFFFFF;
+  --amber:#9A6412; --amber-50:#FFF4E2; --red:#C93C3C; --red-50:#FCEDED; --green:#1E8556; --green-50:#E7F5EE; --blue:#2F6FED;
+  --r:12px; --font:'Inter',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+  color-scheme:light dark;
+}
+@media (prefers-color-scheme: dark){
+  :root{ --navy:#2B6878; --teal:#14939E; --teal-50:#123A3F; --teal-700:#1AA6B2;
+    --ink:#E4EDEF; --muted:#9DB0B5; --faint:#8399A0; --line:#2A3A40; --bg:#0F1A1E; --surface:#16242A;
+    --amber:#E2A84B; --amber-50:#3A2C14; --red:#F06B6B; --red-50:#3D1E1E; --green:#4CC48A; --green-50:#163428; --blue:#5B8FF5; }
+  body{background:#0B1316 !important;}
+  .stage-bar h1{color:var(--ink) !important;}
+  .stage-bar button{background:var(--surface) !important; border-color:var(--line) !important; color:var(--ink);}
+  .phone{border-color:var(--line) !important;}
+  .map{background:#1C2A2F !important;}
+  .pimg,.hero{background:#1E2D33 !important; color:#52666C !important;}
+  .opt.on .ic{background:var(--surface) !important;}
+  .list-row .ic,.role-card .ic,.opt .ic,.result .ic{color:var(--ink) !important;}
+  .trike-mk{background:var(--surface) !important; border-color:var(--ink) !important; color:var(--ink) !important;}
+  .trike-mk.mine{background:var(--teal) !important; border-color:#fff !important; color:#fff !important;}
+  .toast{background:#E4EDEF !important; color:#10232B !important;}
+  .cta button{color:#0A3543 !important;}
+  .seg button.on{box-shadow:none !important;}
+  .stars button{color:#3A4C52;}
+}
+*{box-sizing:border-box;}
+html,body{margin:0; height:100%;}
+body{font-family:var(--font); color:var(--ink); background:#E7ECED; -webkit-font-smoothing:antialiased;}
+button{font-family:inherit; color:inherit;}
+.i{width:20px; height:20px; flex:none;}
+:focus-visible{outline:3px solid var(--teal); outline-offset:2px;}
+.field:focus-visible{outline:none;}
+.photo-list{display:flex; flex-direction:column; gap:12px; margin:0 16px 12px;}
+.pcard.wide{width:100%;} .pcard.wide .pimg{aspect-ratio:16/9;}
+.opt .s{line-height:1.35;}
+.btn .i{width:18px; height:18px;}
+input,select,textarea{font-family:inherit;}
+
+/* ---------- demo stage (laptop): phones side by side ---------- */
+.stage{min-height:100%; display:flex; flex-direction:column; align-items:center; padding:12px 16px 16px; gap:10px;}
+.stage-bar{display:flex; flex-wrap:wrap; align-items:center; justify-content:center; gap:4px 14px; max-width:880px; text-align:center;}
+.stage-bar h1{font-size:15px; margin:0; font-weight:700; color:var(--navy);}
+.stage-bar p{margin:0; font-size:12.5px; color:var(--muted);}
+.stage-bar button{border:1px solid #C9D3D5; background:#fff; border-radius:8px; padding:7px 12px; font-size:12.5px; font-weight:600; cursor:pointer;}
+.phones{display:flex; gap:28px; justify-content:center; flex-wrap:wrap;}
+.phone-col{display:flex; flex-direction:column; align-items:center; gap:6px;}
+.phone-label{font-size:12px; font-weight:700; color:var(--muted); letter-spacing:.04em; text-transform:uppercase;}
+.phone{position:relative; width:390px; height:calc(100vh - 118px); max-height:820px; min-height:560px; background:var(--bg);
+  border:1px solid #C9D3D5; border-radius:28px; overflow:hidden; display:flex; flex-direction:column;
+  box-shadow:0 12px 32px rgba(16,35,43,.10);}
+@media (max-width:860px){
+  .stage{padding:0; gap:0;} .stage-bar,.phone-label{display:none;} .phones{gap:0; width:100%;}
+  .phone-col{width:100%;} .phone-col.second{display:none;}
+  .phone{width:100%; height:100vh; height:100dvh; max-height:none; min-height:0; border:none; border-radius:0; box-shadow:none;}
+}
+
+/* ---------- phone shell ---------- */
+.content{position:relative; flex:1; min-height:0;}
+.tab{position:absolute; inset:0; display:none; flex-direction:column;}
+.tab.on{display:flex;}
+.scroll{flex:1; min-height:0; overflow-y:auto; -webkit-overflow-scrolling:touch;}
+.scroll::-webkit-scrollbar{width:0;}
+.tabbar{flex:none; display:flex; background:var(--surface); border-top:1px solid var(--line); padding:6px 6px calc(8px + env(safe-area-inset-bottom));}
+.tabbar button{flex:1; border:none; background:none; display:flex; flex-direction:column; align-items:center; gap:3px;
+  font-size:11px; font-weight:600; color:var(--faint); padding:6px 0; cursor:pointer; border-radius:8px;}
+.tabbar button.on{color:var(--teal);}
+.tabbar svg{width:22px; height:22px;}
+.page{position:absolute; inset:0; background:var(--bg); display:flex; flex-direction:column; z-index:30;}
+.page-head{flex:none; display:flex; align-items:center; gap:8px; padding:12px 12px 10px; background:var(--surface); border-bottom:1px solid var(--line);}
+.page-head h2{font-size:16px; margin:0; font-weight:700;}
+.icon-btn{width:40px; height:40px; flex:none; border:none; background:var(--bg); border-radius:10px; display:flex; align-items:center; justify-content:center; cursor:pointer; color:var(--ink);}
+.icon-btn svg{width:20px; height:20px;}
+.pad{padding:16px;}
+.head{padding:18px 16px 12px; background:var(--surface); border-bottom:1px solid var(--line);}
+.head h1{font-size:22px; margin:0; font-weight:800; letter-spacing:-.01em;}
+.head p{margin:4px 0 0; font-size:13px; color:var(--muted);}
+
+/* ---------- basic parts ---------- */
+.btn{display:flex; align-items:center; justify-content:center; gap:8px; width:100%; border:none; border-radius:10px;
+  padding:14px 16px; font-size:15px; font-weight:700; cursor:pointer; text-decoration:none;}
+.btn.primary{background:var(--teal); color:#fff;} .btn.primary:hover{background:var(--teal-700);}
+.btn.dark{background:var(--navy); color:#fff;}
+.btn.ghost{background:var(--surface); color:var(--ink); border:1px solid var(--line);}
+.btn.danger{background:var(--surface); color:var(--red); border:1px solid #EFC9C9;}
+.btn.sm{padding:10px 14px; min-height:40px; font-size:13px; width:auto;}
+.btn:disabled{opacity:.45; cursor:not-allowed;}
+.row-btns{display:flex; gap:10px;} .row-btns .btn{flex:1;}
+.link{background:none; border:none; color:var(--teal); font-weight:600; font-size:13px; cursor:pointer; padding:0 6px; min-height:40px; min-width:40px; display:inline-flex; align-items:center; justify-content:center; border-radius:8px;}
+.card{background:var(--surface); border:1px solid var(--line); border-radius:var(--r); padding:14px;}
+.stack{display:flex; flex-direction:column; gap:12px;}
+.label{font-size:12px; font-weight:600; color:var(--muted); margin:0 0 6px; display:block;}
+.section{font-size:12px; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:.05em; margin:18px 0 8px;}
+.field{width:100%; border:1px solid var(--line); border-radius:10px; padding:12px; font-size:15px; background:var(--surface); color:var(--ink); outline:none;}
+.field:focus{border-color:var(--teal);}
+textarea.field{min-height:80px; resize:vertical;}
+.hint{font-size:12px; color:var(--muted); line-height:1.45;}
+.tag{display:inline-flex; align-items:center; gap:4px; font-size:10.5px; font-weight:700; padding:2px 7px; border-radius:5px; letter-spacing:.02em; white-space:nowrap;}
+.tag.demo{background:var(--amber-50); color:var(--amber);} .tag.ok{background:var(--green-50); color:var(--green);}
+.tag.info{background:var(--teal-50); color:var(--teal-700);} .tag.todo{background:var(--red-50); color:var(--red);}
+.chips{display:flex; gap:6px; overflow-x:auto; padding:0 16px 2px;} .chips::-webkit-scrollbar{height:0;}
+.chip{flex:none; border:1px solid var(--line); background:var(--surface); border-radius:999px; padding:9px 14px; min-height:38px; font-size:13px; font-weight:600; cursor:pointer; white-space:nowrap;}
+.chip.on{background:var(--navy); border-color:var(--navy); color:#fff;}
+.list-row{display:flex; align-items:center; gap:12px; padding:12px 14px; background:var(--surface); border:none; border-bottom:1px solid var(--line); width:100%; text-align:left; cursor:pointer; font-size:14px;}
+.list-row:last-child{border-bottom:none;}
+.list-row .ic{width:36px; height:36px; flex:none; border-radius:10px; background:var(--bg); display:flex; align-items:center; justify-content:center; color:var(--navy);}
+.list-row .ic svg{width:19px; height:19px;}
+.list-row .t{font-weight:600;} .list-row .s{font-size:12px; color:var(--muted); margin-top:1px;}
+.list-row .grow{flex:1; min-width:0;} .list-row .chev{color:var(--faint);}
+.group{background:var(--surface); border:1px solid var(--line); border-radius:var(--r); overflow:hidden;}
+.kv{display:flex; justify-content:space-between; gap:12px; padding:9px 0; border-bottom:1px solid var(--line); font-size:14px;}
+.kv:last-child{border-bottom:none;} .kv .k{color:var(--muted);} .kv .v{font-weight:600; text-align:right;}
+.kv.total{border-top:2px solid var(--ink); border-bottom:none; margin-top:4px; padding-top:11px;} .kv.total .v{font-size:17px;}
+.toast{position:absolute; left:50%; top:58px; transform:translateX(-50%); background:var(--ink); color:#fff; font-size:13px; font-weight:600;
+  padding:10px 14px; border-radius:10px; opacity:0; pointer-events:none; transition:opacity .2s; z-index:80; max-width:86%; text-align:center;}
+.toast.on{opacity:1;}
+.modal{position:absolute; inset:0; background:rgba(16,35,43,.45); display:flex; align-items:flex-end; z-index:70;}
+.modal-box{background:var(--surface); width:100%; border-radius:16px 16px 0 0; padding:18px 16px 20px; max-height:85%; overflow:auto;}
+.modal-box h3{margin:0 0 12px; font-size:17px;}
+.seg{display:flex; background:var(--bg); border-radius:10px; padding:3px; gap:3px;}
+.seg button{flex:1; border:none; background:none; border-radius:8px; padding:9px; min-height:40px; display:flex; align-items:center; justify-content:center; gap:6px; font-weight:600; font-size:13px; cursor:pointer; color:var(--muted);}
+.seg button.on{background:var(--surface); color:var(--ink); box-shadow:0 1px 2px rgba(0,0,0,.08);}
+.stepper{display:flex; align-items:center; gap:14px;}
+.stepper button{width:44px; height:44px; border-radius:10px; border:1px solid var(--line); background:var(--surface); font-size:18px; font-weight:700; cursor:pointer;}
+.stepper b{min-width:20px; text-align:center; font-size:17px;}
+.avatar{width:44px; height:44px; flex:none; border-radius:50%; background:var(--navy); color:#fff; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:15px;}
+.empty{text-align:center; padding:40px 20px; color:var(--muted); font-size:14px;}
+.empty b{display:block; color:var(--ink); font-size:15px; margin-bottom:4px;}
+
+/* ---------- auth ---------- */
+.auth{position:absolute; inset:0; background:var(--surface); z-index:60; display:flex; flex-direction:column;}
+.auth .scroll{padding:24px 20px;}
+.brand{display:flex; align-items:center; gap:10px;}
+.mark{width:40px; height:40px; border-radius:10px; background:var(--navy); color:#fff; font-weight:800; display:flex; align-items:center; justify-content:center; font-size:15px; letter-spacing:.02em;}
+.brand b{font-size:20px; letter-spacing:.02em;}
+.hero-title{font-size:28px; font-weight:800; line-height:1.15; letter-spacing:-.02em; margin:40px 0 10px;}
+.role-card{display:flex; gap:12px; align-items:flex-start; text-align:left; width:100%; padding:16px; border:1.5px solid var(--line); border-radius:var(--r); background:var(--surface); cursor:pointer;}
+.role-card.on{border-color:var(--teal); background:var(--teal-50);}
+.role-card .ic{width:40px; height:40px; border-radius:10px; background:var(--bg); display:flex; align-items:center; justify-content:center; color:var(--navy); flex:none;}
+.role-card b{display:block; font-size:15px;} .role-card span{font-size:13px; color:var(--muted);}
+
+/* ---------- ride / drive: map + bottom sheet ---------- */
+.map{position:absolute; inset:0; background:#DCE6E8; z-index:0;}
+.map .netmap-svg{width:100%; height:100%;}
+.sheet{position:absolute; left:0; right:0; bottom:0; max-height:78%; background:var(--surface); border-radius:16px 16px 0 0;
+  box-shadow:0 -2px 14px rgba(16,35,43,.10); display:flex; flex-direction:column; z-index:10;}
+.sheet.full{top:0; max-height:none; border-radius:0;}
+.sheet .grab{width:36px; height:4px; border-radius:2px; background:var(--line); margin:8px auto 0; flex:none;}
+.sheet .scroll{padding:12px 16px 16px;}
+.top-pill{position:absolute; top:12px; left:12px; right:12px; z-index:5; display:flex; justify-content:space-between; gap:8px; pointer-events:none;}
+.top-pill > *{pointer-events:auto;}
+.pill{background:var(--surface); border:1px solid var(--line); border-radius:999px; padding:7px 12px; font-size:12px; font-weight:700; display:inline-flex; align-items:center; gap:6px;}
+.dot{width:8px; height:8px; border-radius:50%; background:var(--faint); display:inline-block;} .dot.on{background:var(--green);} .dot.demo{background:#D9952B;}
+.where{display:flex; align-items:center; gap:10px; width:100%; padding:14px; border:none; border-radius:12px; background:var(--bg); font-size:16px; font-weight:700; color:var(--ink); cursor:pointer; text-align:left;}
+.where svg{width:20px; height:20px; color:var(--teal);}
+.pickup-line{display:flex; align-items:center; gap:10px; padding:12px 2px 2px; font-size:13px;}
+.pickup-line .pin{width:10px; height:10px; border-radius:50%; background:var(--blue); flex:none; box-shadow:0 0 0 3px #DCE7FC;}
+.pickup-line .grow{flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
+.quick{display:flex; gap:8px; overflow-x:auto; margin:0 -16px; padding:0 16px;} .quick::-webkit-scrollbar{height:0;}
+.quick button{flex:none; border:1px solid var(--line); background:var(--surface); border-radius:10px; padding:10px 12px; text-align:left; cursor:pointer; max-width:170px;}
+.quick b{display:block; font-size:13px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;} .quick span{font-size:11.5px; color:var(--muted);}
+.nearby{display:flex; align-items:center; gap:10px; margin-top:14px; padding:12px; border-radius:10px; background:var(--teal-50); font-size:13px; color:var(--teal-700); font-weight:600;}
+.nearby svg{width:20px; height:20px; flex:none;}
+.route-fields{position:relative; display:flex; flex-direction:column; gap:8px; padding-left:22px;}
+.route-fields::before{content:""; position:absolute; left:6px; top:20px; bottom:20px; width:2px; background:var(--line);}
+.rf{position:relative; display:flex; gap:8px; align-items:center;}
+.rf::before{content:""; position:absolute; left:-20px; top:50%; width:10px; height:10px; margin-top:-5px; border-radius:50%; background:var(--blue);}
+.rf.stop::before{background:var(--red); border-radius:2px;}
+.rf .field{padding:11px 12px; font-size:14px;}
+.rf .static{flex:1; padding:11px 12px; border:1px solid var(--line); border-radius:10px; font-size:14px; background:var(--bg); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+.result{display:flex; gap:12px; align-items:center; padding:11px 0; border:none; border-bottom:1px solid var(--line); background:none; width:100%; text-align:left; cursor:pointer;}
+.result .ic{width:34px; height:34px; border-radius:50%; background:var(--bg); display:flex; align-items:center; justify-content:center; flex:none; color:var(--muted);}
+.result .ic svg{width:17px; height:17px;}
+.result .t{font-size:14px; font-weight:600;} .result .s{font-size:12px; color:var(--muted);}
+.result .grow{flex:1; min-width:0;} .result .km{font-size:12px; color:var(--muted); white-space:nowrap;}
+.summary{display:flex; gap:10px; align-items:flex-start; font-size:13px; color:var(--muted);}
+.summary b{color:var(--ink); font-size:14px;}
+.opt{display:flex; gap:12px; align-items:center; width:100%; text-align:left; padding:13px; border:1.5px solid var(--line); border-radius:12px; background:var(--surface); cursor:pointer;}
+.opt.on{border-color:var(--teal); background:var(--teal-50);}
+.opt .ic{width:42px; height:42px; border-radius:10px; background:var(--bg); display:flex; align-items:center; justify-content:center; flex:none; color:var(--navy);}
+.opt.on .ic{background:#fff;}
+.opt .ic svg{width:22px; height:22px;}
+.opt .grow{flex:1; min-width:0;} .opt b{font-size:15px;} .opt .s{font-size:12.5px; color:var(--muted); margin-top:2px;}
+.opt .price{font-size:16px; font-weight:800; white-space:nowrap;}
+.opt.off{opacity:.55; cursor:not-allowed;}
+.fare-line{display:flex; align-items:center; justify-content:space-between; gap:8px; padding:11px 0 2px; font-size:13px; color:var(--muted);}
+details.breakdown{margin-top:6px; font-size:13px;} details.breakdown summary{cursor:pointer; color:var(--teal); font-weight:600; padding:6px 0; list-style:none;}
+details.breakdown summary::-webkit-details-marker{display:none;}
+.progress{display:flex; gap:4px; margin:12px 0 4px;} .progress i{flex:1; height:4px; border-radius:2px; background:var(--line);} .progress i.on{background:var(--teal);}
+.progress-l{display:flex; justify-content:space-between; font-size:10.5px; color:var(--faint); font-weight:600;}
+.driver{display:flex; gap:12px; align-items:center;}
+.driver .grow{flex:1; min-width:0;} .driver b{font-size:15px;} .driver .s{font-size:12.5px; color:var(--muted);}
+.big-eta{font-size:26px; font-weight:800; letter-spacing:-.01em;}
+.stars{display:flex; gap:6px; justify-content:center; margin:8px 0;}
+.stars button{border:none; background:none; cursor:pointer; padding:7px; color:#C9D3D5;} .stars button.on{color:#D9952B;}
+.stars svg{width:30px; height:30px;}
+.ticket{border:1.5px dashed var(--teal); border-radius:12px; padding:16px; text-align:center; background:var(--teal-50);}
+.ticket .code{font-family:ui-monospace,Menlo,Consolas,monospace; font-size:22px; font-weight:800; letter-spacing:.12em; margin:6px 0;}
+.ticket .amt{font-size:32px; font-weight:800; margin:6px 0 2px;}
+.req{border:1.5px solid var(--teal); border-radius:12px; padding:14px;}
+.ring{width:46px; height:46px; border-radius:50%; flex:none; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:14px;
+  background:conic-gradient(var(--teal) calc(var(--p) * 1%), var(--line) 0); position:relative;}
+.ring::before{content:""; position:absolute; inset:4px; border-radius:50%; background:var(--surface);}
+.ring span{position:relative;}
+.switch-big{display:flex; align-items:center; justify-content:space-between; gap:12px; padding:14px; border-radius:12px; background:var(--bg);}
+.switch-big b{font-size:16px;}
+
+/* ---------- explore ---------- */
+.search{display:flex; align-items:center; gap:8px; margin-top:12px; padding:0 12px; border-radius:10px; background:var(--bg);}
+.search svg{width:18px; height:18px; color:var(--faint); flex:none;}
+.search input{flex:1; border:none; background:none; padding:12px 0; font-size:15px; outline:none;}
+.grid{display:grid; grid-template-columns:1fr 1fr; gap:12px; padding:0 16px 20px;}
+.pcard{border:1px solid var(--line); border-radius:var(--r); overflow:hidden; background:var(--surface); cursor:pointer; text-align:left; padding:0;}
+.pimg{aspect-ratio:4/3; background:#E2EAEC; display:flex; align-items:center; justify-content:center; color:#9DB0B5; position:relative; overflow:hidden;}
+.pimg img{position:absolute; inset:0; width:100%; height:100%; object-fit:cover;}
+.pimg svg{width:30px; height:30px;}
+.pcard .b{padding:9px 10px 11px;} .pcard b{display:block; font-size:13.5px; line-height:1.3;} .pcard span{font-size:11.5px; color:var(--muted);}
+.hero{aspect-ratio:16/10; background:#E2EAEC; display:flex; align-items:center; justify-content:center; color:#9DB0B5; position:relative; overflow:hidden;}
+.hero img{position:absolute; inset:0; width:100%; height:100%; object-fit:cover;}
+.hero svg{width:44px; height:44px;}
+.hero .nav{position:absolute; top:50%; transform:translateY(-50%); width:34px; height:34px; border:none; border-radius:50%; background:rgba(16,35,43,.55); color:#fff; cursor:pointer; font-size:18px;}
+.hero .nav.l{left:10px;} .hero .nav.r{right:10px;}
+.minimap{height:170px; border-radius:var(--r); overflow:hidden; border:1px solid var(--line); position:relative;}
+.cta{display:flex; gap:12px; align-items:center; margin:0 16px 20px; padding:14px; border-radius:var(--r); background:var(--navy); color:#fff;}
+.cta .grow{flex:1;} .cta b{display:block; font-size:14px;} .cta span{font-size:12.5px; opacity:.8;}
+.cta button{border:none; background:#fff; color:var(--navy); border-radius:8px; padding:10px 14px; min-height:40px; font-weight:700; font-size:13px; cursor:pointer; white-space:nowrap;}
+.thumbs{display:flex; gap:8px; flex-wrap:wrap;} .thumbs div{position:relative; width:76px; height:76px; border-radius:8px; overflow:hidden; border:1px solid var(--line);}
+.thumbs img{width:100%; height:100%; object-fit:cover;} .thumbs button{position:absolute; top:2px; right:2px; width:32px; height:32px; border:none; border-radius:5px; background:rgba(16,35,43,.7); color:#fff; cursor:pointer;}
+.profile{display:flex; gap:14px; align-items:center;}
+.profile .avatar{width:56px; height:56px; font-size:19px;}
+.profile b{font-size:17px; display:block;} .profile span{font-size:13px; color:var(--muted);}
+table.t{width:100%; border-collapse:collapse; font-size:13px;}
+table.t th{text-align:left; font-size:11px; text-transform:uppercase; letter-spacing:.04em; color:var(--muted); padding:8px 6px; border-bottom:1px solid var(--line);}
+table.t td{padding:9px 6px; border-bottom:1px solid var(--line); vertical-align:top;}
+.y{color:var(--green); font-weight:700;} .n{color:var(--faint);} .p{color:var(--amber); font-weight:700;}
+.leaflet-container{font-family:var(--font);}
+.sos{pointer-events:auto; border:none; background:var(--red); color:#fff; border-radius:999px; padding:10px 16px; min-height:40px; font-size:13px; font-weight:800; display:inline-flex; align-items:center; gap:6px; cursor:pointer;}
+.sos .i{width:16px; height:16px;}
+.safety{display:flex; gap:10px; align-items:center; padding:10px 12px; border-radius:10px; background:var(--bg); font-size:13px; margin-top:12px;}
+.safety .i{color:var(--teal); width:18px; height:18px;} .safety.none .i{color:var(--red);}
+.safety .grow{flex:1;}
+.banner{border-radius:10px; padding:10px 12px; font-size:13px; font-weight:600; margin-top:10px; line-height:1.4;}
+.banner.warn{background:var(--amber-50); color:var(--amber);} .banner.bad{background:var(--red-50); color:var(--red);} .banner.ok{background:var(--green-50); color:var(--green);}
+.log{margin-top:8px; display:flex; flex-direction:column; gap:6px;}
+.log div{font-size:12px; padding:7px 10px; border-left:3px solid var(--line); background:var(--bg); border-radius:0 8px 8px 0;}
+.log .bad{border-left-color:var(--red);} .log .warn{border-left-color:#D9952B;} .log .ok{border-left-color:var(--green);}
+.ring.red{background:conic-gradient(var(--red) calc(var(--p) * 1%), var(--line) 0); width:84px; height:84px; font-size:26px; color:var(--red); margin:12px auto;}
+.ring.red::before{inset:6px;}
+.demo-row{display:flex; align-items:center; gap:8px; margin-top:10px; font-size:12px; color:var(--muted);}
+.demo-row button{border:1px dashed #D9B57A; background:var(--amber-50); color:var(--amber); border-radius:8px; padding:9px 14px; min-height:40px; font-size:12px; font-weight:700; cursor:pointer;}
+.trike-mk{width:22px; height:22px; border-radius:6px; background:var(--surface); border:2px solid var(--navy); display:flex; align-items:center; justify-content:center; color:var(--navy);}
+.trike-mk.mine{background:var(--navy); color:#fff;} .trike-mk.bot{border-style:dashed;}
+.trike-mk svg{width:13px; height:13px;}
+</style>
+</head>
+<body>
+<div class="stage">
+  <div class="stage-bar">
+    <h1>PANAW redesign · live demo</h1>
+    <p>Go online on the driver phone, then book on the passenger phone. DEMONSTRATION data; everything stays on this device (LOCAL DEMO MODE).</p>
+    <button id="reset-demo">Reset demo</button>
+  </div>
+  <div class="phones">
+    <div class="phone-col"><div class="phone-label">Passenger</div><div class="phone" id="phone-a"></div></div>
+    <div class="phone-col second"><div class="phone-label">Driver</div><div class="phone" id="phone-b"></div></div>
+  </div>
+</div>
+
+<script>/*@LEAFLET_JS@*/</script>
+<script>/*@NETWORK@*/</script>
+<script>var module = { exports: {} };</script>
+<script>/*@FARE@*/</script>
+<script>window.TrikeFare = module.exports; module = undefined;</script>
+<script>/*@NETMAP@*/</script>
+<script>window.RAW = /*@DATA@*/;</script>
+<script>/*@HUB@*/</script>
+<script>
+'use strict';
+/* =====================================================================
+   PANAW app.
+   Real data, fare engine (src/fare.js), route engine (src/network.js) and
+   hub (src/hub.js). Offline the hub runs in this tab (LOCAL DEMO MODE);
+   online the PANAW server runs it and every phone shares it.
+   ===================================================================== */
+const N = window.TrikeNetwork, F = window.TrikeFare, RAW = window.RAW;
+// accounts, drivers, rides and the safety watch: src/hub.js, the same code the PANAW server runs
+const H = PanawHub.create({ N, F, RAW });
+const { RULES, NET, FAST, SPEED, TOL, CONFIRM_S, PLACES, Hub, byId, muniName, short, initials, offMin, fmtMin, nearestNode, route,
+  FEATURED, seedHub, approach, availableTrikes, termRuleFor, quote, alertText, passengerDrives, ratingOf } = H;
+
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const peso = n => '₱' + Number(n).toFixed(2);
+const fareTag = info => info.status === 'TODA FARE CARD' ? 'ok' : info.isDemo ? 'demo' : 'info';
+
+const ICON = {
+  ride: '<circle cx="6" cy="18" r="2"/><circle cx="18" cy="6" r="2"/><path d="M8 18h7a3 3 0 0 0 0-6H9a3 3 0 0 1 0-6h7"/>',
+  explore: '<circle cx="12" cy="12" r="9"/><path d="M15.5 8.5l-2 5-5 2 2-5z"/>',
+  user: '<circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-7 8-7s8 3 8 7"/>',
+  van: '<path d="M3 7h12l4 4h2v5h-2M3 7v9h2M9 16h6"/><circle cx="7" cy="16.5" r="2"/><circle cx="17" cy="16.5" r="2"/><path d="M7 7v4h11"/>',
+  jeep: '<rect x="3" y="5" width="18" height="11" rx="2"/><path d="M3 10h18M7 5v5M12 5v5M17 5v5"/><circle cx="7" cy="18" r="2"/><circle cx="17" cy="18" r="2"/>',
+  msg: '<path d="M4 5h16v11H8l-4 4z"/>',
+  wheel: '<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="2.5"/><path d="M12 3v6.5M12 14.5V21M3 12h6.5M14.5 12H21"/>',
+  wallet: '<rect x="3" y="6" width="18" height="13" rx="2"/><path d="M3 10h18M16 14.5h2"/>',
+  search: '<circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/>',
+  back: '<path d="M15 5l-7 7 7 7"/>',
+  chev: '<path d="M9 5l7 7-7 7"/>',
+  pin: '<path d="M12 21s-7-6.2-7-11a7 7 0 0 1 14 0c0 4.8-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/>',
+  trike: '<path d="M3 15V8a1 1 0 0 1 1-1h8l3 4h4a2 2 0 0 1 2 2v2"/><circle cx="7" cy="17" r="2"/><circle cx="17" cy="17" r="2"/><path d="M9 17h6"/>',
+  stop: '<path d="M6 21V4M6 4h11l-2.5 4L17 12H6"/>',
+  terminal: '<rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8M12 16v4"/>',
+  clock: '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
+  doc: '<path d="M7 3h7l4 4v14H7z"/><path d="M14 3v4h4M9.5 12h5M9.5 16h5"/>',
+  people: '<circle cx="9" cy="8" r="3"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6"/><path d="M16 5.5a3 3 0 0 1 0 5.5M18 14c2 .7 3 2.8 3 6"/>',
+  box: '<path d="M3 7l9-4 9 4v10l-9 4-9-4z"/><path d="M3 7l9 4 9-4M12 11v10"/>',
+  info: '<circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.5v.5"/>',
+  plus: '<path d="M12 5v14M5 12h14"/>',
+  store: '<path d="M4 9l1.5-5h13L20 9M4 9h16v11H4zM9 20v-6h6v6"/>',
+  logout: '<path d="M15 4h4v16h-4M10 8l-4 4 4 4M6 12h10"/>',
+  shield: '<path d="M12 3l8 3v6c0 4.5-3.4 8-8 9-4.6-1-8-4.5-8-9V6z"/><path d="M9 12l2 2 4-4"/>',
+  gps: '<circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/><circle cx="12" cy="12" r="7"/>',
+  beach: '<path d="M3 20h18M5 20c2-4 5-6 9-6M12 4a8 8 0 0 1 8 8H4a8 8 0 0 1 8-8zM12 4v16"/>',
+  church: '<path d="M12 2v4M10 4h4M6 21V11l6-5 6 5v10zM10 21v-5h4v5"/>',
+  leaf: '<path d="M5 19c0-8 6-14 15-14 0 9-6 15-14 15M5 19l7-7"/>',
+  landmark: '<path d="M3 21h18M5 21V10M19 21V10M9 21V10M15 21V10M2 10l10-6 10 6z"/>',
+  anchor: '<circle cx="12" cy="5" r="2"/><path d="M12 7v14M5 13a7 7 0 0 0 14 0M8 11h8"/>',
+  home: '<path d="M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/>',
+  star: '<path d="M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1L3.2 9.5l6.1-.9z"/>',
+  share: '<circle cx="18" cy="5" r="2.5"/><circle cx="6" cy="12" r="2.5"/><circle cx="18" cy="19" r="2.5"/><path d="M8.2 10.8l7.6-4.4M8.2 13.2l7.6 4.4"/>',
+  phone: '<path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2"/>',
+  check: '<path d="M5 12l5 5 9-10"/>'
+};
+const ic = (n, cls = '') => `<svg class="i ${cls}" viewBox="0 0 24 24" fill="${n === 'star' ? 'currentColor' : 'none'}" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICON[n] || ''}</svg>`;
+
+/* ---------- places ---------- */
+const CAT_ICON = { Beaches: 'beach', Heritage: 'church', Nature: 'leaf', Landmarks: 'landmark', Ports: 'anchor', Towns: 'home', Essentials: 'store', Schools: 'landmark', 'Owner listings': 'store', Barangays: 'home' };
+/* =====================================================================
+   WHERE THE HUB RUNS
+   LOCAL DEMO MODE: in this tab (the offline APK, or this file opened on a laptop).
+   CONNECTED: on the PANAW server (window.PANAW_API in the online APK, or the
+   server that served this page). Then accounts and rides are shared by every phone.
+   ===================================================================== */
+const API = typeof window.PANAW_API === 'string' ? window.PANAW_API.replace(/\/$/, '')
+  : /^https?:$/.test(location.protocol) && !window.PANAW_LOCAL ? '' : null;
+const REMOTE = API !== null;
+const store = {
+  get(k) { try { return localStorage.getItem(k); } catch { return null; } },
+  set(k, v) { try { v == null ? localStorage.removeItem(k) : localStorage.setItem(k, v); } catch { /* private mode: not kept */ } }
+};
+const LOCAL_KEY = 'panaw-local-v1';
+let saveTimer = null;
+function saveLocal() {
+  if (REMOTE || saveTimer) return;
+  saveTimer = setTimeout(() => { saveTimer = null; store.set(LOCAL_KEY, JSON.stringify({ hub: H.dump(), listings: Hub.listings })); }, 1500);
+}
+function loadLocal() {
+  try { const s = JSON.parse(store.get(LOCAL_KEY)); if (s && H.restore(s.hub)) Hub.listings = s.listings || []; } catch { /* nothing saved */ }
+}
+const Remote = {
+  token: null, phone: null, online: true, lrev: '',
+  async call(path, body) {
+    const r = await fetch(API + path, { method: body ? 'POST' : 'GET', cache: 'no-store',
+      headers: { 'Content-Type': 'application/json', ...(this.token ? { Authorization: 'Bearer ' + this.token } : {}) }, body: body ? JSON.stringify(body) : undefined });
+    const j = await r.json().catch(() => ({ error: 'The PANAW server sent an unexpected reply.' }));
+    if (r.status === 401 && this.token) { this.signOut(); }
+    return j;
+  },
+  apply(v) {
+    if (!v) return;
+    // a poll leaves listings out when the board has not changed since lrev
+    Object.assign(Hub, { accounts: v.accounts, drivers: v.drivers, requests: v.requests, listings: v.listings || Hub.listings, operators: v.operators, reports: v.reports });
+    if (v.listings && v.listingsRev) this.lrev = v.listingsRev;
+    const P = this.phone;
+    if (P && v.me && this.token) P.account = v.me;
+    Hub.emit();
+  },
+  signOut() { this.token = null; store.set('panaw-token', null); const P = this.phone; if (P && P.account) { P.account = null; P.render(); } },
+  async poll() {
+    if (!this.token) return;
+    try { const j = await this.call('/api/hub/view?lrev=' + this.lrev); this.online = true; if (j.view) this.apply(j.view); }
+    catch { if (this.online) { this.online = false; this.phone && this.phone.toast('Central sync offline. Retrying.'); } }
+  }
+};
+
+/* ---------- language: Filipino and Hiligaynon for the main labels ----------
+   Exact labels only; sentences with names or numbers stay in English.
+   First draft by the developer: a native speaker should check these before release. */
+const LANGS = { en: 'English', fil: 'Filipino', hil: 'Hiligaynon' };
+const TR = {   // English: [Filipino, Hiligaynon]
+  'Ride': ['Sakay', 'Sakay'], 'Explore': ['Tuklasin', 'Lagaw'], 'Account': ['Account', 'Account'],
+  'Where to?': ['Saan papunta?', 'Diin ka makadto?'], 'Use GPS': ['Gamitin ang GPS', 'Gamita ang GPS'],
+  "I'm safe": ['Ligtas ako', 'Luwas ako'], 'Alert now': ['Mag-alerto na', 'Alerto na'],
+  'Your trike left the route': ['Lumihis ang traysikel sa ruta', 'Naglihis ang traysikel sa ruta'],
+  'Cancel ride': ['Kanselahin ang sakay', 'Kanselahon ang sakay'], 'Cancel request': ['Kanselahin ang request', 'Kanselahon ang request'],
+  'Cancel trip': ['Kanselahin ang biyahe', 'Kanselahon ang biyahe'],
+  'Finding your trike': ['Hinahanap ang iyong traysikel', 'Ginapangita ang imo traysikel'],
+  'Your trike is on the way': ['Papunta na ang iyong traysikel', 'Padulong na ang imo traysikel'],
+  'Your trike is here': ['Nandito na ang iyong traysikel', 'Ari na ang imo traysikel'],
+  'You have arrived': ['Nakarating ka na', 'Nakaabot ka na'],
+  'Share trip': ['Ibahagi ang biyahe', 'Ipaambit ang biyahe'], 'Report issue': ['Mag-ulat ng problema', 'Ireport ang problema'],
+  'Send this alert by text': ['Ipadala ang alerto sa text', 'Ipadala ang alerto paagi sa text'],
+  'Done': ['Tapos', 'Tapos na'], 'Log in': ['Mag-log in', 'Mag-log in'], 'Log out': ['Mag-log out', 'Mag-log out'],
+  'Create an account': ['Gumawa ng account', 'Maghimo sang account'], 'Create account': ['Gumawa ng account', 'Maghimo sang account'],
+  'Just explore as a guest': ['Mag-explore bilang bisita', 'Maglagaw subong bisita'],
+  'Emergency contacts': ['Mga emergency contact', 'Mga emergency contact'], 'Safety': ['Kaligtasan', 'Kaluwasan'],
+  'Ride history': ['Mga nakaraang sakay', 'Mga nagligad nga sakay'], 'Language': ['Wika', 'Lingguahe'],
+  'Fare': ['Pamasahe', 'Pasahe'], 'Fare to pay': ['Babayaran', 'Bayaran'], 'Pickup': ['Sakayan', 'Sakayan'],
+  'Go online': ['Mag-online', 'Mag-online'], 'Go offline': ['Mag-offline', 'Mag-offline'],
+  'Accept': ['Tanggapin', 'Batuna'], 'Decline': ['Tanggihan', 'Indi pagbatunon'], 'I have arrived': ['Nandito na ako', 'Ari na ako'],
+  'Start trip': ['Simulan ang biyahe', 'Umpisahan ang biyahe'], 'Book a trike': ['Mag-book ng traysikel', 'Mag-book sang traysikel'],
+  'Drive': ['Pagmamaneho', 'Pagmaneho'], 'Earnings': ['Kita', 'Kita'], 'Activity': ['Aktibidad', 'Aktibidad']
+};
+let LANG = LANGS[store.get('panaw-lang')] ? store.get('panaw-lang') : 'en';
+function translate(root) {
+  if (LANG === 'en' || !root) return;
+  const i = LANG === 'fil' ? 0 : 1, w = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+  for (let n; (n = w.nextNode());) { const k = n.nodeValue.trim(), t = TR[k]; if (t) n.nodeValue = n.nodeValue.replace(k, t[i]); }
+}
+/* =====================================================================
+   PHONE: one instance per screen; the passenger and driver phones share Hub.
+   ===================================================================== */
+function Phone(host, startAccountId) {
+  const P = this;
+  P.host = host;
+  P.account = startAccountId ? byId(Hub.accounts, startAccountId) : null;
+  P.guest = false;
+  P.auth = { step: 'welcome', role: 'passenger', error: '' };
+  P.tab = null; P.pages = [];
+  P.ride = { pickup: defaultPickup(), stops: [], step: 'home', option: 'pickup', opts: { pax: 1, hire: 'regular', disc: 'none', dpax: 0 }, query: '', active: 0, reqId: null, rating: 0, refit: true };
+  P.explore = { q: '', cat: 'All', muni: 'all' };
+  P.drive = { refit: true };
+  P.listing = { photos: [], pin: null };
+  host.innerHTML = `<div class="content"></div><nav class="tabbar"></nav><div class="toast"></div>`;
+  P.content = host.querySelector('.content'); P.tabbar = host.querySelector('.tabbar'); P.toastEl = host.querySelector('.toast');
+  host.addEventListener('click', e => P.onClick(e));
+  host.addEventListener('input', e => P.onInput(e));
+  host.addEventListener('change', e => P.onChange(e));
+  Hub.listeners.add(() => P.live());
+  // labels drawn later are translated as they appear
+  new MutationObserver(ms => ms.forEach(m => m.addedNodes.forEach(n => translate(n.nodeType === 1 ? n : n.parentNode)))).observe(host, { childList: true, subtree: true });
+  P.render();
+}
+function defaultPickup() {
+  const n = byId(NET.nodes, 'd2');   // demo position: by the Buenavista New Terminal Market
+  return { lat: n.lat + 0.0012, lng: n.lng - 0.0008, label: 'Near Buenavista New Terminal Market', src: 'demo' };
+}
+const Pp = Phone.prototype;
+Pp.q = function (s) { return this.host.querySelector(s); };
+Pp.toast = function (m) { const t = this.toastEl; t.textContent = m; t.classList.add('on'); clearTimeout(t._h); t._h = setTimeout(() => t.classList.remove('on'), 2400); };
+Pp.isDriver = function () { return this.account && this.account.role === 'driver'; };
+Pp.isOperator = function () { return this.account && this.account.role === 'operator'; };
+Pp.tabs = function () {
+  if (this.isOperator()) return [['vehicle', 'My vehicle', 'van'], ['explore', 'Explore', 'explore'], ['account', 'Account', 'user']];
+  return this.isDriver() ? [['drive', 'Drive', 'wheel'], ['earnings', 'Earnings', 'wallet'], ['account', 'Account', 'user']]
+    : [['ride', 'Ride', 'ride'], ['explore', 'Explore', 'explore'], ['account', 'Account', 'user']];
+};
+
+/* ---------- top-level render ---------- */
+Pp.render = function () {
+  const P = this;
+  P.maps && Object.values(P.maps).forEach(m => m.map && m.map.remove());
+  P.maps = {};
+  if (!P.account && !P.guest) { P.tabbar.style.display = 'none'; return P.renderAuth(); }
+  P.tabbar.style.display = '';
+  const tabs = P.tabs();
+  if (!P.tab || !tabs.some(t => t[0] === P.tab)) P.tab = tabs[0][0];
+  P.content.innerHTML = tabs.map(([id]) => `<section class="tab" data-tab="${id}"></section>`).join('') + '<div class="pagehost"></div><div class="modalhost"></div>';
+  P.tabbar.innerHTML = tabs.map(([id, label, icon]) => `<button data-go-tab="${id}">${ic(icon)}<span>${label}</span></button>`).join('');
+  P.showTab(P.tab);
+};
+Pp.showTab = function (id) {
+  const P = this; P.tab = id; P.pages = []; P.renderPage();
+  P.content.querySelectorAll('.tab').forEach(s => s.classList.toggle('on', s.dataset.tab === id));
+  P.tabbar.querySelectorAll('button').forEach(b => b.classList.toggle('on', b.dataset.goTab === id));
+  const el = P.content.querySelector(`.tab[data-tab="${id}"]`);
+  ({ ride: () => P.renderRide(el), explore: () => P.renderExplore(el), account: () => P.renderAccount(el),
+     drive: () => P.renderDrive(el), earnings: () => P.renderEarnings(el), vehicle: () => P.renderVehicle(el) })[id]();
+};
+/* called on every demo tick: refresh only what moves */
+Pp.live = function () {
+  const P = this; if (!P.account) return;
+  if (P.tab === 'ride' && !P.pages.length) P.updateRide();
+  if (P.tab === 'drive' && !P.pages.length) P.updateDrive();
+};
+
+/* ---------- maps (Leaflet + CARTO light tiles; offline: stored-network drawing) ---------- */
+Pp.map = function (key, el, onTap) {
+  const P = this;
+  if (P.maps[key] && P.maps[key].el === el) return P.maps[key];
+  if (P.maps[key] && P.maps[key].map) P.maps[key].map.remove();   // its element was replaced
+  if (typeof L === 'undefined') {
+    el.innerHTML = TrikeMap.render(NET, { labels: 'terminals', height: 800 });
+    return (P.maps[key] = { el, map: null, offline: true });
+  }
+  const map = L.map(el, { zoomControl: false, attributionControl: true, zoomAnimation: false, fadeAnimation: false, markerZoomAnimation: false }).setView([10.66, 122.63], 12);
+  L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}', { maxZoom: 19,
+    attribution: 'Tiles &copy; Esri &middot; Esri, HERE, Garmin, USGS, OpenStreetMap contributors' }).addTo(map);
+  drawBasemap(map);
+  const m = P.maps[key] = { el, map, layer: L.layerGroup().addTo(map), onTap };
+  map.on('click', e => m.onTap && m.onTap({ lat: e.latlng.lat, lng: e.latlng.lng }));
+  setTimeout(() => map.invalidateSize(), 0);
+  return m;
+};
+/* Offline map: Guimaras coastline and roads from OpenStreetMap, stored in the app (data/basemap.json).
+   It sits below the online tiles, so it shows wherever tiles cannot load. */
+function drawBasemap(map) {
+  const B = RAW.basemap; if (!B) return;
+  map.createPane('base'); map.getPane('base').style.zIndex = 150;
+  const r = L.canvas({ pane: 'base' }), dark = matchMedia('(prefers-color-scheme: dark)').matches;
+  const style = { coast: [dark ? '#5E8C96' : '#7FA7B0', 1.6], major: [dark ? '#C9B27A' : '#D9A441', 3], minor: [dark ? '#6C7F84' : '#A9B4B6', 1.8], local: [dark ? '#3E4F54' : '#CBD3D4', 1] };
+  for (const k of ['local', 'minor', 'major', 'coast']) L.polyline(B[k], { renderer: r, color: style[k][0], weight: style[k][1], interactive: false }).addTo(map);
+  map.attributionControl.addAttribution('Offline map &copy; OpenStreetMap contributors');
+}
+const trikeIcon = cls => L.divIcon({ className: '', html: `<div class="trike-mk ${cls}">${ic('trike')}</div>`, iconSize: [22, 22], iconAnchor: [11, 11] });
+const dotIcon = (color, size = 14) => L.divIcon({ className: '', html: `<div style="width:${size}px;height:${size}px;border-radius:50%;background:${color};border:3px solid #fff;box-shadow:0 0 0 1px rgba(0,0,0,.15)"></div>`, iconSize: [size, size], iconAnchor: [size / 2, size / 2] });
+const sqIcon = color => L.divIcon({ className: '', html: `<div style="width:14px;height:14px;border-radius:3px;background:${color};border:3px solid #fff;box-shadow:0 0 0 1px rgba(0,0,0,.15)"></div>`, iconSize: [14, 14], iconAnchor: [7, 7] });
+function drawLayer(m, o) {
+  if (!m || !m.map) return;
+  m.layer.clearLayers();
+  const pts = [];
+  if (o.line && o.line.length > 1) { L.polyline(o.line.map(p => [p.lat, p.lng]), { color: '#0E7C86', weight: 5, opacity: .9 }).addTo(m.layer); pts.push(...o.line.map(p => [p.lat, p.lng])); }
+  if (o.approach && o.approach.length > 1) L.polyline(o.approach.map(p => [p.lat, p.lng]), { color: '#0A3543', weight: 3, opacity: .55, dashArray: '6 6' }).addTo(m.layer);
+  for (const t of o.trikes || []) L.marker([t.pos.lat, t.pos.lng], { icon: trikeIcon(t.cls), interactive: false }).addTo(m.layer);
+  for (const s of o.stops || []) { L.marker([s.lat, s.lng], { icon: sqIcon('#C93C3C') }).bindTooltip(esc(s.name)).addTo(m.layer); pts.push([s.lat, s.lng]); }
+  for (const s of o.places || []) { const mk = L.marker([s.lat, s.lng], { icon: dotIcon(s.listing ? '#9A6412' : '#0A3543', 12) }).bindTooltip(esc(s.name)).addTo(m.layer); if (s.onClick) mk.on('click', s.onClick); pts.push([s.lat, s.lng]); }
+  if (o.pickup) { L.marker([o.pickup.lat, o.pickup.lng], { icon: dotIcon('#2F6FED', 16) }).addTo(m.layer); pts.push([o.pickup.lat, o.pickup.lng]); }
+  if (o.fit) {
+    const f = o.fitTo || pts;
+    if (f.length > 1) m.map.fitBounds(f, { paddingTopLeft: [30, 60], paddingBottomRight: [30, o.bottomPad || 40], maxZoom: 15 });
+    else if (f.length === 1) m.map.setView(f[0], 14);
+  }
+}
+
+/* =====================================================================
+   AUTH
+   ===================================================================== */
+Pp.renderAuth = function () {
+  const P = this, A = P.auth;
+  const back = `<button class="icon-btn" data-auth="welcome" aria-label="Back">${ic('back')}</button>`;
+  let body = '';
+  if (A.step === 'welcome') body = `
+    <div class="brand"><div class="mark">PN</div><b>PANAW</b></div>
+    <div class="hero-title">Fair tricycle rides across Guimaras</div>
+    <p class="hint" style="font-size:14px">Book a trike to where you are, see the fare before you ride, and discover places in all five municipalities.</p>
+    <div class="stack" style="margin-top:32px">
+      <button class="btn primary" data-auth="role">Create an account</button>
+      <button class="btn ghost" data-auth="login">Log in</button>
+      <button class="link" style="margin-top:6px" data-guest>Just explore as a guest</button>
+    </div>
+    <p class="hint" style="margin-top:28px">Demo accounts: passenger 09171234567, driver 09181234567, van operator 09191234567. Password demo1234.</p>`;
+  else if (A.step === 'role') body = `${back}
+    <h2 style="font-size:22px; margin:18px 0 6px">How will you use PANAW?</h2>
+    <p class="hint">You can only pick one role per account.</p>
+    <div class="stack" style="margin-top:18px">
+      <button class="role-card ${A.role === 'passenger' ? 'on' : ''}" data-role="passenger"><span class="ic">${ic('user')}</span><span><b>Passenger</b><span>Book rides, see fair fares, explore places.</span></span></button>
+      <button class="role-card ${A.role === 'driver' ? 'on' : ''}" data-role="driver"><span class="ic">${ic('wheel')}</span><span><b>Tricycle driver</b><span>Receive ride requests for your TODA unit. Your TODA confirms you before you can go online.</span></span></button>
+      <button class="role-card ${A.role === 'operator' ? 'on' : ''}" data-role="operator"><span class="ic">${ic('van')}</span><span><b>Jeepney or van operator</b><span>List your vehicle for group trips and tours. Passengers contact you directly; you set your own rate.</span></span></button>
+      <button class="btn primary" style="margin-top:8px" data-auth="signup">Continue</button>
+    </div>`;
+  else if (A.step === 'signup') body = `<button class="icon-btn" data-auth="role" aria-label="Back">${ic('back')}</button>
+    <h2 style="font-size:22px; margin:18px 0 16px">${A.role === 'driver' ? 'Driver account' : A.role === 'operator' ? 'Operator account' : 'Passenger account'}</h2>
+    <div class="stack">
+      <div><label class="label">Full name</label><input class="field" name="name" autocomplete="name"></div>
+      <div><label class="label">Mobile number</label><input class="field" name="mobile" inputmode="tel" placeholder="09XXXXXXXXX"></div>
+      <div><label class="label">Password</label><input class="field" name="password" type="password" placeholder="At least 8 characters"></div>
+      ${A.role === 'driver' ? `
+      <div><label class="label">TODA / terminal</label><select class="field" name="terminalId">${NET.terminals.map(t => `<option value="${t.id}">${esc(t.name)} · ${esc(muniName(t.municipality))}</option>`).join('')}</select></div>
+      <div class="row-btns"><div style="flex:1"><label class="label">Unit number</label><input class="field" name="unit" placeholder="BTODA-0000"></div>
+        <div style="flex:1"><label class="label">Plate number</label><input class="field" name="plate" placeholder="1234-AB"></div></div>
+      <div><label class="label">Driver's license number</label><input class="field" name="license"></div>
+      <p class="hint">Your location is shared only while you are online. Your TODA officer confirms your unit before you can accept rides.</p>` : ''}
+      ${A.role === 'operator' ? `
+      <div class="row-btns"><div style="flex:1"><label class="label">Vehicle</label><select class="field" name="otype"><option value="van">Van</option><option value="jeepney">Jeepney</option></select></div>
+        <div style="flex:1"><label class="label">Seats</label><input class="field" name="oseats" inputmode="numeric" placeholder="14"></div></div>
+      <div><label class="label">Name shown to passengers</label><input class="field" name="oname" placeholder="e.g. Reyes Van Rental"></div>
+      <div class="row-btns"><div style="flex:1"><label class="label">Plate number</label><input class="field" name="oplate"></div>
+        <div style="flex:1"><label class="label">Based in</label><select class="field" name="omuni">${NET.municipalities.map(m => `<option value="${m.id}">${esc(m.name)}</option>`).join('')}</select></div></div>
+      <div><label class="label">Your rate</label><input class="field" name="orate" placeholder="e.g. ₱3,500 per day within Guimaras"></div>
+      <div><label class="label">Facebook or Messenger link (optional)</label><input class="field" name="omsg" placeholder="https://m.me/yourpage"></div>
+      <p class="hint">Passengers call or text your mobile number directly. You agree on the route, time and price with them.</p>` : ''}
+      ${A.error ? `<div class="tag todo" style="white-space:normal; padding:8px 10px; font-size:12.5px">${esc(A.error)}</div>` : ''}
+      <button class="btn primary" data-signup>Create account</button>
+    </div>`;
+  else if (A.step === 'login') body = `${back}
+    <h2 style="font-size:22px; margin:18px 0 16px">Welcome back</h2>
+    <div class="stack">
+      <div><label class="label">Mobile number</label><input class="field" name="mobile" inputmode="tel" placeholder="09XXXXXXXXX"></div>
+      <div><label class="label">Password</label><input class="field" name="password" type="password"></div>
+      ${A.error ? `<div class="tag todo" style="white-space:normal; padding:8px 10px; font-size:12.5px">${esc(A.error)}</div>` : ''}
+      <button class="btn primary" data-login>Log in</button>
+      <p class="hint">Demo: 09171234567 (passenger), 09181234567 (driver) or 09191234567 (van operator), password demo1234.</p>
+    </div>`;
+  P.content.innerHTML = `<div class="auth"><div class="scroll">${body}</div></div>`;
+  // keep what was typed when a form comes back with an error (never the password)
+  for (const [k, v] of Object.entries(A.vals || {})) { const i = P.content.querySelector(`[name="${k}"]`); if (i && k !== 'password') i.value = v; }
+};
+Pp.formVals = function () { const o = {}; this.content.querySelectorAll('[name]').forEach(i => o[i.name] = i.value.trim()); return o; };
+/* every change goes through the hub: in this tab, or on the server (which answers with this phone's new view) */
+Pp.act = function (name, payload) {
+  const P = this;
+  if (!REMOTE) { const r = H.run(name, P.account, payload); Hub.emit(); saveLocal(); return Promise.resolve(r); }
+  return Remote.call('/api/hub/' + name, payload || {}).then(res => {
+    if (res.token) { Remote.token = res.token; store.set('panaw-token', res.token); }
+    if (res.view) Remote.apply(res.view);
+    return res.result || { error: res.error || 'Something went wrong.' };
+  }, () => ({ error: 'No connection to the PANAW server. Your trip details stay on this phone; try again when you have signal.' }));
+};
+Pp.signup = function () {
+  const P = this, v = P.formVals(), A = P.auth;
+  return P.act('signup', { ...v, role: A.role }).then(res => {
+    if (res.error) { A.error = res.error; A.vals = v; return P.renderAuth(); }
+    P.account = REMOTE ? P.account : res.account; if (!REMOTE) store.set('panaw-local-me', P.account.id); A.error = ''; A.vals = null; P.tab = null; P.render();
+    P.toast(A.role === 'driver' ? 'Account created. Waiting for TODA confirmation.' : 'Welcome to PANAW');
+  });
+};
+Pp.login = function () {
+  const P = this, v = P.formVals();
+  return P.act('login', { mobile: v.mobile, password: v.password }).then(res => {
+    if (res.error) { P.auth.error = res.error; return P.renderAuth(); }
+    P.account = REMOTE ? P.account : res.account; if (!REMOTE) store.set('panaw-local-me', P.account.id); P.auth.error = ''; P.tab = null; P.render();
+  });
+};
+Pp.logout = function () {
+  const P = this;
+  P.act('logout');   // its request already carries the token, so forget it now
+  if (REMOTE) { Remote.token = null; store.set('panaw-token', null); } else store.set('panaw-local-me', null);
+  P.stopGps && P.stopGps();
+  P.account = null; P.guest = false; P.auth = { step: 'welcome', role: 'passenger', error: '' }; P.render();
+};
+
+/* =====================================================================
+   RIDE (passenger)
+   ===================================================================== */
+Pp.renderRide = function (el) {
+  const P = this;
+  el.innerHTML = `<div class="map" data-map="ride"></div>
+    <div class="top-pill"><span class="pill"><span class="dot demo"></span>DEMO data · no live traffic</span><span data-sos-slot></span></div>
+    <div class="sheet"></div>`;
+  P.map('ride', el.querySelector('[data-map="ride"]'), pos => {
+    const R = P.ride;
+    if (R.step === 'home' || R.step === 'search' || R.step === 'options') { R.pickup = { ...pos, label: 'Pinned on the map', src: 'map' }; R.refit = R.step === 'options'; P.drawRideSheet(); }
+  });
+  P.ride.refit = true;
+  P.drawRideSheet();
+};
+Pp.myRide = function () { return this.ride.reqId && byId(Hub.requests, this.ride.reqId); };
+Pp.drawRideSheet = function () {
+  const P = this, R = P.ride, sheet = P.q('.tab[data-tab="ride"] .sheet'); if (!sheet) return;
+  if (P.guest) {
+    sheet.className = 'sheet';
+    sheet.innerHTML = `<div class="grab"></div><div class="scroll"><h3 style="margin:4px 0 6px">Book a trike</h3>
+      <p class="hint">Create a free account to book rides. You can still explore places and check fares as a guest.</p>
+      <div class="row-btns" style="margin-top:12px"><button class="btn primary" data-to-auth="role">Create account</button><button class="btn ghost" data-to-auth="login">Log in</button></div></div>`;
+    return P.drawRideMap();
+  }
+  const req = P.myRide();
+  if (req && !['cancelled'].includes(req.status) && R.step !== 'done') R.step = req.status === 'completed' ? 'done' : 'active';
+  sheet.className = 'sheet' + (R.step === 'search' ? ' full' : '');
+  sheet.innerHTML = `${R.step === 'search' ? '' : '<div class="grab"></div>'}<div class="scroll">${P['ride_' + R.step]()}</div>`;
+  const bu = sheet.querySelector('[name="bunit"]'); if (bu && bu.value === '__other') sheet.querySelector('[data-other]').style.display = '';
+  if (R.step === 'search') { const f = sheet.querySelector('input[data-q]'); if (f) { f.focus(); f.setSelectionRange(f.value.length, f.value.length); } }
+  const live = req && ['accepted', 'arrived', 'ontrip'].includes(req.status);
+  const slot = P.q('[data-sos-slot]'); if (slot) slot.innerHTML = live ? `<button class="sos" data-sos>${ic('shield')}Emergency</button>` : '';
+  P.drawSafetyPrompt(req);
+  P.drawRideMap();
+};
+Pp.safetyBlock = function (req) {
+  const n = (this.account.contacts || []).length;
+  const last = req.safety.slice(-3).reverse();
+  const line = e => e.type === 'alert_sent' ? `<div class="bad">${new Date(e.at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} · ${e.how === 'automatic' ? 'No answer: alert ready for' : 'Alert ready for'} ${esc(e.notified.join(', '))}. Send it below.</div>`
+    : e.type === 'safe_confirmed' ? `<div class="ok">${new Date(e.at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} · You confirmed you are safe</div>`
+    : `<div class="${e.severity === 'major' ? 'bad' : 'warn'}">${new Date(e.at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} · ${e.severity === 'major' ? 'Major' : 'Minor'} route deviation, ${e.km.toFixed(2)} km off the route</div>`;
+  return `<div class="safety ${n ? '' : 'none'}">${ic('shield')}<span class="grow">${n ? `Safety watch on · ${n} emergency contact${n > 1 ? 's' : ''}` : 'No emergency contacts yet'}</span>
+      <button class="link" data-page="contacts">${n ? 'Edit' : 'Add'}</button></div>
+    ${last.length ? `<div class="log">${last.map(line).join('')}</div>` : ''}
+    ${(() => {
+      const e = [...req.safety].reverse().find(x => x.type === 'alert_sent'); if (!e) return '';
+      const text = alertText(req, e, this.trackLink(req)), nums = (this.account.contacts || []).map(c => c.mobile).join(',');
+      return `<div class="card" style="margin-top:10px"><b style="font-size:13px">Message to ${esc(e.notified.join(', '))}</b>
+        <div class="hint" style="margin-top:6px; color:var(--ink)">${esc(text)}</div>
+        <a class="btn primary sm" style="margin-top:10px; width:100%" href="sms:${esc(nums)}?body=${encodeURIComponent(text)}">Send this alert by text</a>
+        <p class="hint" style="margin-top:6px">PANAW does not text anyone by itself. This opens your phone's Messages app with the alert written; tap Send there.${this.trackLink(req) ? '' : ' The live tracking link needs the online app.'}</p></div>`;
+    })()}
+    <div class="row-btns" style="margin-top:10px"><button class="btn ghost sm" data-share>${ic('share')}Share trip</button><button class="btn ghost sm" data-report="${req.id}">Report issue</button></div>
+    ${req.status === 'ontrip' ? '<div class="demo-row">DEMO: simulate a detour <button data-detour="0.6">Minor</button><button data-detour="1.6">Major</button></div>' : ''}`;
+};
+Pp.drawSafetyPrompt = function (req) {
+  const P = this, host = P.content.querySelector('.modalhost'); if (!host) return;
+  const pr = req && req.status === 'ontrip' && req.watch.prompt;
+  const open = host.querySelector('[data-prompt]');
+  if (!pr) { if (open) host.innerHTML = ''; return; }
+  const left = Math.max(0, CONFIRM_S - (Date.now() - pr.at) / 1000);
+  // already open for this prompt: move the countdown only, so a tap on the buttons is never lost to a redraw
+  if (open && +open.dataset.prompt === pr.at) {
+    const ring = open.querySelector('.ring'); ring.style.setProperty('--p', left / CONFIRM_S * 100); ring.querySelector('span').textContent = Math.ceil(left);
+    return;
+  }
+  host.innerHTML = `<div class="modal" data-prompt="${pr.at}" role="alertdialog" aria-label="Safety check"><div class="modal-box" style="text-align:center">
+    <h3 style="color:var(--red)">Your trike left the route</h3>
+    <p class="hint">It is ${pr.km.toFixed(1)} km away from the planned route. Are you safe?</p>
+    <div class="ring red" style="--p:${left / CONFIRM_S * 100}"><span>${Math.ceil(left)}</span></div>
+    <p class="hint">If you do not answer, PANAW alerts ${esc((P.account.contacts || []).map(c => c.name).join(', ') || 'your emergency contacts')} with the trike's location.</p>
+    <div class="row-btns" style="margin-top:12px"><button class="btn danger" data-alert-now>Alert now</button><button class="btn primary" data-safe>I'm safe</button></div></div></div>`;
+};
+const rateText = unit => { const r = ratingOf(unit); return r ? `Rated ${r.avg.toFixed(1)} of 5 · ${r.n} ride${r.n > 1 ? 's' : ''}` : 'No ratings yet'; };
+const VEH = { jeepney: 'Jeepney', van: 'Van' };
+function opCard(o, preview) {
+  return `<div class="card" style="margin-top:10px"><div class="driver"><div class="avatar" style="border-radius:12px">${ic(o.type === 'van' ? 'van' : 'jeep')}</div>
+      <div class="grow"><b>${esc(o.name)}</b><div class="s">${o.seats} seats · based in ${esc(muniName(o.municipality))}</div>
+      <div style="margin-top:4px">${o.demo ? '<span class="tag demo">DEMO OPERATOR</span> ' : ''}${o.available ? '<span class="tag ok">Available</span>' : '<span class="tag todo">Not available</span>'}</div></div></div>
+    <div class="kv" style="margin-top:8px"><span class="k">Rate</span><span class="v">${esc(o.rate)}</span></div>
+    ${o.notes ? `<p class="hint" style="margin:6px 0 0">${esc(o.notes)}</p>` : ''}
+    ${preview ? '' : `<div class="row-btns" style="margin-top:10px">
+      <button class="btn primary sm" data-contact="call" data-op="${o.id}" ${o.available ? '' : 'disabled'}>${ic('phone')}Call</button>
+      <button class="btn ghost sm" data-contact="text" data-op="${o.id}" ${o.available ? '' : 'disabled'}>${ic('msg')}Text</button>
+      ${o.messenger ? `<button class="btn ghost sm" data-contact="messenger" data-op="${o.id}">Messenger</button>` : ''}</div>`}</div>`;
+}
+/* Group trips: hiring a whole jeepney or van lives in Explore, next to the places people plan outings to */
+Pp.page_hire = function (type) {
+  const P = this, list = Hub.operators.filter(o => o.type === type).sort((a, b) => b.available - a.available);
+  const dest = P.hireDest && byId(PLACES, P.hireDest);
+  return [`Hire a ${VEH[type].toLowerCase()}`, `<div class="pad">
+    <div class="seg" role="tablist">${Object.entries(VEH).map(([id, l]) => `<button role="tab" aria-selected="${type === id}" class="${type === id ? 'on' : ''}" data-hire-type="${id}">${ic(id === 'van' ? 'van' : 'jeep')}${l}</button>`).join('')}</div>
+    <p class="hint" style="margin-top:12px">Hire the whole ${VEH[type].toLowerCase()} with its driver for a group, a tour or a day trip. You agree on the time, route and price directly with the operator.</p>
+    ${dest ? `<div class="safety" style="margin-top:4px">${ic('pin')}<span class="grow">Your message will mention <b>${esc(short(dest.name))}</b></span><button class="link" data-hire-clear>Remove</button></div>` : ''}
+    ${list.length ? list.map(o => opCard(o)).join('') : `<div class="empty"><b>No ${VEH[type].toLowerCase()} listed yet</b>Operators list their vehicles by signing up as a jeepney or van operator.</div>`}
+    <p class="hint" style="margin-top:12px">Rates are set by each operator. They are not ordinance fares, and PANAW does not take a cut.</p></div>`];
+};
+Pp.ride_home = function () {
+  const P = this, R = P.ride, a = P.account;
+  const near = availableTrikes(R.pickup);
+  const hour = new Date().getHours();
+  const recent = [...new Set((a.history || []).flatMap(h => h.to))].slice(0, 2).map(n => PLACES.find(p => p.name === n)).filter(Boolean);
+  const quick = [...recent, ...FEATURED.map(id => byId(PLACES, id)).filter(Boolean)].filter((p, i, arr) => arr.indexOf(p) === i).slice(0, 6);
+  return `<div class="hint" style="font-weight:600">Good ${hour < 12 ? 'morning' : hour < 18 ? 'afternoon' : 'evening'}, ${esc(a.name.split(' ')[0])}</div>
+    <button class="where" style="margin-top:8px" data-ride="search">${ic('search')}Where to?</button>
+    <div class="pickup-line"><span class="pin"></span><span class="grow">Pickup: <b>${esc(R.pickup.label)}</b></span><button class="link" data-gps>Use GPS</button></div>
+    <p class="hint" style="margin:4px 0 0 20px">Tap the map to move your pickup.</p>
+    <div class="section">${recent.length ? 'Recent and popular' : 'Popular in Guimaras'}</div>
+    <div class="quick">${quick.map(p => `<button data-dest="${p.id}"><b>${esc(short(p.name).split(',')[0])}</b><span>${esc(muniName(p.municipality))}</span></button>`).join('')}</div>
+    <div class="nearby">${ic('trike')}<span>${near.length ? `${near.length} trike${near.length > 1 ? 's' : ''} online near you · closest ${fmtMin(near[0].a.min)} away` : 'No trike online near you right now'}</span></div>`;
+};
+Pp.ride_search = function () {
+  const P = this, R = P.ride;
+  if (!R.stops.length) R.stops = [''];
+  return `<div style="display:flex; align-items:center; gap:8px; margin-bottom:12px"><button class="icon-btn" data-ride="home" aria-label="Back">${ic('back')}</button><b style="font-size:16px">Plan your ride</b></div>
+    <div class="route-fields">
+      <div class="rf"><div class="static">${esc(R.pickup.label)}</div><button class="icon-btn" data-gps aria-label="Use GPS">${ic('gps')}</button></div>
+      ${R.stops.map((s, i) => `<div class="rf stop">${i === R.active
+        ? `<input class="field" data-q placeholder="${i ? 'Add a stop' : 'Where to?'}" value="${esc(R.query)}">`
+        : `<button class="static" style="text-align:left; cursor:pointer" data-edit-stop="${i}">${s ? esc(byId(PLACES, s).name) : 'Choose a place'}</button>`}
+        ${R.stops.length > 1 ? `<button class="icon-btn" data-rm-stop="${i}" aria-label="Remove stop">×</button>` : ''}</div>`).join('')}
+    </div>
+    ${R.stops.length < 3 && R.stops.every(Boolean) ? '<button class="link" style="margin:10px 0 0 22px" data-add-stop>+ Add a stop</button>' : ''}
+    ${R.stops.every(Boolean) ? '<button class="btn primary" style="margin-top:14px" data-ride="options">See fares</button>' : ''}
+    <div data-results style="margin-top:8px">${P.results()}</div>`;
+};
+Pp.results = function () {
+  const P = this, R = P.ride, q = R.query.trim().toLowerCase();
+  const list = PLACES.filter(p => !q || p.name.toLowerCase().includes(q) || muniName(p.municipality).toLowerCase().includes(q))
+    .map(p => ({ p, km: F.haversineKm(R.pickup, p) })).sort((a, b) => q ? a.km - b.km : exploreRank(a.p) - exploreRank(b.p) || a.km - b.km).slice(0, 12);
+  return (q ? '' : '<div class="section" style="margin-top:6px">Suggestions</div>') + (list.length ? list.map(({ p, km }) => `<button class="result" data-pick="${p.id}">
+      <span class="ic">${ic(CAT_ICON[p.category] || 'pin')}</span><span class="grow"><div class="t">${esc(p.name)}</div><div class="s">${esc(p.category)} · ${esc(muniName(p.municipality))}</div></span>
+      <span class="km">${km.toFixed(1)} km</span></button>`).join('') : '<div class="empty"><b>No place found</b>Try another name or municipality.</div>');
+};
+Pp.quotes = function () {
+  const R = this.ride;
+  return H.rideQuotes(R.pickup, R.stops, R.opts);   // the server prices the booking again with this same code
+};
+Pp.ride_options = function () {
+  const P = this, R = P.ride, o = R.opts;
+  const { snap, qp, qt, trikes, term } = P.quotes();
+  P._optAny = trikes.length > 0;
+  if (snap.km > 3) return `<div style="display:flex; gap:8px; align-items:center"><button class="icon-btn" data-ride="search">${ic('back')}</button><b>Outside the route network</b></div>
+    <p class="hint" style="margin-top:10px">Your pickup is ${snap.km.toFixed(1)} km from the nearest road PANAW knows. Move the pin closer to a road in Guimaras.</p>`;
+  const sel = R.option === 'terminal' ? qt : qp;
+  if (sel.error) return `<p class="hint">${esc(sel.error)}</p>`;
+  const f0 = sel.legs[0].fare;
+  return `<div style="display:flex; gap:8px; align-items:flex-start">
+      <button class="icon-btn" data-ride="search" aria-label="Back">${ic('back')}</button>
+      <div class="summary" style="flex:1"><div><b>${esc(R.stops.map(id => byId(PLACES, id).name).join(' → '))}</b><br>
+        ${sel.km.toFixed(1)} km · about ${Math.round(sel.min)} min${sel.munis.length > 1 ? ' · ' + esc(sel.munis.join(' → ')) : ''}</div></div></div>
+    <div class="stack" style="margin-top:14px">
+      <button class="opt ${R.option === 'pickup' ? 'on' : ''} ${trikes.length ? '' : 'off'}" data-option="pickup" ${trikes.length ? '' : 'disabled'}>
+        <span class="ic">${ic('trike')}</span><span class="grow"><b>Trike comes to you</b>
+        <div class="s">${trikes.length ? `Nearest trike ${fmtMin(trikes[0].a.min)} away` : 'No trike online nearby'}</div></span>
+        <span class="price">${qp.error ? '—' : peso(qp.total)}</span></button>
+      <button class="opt ${R.option === 'terminal' ? 'on' : ''}" data-option="terminal">
+        <span class="ic">${ic('stop')}</span><span class="grow"><b>Ride from a terminal</b>
+        <div class="s">${esc(short(term.t.name))} · ${term.km.toFixed(1)} km from you</div></span>
+        <span class="price">${qt.error ? '—' : peso(qt.total)}</span></button>
+    </div>
+    <div class="fare-line"><span>${o.pax} passenger${o.pax > 1 ? 's' : ''} · ${o.hire === 'special' || sel.forcedSpecial ? 'Special trip' : 'Regular'}${o.disc !== 'none' ? ` · ${o.dpax} ${o.disc}` : ''}</span><button class="link" data-fare-opts>Change</button></div>
+    <details class="breakdown"><summary>How this fare is computed</summary>
+      ${sel.legs.length > 1 ? sel.legs.map((l, i) => `<div class="kv"><span class="k">Leg ${i + 1} to ${esc(l.to.name)} · ${l.route.distanceKm} km</span><span class="v">${peso(l.fare.total)}</span></div>`).join('') : `
+      ${f0.hireType === 'regular' && !f0.perKmRate ? `<div class="kv"><span class="k">Regular fare, flat per passenger</span><span class="v">${peso(f0.baseFare)}</span></div>` : `
+      <div class="kv"><span class="k">${f0.hireType === 'special' ? 'Special trip, ' : ''}first ${f0.baseKm} km</span><span class="v">${peso(f0.baseFare)}</span></div>
+      <div class="kv"><span class="k">${f0.extraKm} km × ${peso(f0.perKmRate)}</span><span class="v">${peso(f0.distanceFare)}</span></div>`}
+      <div class="kv"><span class="k">Passengers</span><span class="v">${f0.passengers}</span></div>
+      ${f0.nightApplies ? `<div class="kv"><span class="k">Night adjustment</span><span class="v">${peso(f0.nightSurcharge)}</span></div>` : ''}
+      ${f0.discountTotal ? `<div class="kv"><span class="k">Discount (${f0.discountedPax} × 20%)</span><span class="v">−${peso(f0.discountTotal)}</span></div>` : ''}`}
+      <div class="kv total"><span class="k">Total</span><span class="v">${peso(sel.total)}</span></div>
+      ${sel.legs.length === 1 && sel.legs[0].to.card && sel.set.id === 'npbtoda_card' ? `<div class="kv"><span class="k">TODA fare card, special trip to ${esc(sel.legs[0].to.name)}</span><span class="v">${peso(sel.legs[0].to.card)}</span></div>` : ''}
+      ${sel.forcedSpecial ? '<p class="hint" style="margin-top:6px">This trip leaves the TODA\'s Buenavista zone, so it is priced as a special trip (the whole tricycle).</p>' : ''}
+      <p class="hint" style="margin-top:8px">${esc(sel.info.ordinance || '')} · <span class="tag ${fareTag(sel.info)}">${esc(sel.info.status)}</span>
+        ${R.option === 'pickup' ? '<br>The pick-up distance is not charged: no ordinance sets a pick-up fee.' : ''}<br>Route from stored road data, not live traffic.</p>
+    </details>
+    <button class="btn primary" style="margin-top:12px" data-book ${R.option === 'pickup' && !trikes.length ? 'disabled' : ''}>
+      ${R.option === 'pickup' ? `Book trike · ${peso(qp.total)}` : `Get fare ticket · ${peso(qt.total)}`}</button>`;
+};
+Pp.ride_active = function () {
+  const P = this, req = P.myRide(); if (!req) { P.ride.step = 'home'; return P.ride_home(); }
+  const d = Hub.drivers[req.driverId];
+  const stage = { requested: 0, nodriver: 0, accepted: 1, arrived: 2, ontrip: 3, completed: 4 }[req.status];
+  const prog = `<div class="progress">${[1, 2, 3, 4].map(i => `<i class="${stage >= i ? 'on' : ''}"></i>`).join('')}</div>
+    <div class="progress-l"><span>Accepted</span><span>Arrived</span><span>On trip</span><span>Done</span></div>`;
+  const dest = req.stopIds.map(id => byId(PLACES, id).name).join(' → ');
+  const driverCard = d ? `<div class="driver" style="margin-top:14px"><div class="avatar">${esc(initials(d.name))}</div>
+      <div class="grow"><b>${esc(d.name)}</b><div class="s">${esc(d.vehicle)} · ${esc(d.plate)} · Unit ${esc(d.unit)}${d.bot ? ' · <span class="tag demo">DEMO DRIVER</span>' : ''}
+        <br>${rateText(d.id)}
+        ${d.noApp ? '<br><span class="tag info">Tracked with your phone\'s GPS</span>' : ''}</div></div>
+      <button class="icon-btn" title="Calling the driver is not available in this demo" aria-label="Call driver (not available in this demo)" disabled>${ic('phone')}</button></div>` : '';
+  if (req.status === 'nodriver') return `<b style="font-size:18px">No trike available</b><p class="hint">Every nearby trike is busy or declined. Try again in a minute, or ride from a terminal.</p>
+    <div class="row-btns" style="margin-top:12px"><button class="btn ghost" data-cancel-ride>Close</button><button class="btn primary" data-retry>Try again</button></div>`;
+  if (req.status === 'requested') return `<div class="big-eta">Finding your trike</div>
+    <p class="hint">Asking ${esc(d ? d.name : 'a driver')}${d ? ` (${fmtMin(req.etaMin)} away)` : ''}. If they do not answer in a minute, PANAW asks the next nearest trike.</p>
+    ${prog}<div class="kv" style="margin-top:10px"><span class="k">Fare</span><span class="v">${peso(req.quote.total)}</span></div>
+    <button class="btn danger" style="margin-top:12px" data-cancel-ride>Cancel request</button>`;
+  if (req.status === 'accepted') return `<div class="hint" style="font-weight:600">Your trike is on the way</div>
+    <div class="big-eta">Arriving in ${fmtMin((d && d.remainingMin) || 0)}</div>${prog}${driverCard}
+    <div class="kv" style="margin-top:10px"><span class="k">Pickup</span><span class="v">${esc(req.pickup.label)}</span></div>
+    <div class="kv"><span class="k">Fare</span><span class="v">${peso(req.quote.total)}</span></div>
+    <p class="hint">ETA from the trike's position over stored roads. Not live traffic.</p>${P.safetyBlock(req)}
+    <button class="btn danger" style="margin-top:12px" data-cancel-ride>Cancel ride</button>`;
+  if (req.status === 'arrived' && req.kind === 'terminal') return `<div class="hint" style="font-weight:600">Ticket ${esc(req.ticket)} · ${esc(req.pickup.label)}</div>
+    <div class="big-eta">On board unit ${esc(d.unit)}</div>${prog}${driverCard}
+    ${passengerDrives(d) ? '<button class="btn primary" style="margin-top:12px" data-pstart>We\'re leaving · start trip</button>' : '<p class="hint" style="margin-top:10px">The driver starts the trip in their PANAW app.</p>'}
+    <div class="kv" style="margin-top:10px"><span class="k">Fare to pay</span><span class="v">${peso(req.quote.total)}</span></div>${P.safetyBlock(req)}
+    <button class="btn danger" style="margin-top:12px" data-cancel-ride>Cancel trip</button>`;
+  if (req.status === 'arrived') return `<div class="big-eta">Your trike is here</div><p class="hint">Look for plate ${esc(d ? d.plate : '')} at your pickup point.</p>${prog}${driverCard}
+    <div class="kv" style="margin-top:10px"><span class="k">Fare to pay</span><span class="v">${peso(req.quote.total)}</span></div>${P.safetyBlock(req)}`;
+  if (req.status === 'ontrip') return `<div class="hint" style="font-weight:600">On the way to ${esc(dest)}</div>
+    <div class="big-eta">${req.reachedDest ? 'You have arrived' : fmtMin((d && d.remainingMin) || 0) + ' to go'}</div>${prog}${driverCard}
+    <div class="kv" style="margin-top:10px"><span class="k">Fare</span><span class="v">${peso(req.quote.total)}</span></div>
+    ${passengerDrives(d) ? `<button class="btn primary" style="margin-top:12px" data-pend>${req.reachedDest ? 'I have arrived · end trip' : 'End trip'}</button>` : ''}${P.safetyBlock(req)}`;
+  return '';
+};
+Pp.ride_done = function () {
+  const P = this, R = P.ride, req = P.myRide();
+  if (R.ticket) {
+    const t = R.ticket;
+    return `<b style="font-size:18px">Fare ticket</b>
+      <div class="ticket" style="margin-top:12px"><div class="hint">Show this to the driver at</div><b>${esc(t.terminal)}</b>
+        <div class="amt">${peso(t.total)}</div><div class="hint">${esc(t.to)} · ${t.km.toFixed(1)} km · ${t.pax} passenger${t.pax > 1 ? 's' : ''}</div>
+        <div class="code">${esc(t.code)}</div><div class="hint">${esc(t.ordinance)} · ${esc(t.status)}</div></div>
+      <div class="card stack" style="margin-top:12px"><b>Board a trike</b>
+        <p class="hint" style="margin:0">When you get on, tell PANAW which unit you are in. This turns on the safety watch, the Emergency button, trip sharing and a receipt for this ride.</p>
+        <div><label class="label">Which tricycle are you in?</label>
+          <select class="field" name="bunit">${Object.values(Hub.drivers).filter(d => d.terminalId === t.terminalId && d.status !== 'busy' && !d.noApp)
+            .map(d => `<option value="${esc(d.id)}">${esc(d.id)} · ${esc(d.name)}</option>`).join('')}<option value="__other">Another unit</option></select></div>
+        <div data-other style="display:none"><label class="label">Unit number painted on the tricycle</label>
+          <input class="field" name="bother" placeholder="e.g. BTODA-0315 (not your ticket code)" autocomplete="off"></div>
+        <button class="btn primary" data-board>I'm on board · start safety watch</button></div>
+      <p class="hint" style="margin-top:10px">The driver should charge the fare on this ticket. If not, report it from the trip.</p>
+      <button class="btn ghost" style="margin-top:8px" data-ride-new>Close ticket</button>`;
+  }
+  if (!req) { R.step = 'home'; return P.ride_home(); }
+  const d = Hub.drivers[req.driverId];
+  return `<div style="text-align:center"><div class="hint" style="font-weight:600">You have arrived</div><div class="big-eta">${peso(req.quote.total)}</div>
+      <p class="hint">${esc(req.stopIds.map(id => byId(PLACES, id).name).join(' → '))} · ${req.quote.km.toFixed(1)} km</p>
+      <div style="margin-top:14px; font-weight:600">How was your ride with ${esc(d ? d.name.split(' ')[0] : 'your driver')}?</div>
+      <div class="stars">${[1, 2, 3, 4, 5].map(i => `<button class="${R.rating >= i ? 'on' : ''}" data-rate="${i}" aria-label="${i} star">${ic('star')}</button>`).join('')}</div>
+      ${R.rating ? `<p class="hint">Thanks. Your ${R.rating}-star rating is on the driver's profile.</p>` : ''}</div>
+    ${req.safety.some(e => e.type === 'alert_sent') ? '<div class="banner bad">A safety alert was prepared during this trip.</div>' : ''}
+    <button class="btn primary" style="margin-top:8px" data-ride-new>Done</button>
+    <button class="btn ghost" style="margin-top:8px" data-report="${req.id}">Report a problem with this trip</button>`;
+};
+Pp.drawRideMap = function () {
+  const P = this, R = P.ride, m = P.maps.ride; if (!m) return;
+  const req = P.myRide(), active = req && ['requested', 'accepted', 'arrived', 'ontrip'].includes(req.status);
+  const trikes = Object.values(Hub.drivers).filter(d => (d.online || (req && active && req.driverId === d.id)) && d.pos && d.status !== 'offline')
+    .map(d => ({ pos: d.pos, cls: (req && req.driverId === d.id && active ? 'mine' : '') + (d.bot ? ' bot' : '') }));
+  let line = null, stops = [];
+  if ((R.step === 'options' || active) && R.stops.every(Boolean)) {
+    const q = active ? req.quote : (R.option === 'terminal' ? P.quotes().qt : P.quotes().qp);
+    if (q && !q.error) line = q.steps;
+    stops = (active ? req.stopIds : R.stops).map(id => byId(PLACES, id));
+  }
+  const fit = R.refit; R.refit = false;
+  drawLayer(m, { trikes, pickup: R.pickup, stops, line, fit, bottomPad: 360 });
+};
+Pp.updateRide = function () {
+  const P = this, req = P.myRide();
+  if (req && ['requested', 'accepted', 'arrived', 'ontrip', 'completed', 'nodriver'].includes(req.status) && P.ride.step !== 'done') {
+    const key = req.status + Math.ceil((Hub.drivers[req.driverId] || {}).remainingMin || 0) + (req.reachedDest ? 'x' : '') + req.driverId
+      + '|' + req.safety.length + (req.watch.prompt ? 'P' + req.watch.prompt.at : '');
+    P.drawSafetyPrompt(req);   // countdown moves in place every tick
+    if (req.watch.prompt && !P._prompted) { P._prompted = true; } else if (!req.watch.prompt) P._prompted = false;
+    const alert = req.safety[req.safety.length - 1];
+    if (alert && alert.type === 'alert_sent' && P._alerted !== alert.at) { P._alerted = alert.at; P.toast('Safety alert ready. Tap "Send this alert by text".'); }
+    if (key !== P._rideKey) { P._rideKey = key; if (req.status === 'accepted' && P._last !== 'accepted') P.toast('Your trike is on the way'); P._last = req.status; P.drawRideSheet(); return; }
+  } else if (P.ride.step === 'home') {
+    const near = availableTrikes(P.ride.pickup).length;
+    if (near !== P._near) { P._near = near; const el = P.q('.tab[data-tab="ride"] .nearby'); if (el) el.outerHTML = P.ride_home().match(/<div class="nearby">[\s\S]*$/)[0]; }
+  } else if (P.ride.step === 'options') {
+    // keep "Trike comes to you" honest: redraw when trikes appear or all go busy; otherwise update the minutes in place
+    const t = availableTrikes(P.ride.pickup), any = t.length > 0;
+    if (any !== P._optAny && !P.content.querySelector('.modalhost .modal')) {
+      const d = P.q('details.breakdown'), open = d && d.open;
+      P.drawRideSheet();
+      const d2 = P.q('details.breakdown'); if (open && d2) d2.open = true;
+      return;
+    }
+    const s = P.q('.tab[data-tab="ride"] [data-option="pickup"] .s'); if (s && any) s.textContent = `Nearest trike ${fmtMin(t[0].a.min)} away`;
+  }
+  P.drawRideMap();
+};
+
+/* =====================================================================
+   DRIVE (driver)
+   ===================================================================== */
+Pp.me = function () {
+  return Hub.drivers[this.account.unit] || H.ensureDriver(this.account);
+};
+/* Connected mode: while online, the driver's phone reports its GPS so passengers see the real trike.
+   Asked only when the driver goes online; the go-online card says the position is shared. */
+Pp.startGps = function () {
+  const P = this;
+  if (!REMOTE || P._gpsWatch != null || !navigator.geolocation) return;
+  let last = 0;
+  P._gpsWatch = navigator.geolocation.watchPosition(p => {
+    if (Date.now() - last < 5000) return; last = Date.now();
+    P.act('gps', { lat: p.coords.latitude, lng: p.coords.longitude });
+  }, () => P.toast('GPS unavailable. Passengers see your simulated position.'), { enableHighAccuracy: true, maximumAge: 5000, timeout: 20000 });
+};
+Pp.stopGps = function () { if (this._gpsWatch != null && navigator.geolocation) navigator.geolocation.clearWatch(this._gpsWatch); this._gpsWatch = null; };
+Pp.renderDrive = function (el) {
+  const P = this;
+  el.innerHTML = `<div class="map" data-map="drive"></div><div class="top-pill"><span class="pill" data-online-pill></span></div><div class="sheet"></div>`;
+  P.map('drive', el.querySelector('[data-map="drive"]'));
+  P.drive.refit = true;
+  P.drawDriveSheet();
+};
+Pp.myJob = function () { const id = this.account.unit; return Hub.requests.find(r => r.driverId === id && ['requested', 'accepted', 'arrived', 'ontrip'].includes(r.status)); };
+Pp.drawDriveSheet = function () {
+  const P = this, a = P.account, d = P.me(), job = P.myJob(), sheet = P.q('.tab[data-tab="drive"] .sheet'); if (!sheet) return;
+  const pill = P.q('[data-online-pill]');
+  if (pill) pill.innerHTML = `<span class="dot ${d.online ? 'on' : ''}"></span>${d.online ? 'Online' : 'Offline'} · Unit ${esc(a.unit)}`;
+  let h;
+  if (!a.verified) h = `<b style="font-size:18px">Waiting for TODA confirmation</b>
+    <p class="hint">Your TODA officer checks your unit ${esc(a.unit)} and plate ${esc(a.plate)} before you can go online.</p>
+    <button class="btn ghost" style="margin-top:12px" data-verify>Confirm now (demo only)</button>`;
+  else if (job && job.status === 'requested') {
+    const left = Math.max(0, 60 - (Date.now() - job.askedAt) / 1000), to = job.stopIds.map(id => byId(PLACES, id).name).join(' → ');
+    h = `<div class="req"><div style="display:flex; gap:12px; align-items:center">
+        <div class="ring" style="--p:${left / 60 * 100}"><span>${Math.ceil(left)}</span></div>
+        <div style="flex:1"><b style="font-size:17px">New ride request</b><div class="hint">${fmtMin(job.etaMin)} away · ${F.haversineKm(d.pos, job.pickup).toFixed(1)} km</div></div>
+        <div class="big-eta" style="font-size:22px">${peso(job.quote.total)}</div></div>
+      <div class="kv" style="margin-top:10px"><span class="k">Pickup</span><span class="v">${esc(job.pickup.label)}</span></div>
+      <div class="kv"><span class="k">Drop-off</span><span class="v">${esc(to)}</span></div>
+      <div class="kv"><span class="k">Passengers</span><span class="v">${job.opts.pax}${job.opts.disc !== 'none' ? ` · ${job.opts.dpax} ${job.opts.disc}` : ''}</span></div>
+      <div class="row-btns" style="margin-top:12px"><button class="btn ghost" data-job="decline">Decline</button><button class="btn primary" data-job="accept">Accept</button></div></div>
+      <p class="hint" style="margin-top:8px">Fare computed by PANAW from the ${esc((job.quote.set && job.quote.set.label) || job.quote.info.status)}. You cannot change it.</p>`;
+  } else if (job) {
+    const to = job.stopIds.map(id => byId(PLACES, id).name).join(' → ');
+    const target = job.status === 'ontrip' ? job.quote.steps[job.quote.steps.length - 1] : job.pickup;
+    h = `<div class="hint" style="font-weight:600">${job.status === 'accepted' ? 'Go to the passenger' : job.status === 'arrived' ? (job.kind === 'terminal' ? 'Passenger on board with ticket ' + esc(job.ticket) : 'Waiting for the passenger') : 'Drop off at ' + esc(to)}</div>
+      <div class="big-eta">${job.status === 'accepted' ? fmtMin(d.remainingMin || 0) + ' to pickup' : job.status === 'arrived' ? (job.kind === 'terminal' ? 'Ready to leave' : 'At pickup') : job.reachedDest ? 'At destination' : fmtMin(d.remainingMin || 0) + ' to drop-off'}</div>
+      <div class="driver" style="margin-top:12px"><div class="avatar">${esc(initials(job.passengerName))}</div><div class="grow"><b>${esc(job.passengerName)}</b>
+        <div class="s">${esc(job.pickup.label)}</div></div><div class="big-eta" style="font-size:18px">${peso(job.quote.total)}</div></div>
+      ${(() => {   // silent alarm: the driver never learns that the passenger was asked or that contacts were alerted
+        const e = [...job.safety].reverse().find(x => x.type === 'deviation');
+        return e && Date.now() - e.at < 30000 ? `<div class="banner warn">You are ${e.km.toFixed(1)} km off the planned route. Please return to it.</div>` : ''; })()}
+      <a class="btn ghost" style="margin-top:12px" target="_blank" rel="noopener" href="https://www.google.com/maps/dir/?api=1&destination=${target.lat},${target.lng}">${ic('ride')}Directions in Google Maps</a>
+      ${job.status === 'accepted' ? '<button class="btn primary" style="margin-top:8px" data-job="arrived">I have arrived</button>'
+        : job.status === 'arrived' ? '<button class="btn primary" style="margin-top:8px" data-job="start">Start trip</button>'
+        : `<button class="btn primary" style="margin-top:8px" data-job="complete">Complete trip · collect ${peso(job.quote.total)}</button>`}`;
+  } else if (!d.online) h = `<div class="switch-big"><div><b>You are offline</b><div class="hint">Go online to receive ride requests near you.</div></div>
+      <button class="btn primary sm" data-online="1">Go online</button></div>
+    <p class="hint" style="margin-top:10px">While online, PANAW shares this unit's position so passengers can see how far you are. Demo: your trike starts at ${esc(short(byId(NET.terminals, d.terminalId).name))}.</p>`;
+  else {
+    const today = (a.history || []).filter(x => new Date(x.at).toDateString() === new Date().toDateString());
+    h = `<div class="switch-big"><div><b>You are online</b><div class="hint">Waiting for ride requests</div></div><button class="btn ghost sm" data-online="0">Go offline</button></div>
+      <div class="row-btns" style="margin-top:12px"><div class="card" style="flex:1"><div class="hint">Today</div><b style="font-size:20px">${peso(today.reduce((s, x) => s + x.fare, 0))}</b></div>
+        <div class="card" style="flex:1"><div class="hint">Trips</div><b style="font-size:20px">${today.length}</b></div></div>`;
+  }
+  sheet.innerHTML = `<div class="grab"></div><div class="scroll">${h}</div>`;
+  P.drawDriveMap();
+};
+Pp.drawDriveMap = function () {
+  const P = this, m = P.maps.drive, d = P.me(), job = P.myJob(); if (!m) return;
+  const trikes = [{ pos: d.pos, cls: 'mine' }];
+  let line = null, approachLine = null, stops = [];
+  if (job) {
+    stops = job.stopIds.map(id => byId(PLACES, id));
+    line = job.quote.steps;
+    if (job.status === 'requested' || job.status === 'accepted') { const a = approach(d.pos, job.pickup); approachLine = a && a.path; }
+  }
+  const fit = P.drive.refit || (job && job.status !== P._jobFit); P._jobFit = job && job.status; P.drive.refit = false;
+  drawLayer(m, { trikes, pickup: job ? job.pickup : null, stops, line, approach: approachLine, fit, fitTo: job ? null : [[d.pos.lat, d.pos.lng]], bottomPad: 340 });
+};
+Pp.updateDrive = function () {
+  const P = this, job = P.myJob(), d = P.me();
+  const key = (job ? job.id + job.status + job.safety.filter(x => x.type === 'deviation').length + Math.ceil(d.remainingMin || 0) + (job.reachedDest ? 'x' : '') : 'none') + d.online + P.account.verified;
+  if (key !== P._driveKey) { if (job && job.status === 'requested' && !(P._driveKey || '').startsWith(job.id)) P.toast('New ride request'); P._driveKey = key; P.drawDriveSheet(); }
+  else {
+    // the 60 s countdown moves in place, so Accept / Decline are never swapped under the driver's finger
+    const ring = job && job.status === 'requested' && P.q('.tab[data-tab="drive"] .req .ring');
+    if (ring) { const left = Math.max(0, 60 - (Date.now() - job.askedAt) / 1000); ring.style.setProperty('--p', left / 60 * 100); ring.querySelector('span').textContent = Math.ceil(left); }
+    P.drawDriveMap();
+  }
+};
+/* ---------- operator: the vehicle listing passengers see ---------- */
+Pp.myOps = function () { return Hub.operators.filter(o => o.owner === this.account.id); };
+Pp.renderVehicle = function (el) {
+  const P = this, ops = P.myOps();
+  el.innerHTML = `<div class="head"><h1>My vehicle</h1><p>This is what passengers see. They call or text you directly.</p></div>
+    <div class="scroll"><div class="pad stack">${ops.map(o => `
+      <div class="switch-big"><div><b>${o.available ? 'Available for hire' : 'Not available'}</b><div class="hint">${o.available ? 'Passengers can contact you now.' : 'Passengers see you as unavailable.'}</div></div>
+        <button class="btn ${o.available ? 'ghost' : 'primary'} sm" data-op-toggle="${o.id}">${o.available ? 'Pause' : 'Go available'}</button></div>
+      <div class="section" style="margin:6px 0 0">Preview</div>${opCard(o, true)}
+      <div class="card stack"><b>Edit listing</b>
+        <div><label class="label">Rate</label><input class="field" name="erate" value="${esc(o.rate)}"></div>
+        <div><label class="label">Seats</label><input class="field" name="eseats" inputmode="numeric" value="${o.seats}"></div>
+        <div><label class="label">Notes for passengers</label><textarea class="field" name="enotes" maxlength="300" placeholder="Trips you do, areas you cover">${esc(o.notes)}</textarea></div>
+        <button class="btn primary" data-op-save="${o.id}">Save</button></div>`).join('')}
+      ${ops.some(o => o.demo) ? '<p class="hint">DEMO listing: its contact buttons do not call anyone.</p>' : ''}</div></div>`;
+};
+Pp.contactOp = function (o, how) {
+  const P = this, R = P.ride;
+  if (o.demo || !o.contact) return P.toast('DEMO operator: no real number to contact');
+  const dest = P.hireDest && byId(PLACES, P.hireDest) ? short(byId(PLACES, P.hireDest).name) : '';
+  const text = `Hi! I found your ${o.type} "${o.name}" on PANAW. I'd like to hire it for ${R.opts.pax} or more people${dest ? ' to ' + dest : ''}. When are you available and how much?`;
+  const url = how === 'call' ? `tel:${o.contact}` : how === 'text' ? `sms:${o.contact}?body=${encodeURIComponent(text)}` : o.messenger;
+  window.open(url, how === 'messenger' ? '_blank' : '_self');
+};
+Pp.renderEarnings = function (el) {
+  const a = this.account, h = a.history || [];
+  el.innerHTML = `<div class="head"><h1>Earnings</h1><p>Fares are computed by PANAW. Cash is collected from the passenger.</p></div>
+    <div class="scroll"><div class="pad stack">
+      <div class="row-btns"><div class="card" style="flex:1"><div class="hint">Total</div><b style="font-size:22px">${peso(a.earnings || 0)}</b></div>
+        <div class="card" style="flex:1"><div class="hint">Trips</div><b style="font-size:22px">${h.length}</b></div></div>
+      <div class="card"><div class="hint">Passenger rating</div><b style="font-size:18px">${rateText(a.unit)}</b></div>
+      ${h.length ? `<div class="group">${h.map(x => `<div class="list-row" style="cursor:default"><span class="ic">${ic('ride')}</span><span class="grow"><div class="t">${esc(x.passenger || '')} → ${esc(x.to.join(' → '))}</div>
+        <div class="s">${new Date(x.at).toLocaleString([], { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })} · ${x.km.toFixed(1)} km</div></span><b>${peso(x.fare)}</b></div>`).join('')}</div>`
+        : '<div class="empty"><b>No trips yet</b>Completed trips and their fares appear here.</div>'}
+    </div></div>`;
+};
+
+/* =====================================================================
+   EXPLORE (visitors)
+   ===================================================================== */
+Pp.allPlaces = function () {
+  return [...PLACES, ...Hub.listings.map(l => ({ ...l, category: 'Owner listings', listing: true, rank: -1 }))];
+};
+Pp.renderExplore = function (el) {
+  const P = this, E = P.explore;
+  const all = P.allPlaces();
+  const cats = ['All', ...['Beaches', 'Heritage', 'Nature', 'Landmarks', 'Ports', 'Owner listings', 'Towns', 'Barangays', 'Essentials', 'Schools'].filter(c => all.some(p => p.category === c))];
+  el.innerHTML = `<div class="head"><h1>Explore Guimaras</h1><p>Beaches, churches and landmarks you can reach by tricycle</p>
+      <div class="search">${ic('search')}<input data-explore-q placeholder="Search places" aria-label="Search places" value="${esc(E.q)}"></div></div>
+    <div class="scroll">
+      <div style="padding:14px 16px 2px"><div class="section" style="margin:0 0 8px">Group trips and tours</div>
+        <div class="row-btns">${Object.entries(VEH).map(([t, l]) => { const n = Hub.operators.filter(o => o.type === t && o.available).length;
+          return `<button class="opt" data-hire="${t}"><span class="ic">${ic(t === 'van' ? 'van' : 'jeep')}</span><span class="grow"><b>Hire a ${l.toLowerCase()}</b><div class="s">${n} available</div></span></button>`; }).join('')}</div></div>
+      <div class="section" style="margin:18px 16px 8px">Places</div>
+      <div class="chips" aria-label="Category">${cats.map(c => `<button class="chip ${E.cat === c ? 'on' : ''}" aria-pressed="${E.cat === c}" data-cat="${c}">${c}</button>`).join('')}</div>
+      <div class="chips" style="margin-top:8px" aria-label="Town">${[{ id: 'all', name: 'All towns' }, ...NET.municipalities].map(m => `<button class="chip ${E.muni === m.id ? 'on' : ''}" aria-pressed="${E.muni === m.id}" data-muni="${m.id}">${esc(m.name)}</button>`).join('')}</div>
+      <div data-grid style="margin-top:12px"></div>
+      <div class="cta"><div class="grow"><b>Own a place in Guimaras?</b><span>List a resort, eatery or shop with photos.</span></div><button data-page="list">List it</button></div></div>`;
+  P.drawGrid();
+};
+// owner listings first, then the featured tourist places in their set order, other places, barangays last
+const exploreRank = p => p.listing ? -1 : p.rank >= 0 ? p.rank : p.category === 'Barangays' ? 2000 : 1000;
+Pp.drawGrid = function () {
+  const P = this, E = P.explore, q = E.q.trim().toLowerCase();
+  const list = P.allPlaces().filter(p => (E.cat === 'All' || p.category === E.cat) && (E.muni === 'all' || p.municipality === E.muni) && (!q || p.name.toLowerCase().includes(q)))
+    .sort((a, b) => exploreRank(a) - exploreRank(b) || a.name.localeCompare(b.name));
+  const g = P.q('[data-grid]'); if (!g) return;
+  const photo = p => p.photos && p.photos[0];
+  const card = p => `<button class="pcard wide" data-place="${esc(p.id)}"><div class="pimg"><img src="${esc(photo(p))}" alt=""></div>
+      <div class="b"><b>${esc(p.name)}</b><span>${esc(p.kind || p.category)} · ${esc(muniName(p.municipality))}${p.listing ? ' · Owner listing' : ''}</span></div></button>`;
+  const row = p => `<button class="list-row" data-place="${esc(p.id)}"><span class="ic">${ic(CAT_ICON[p.category] || 'pin')}</span>
+      <span class="grow"><div class="t">${esc(short(p.name))}</div><div class="s">${esc(p.category)} · ${esc(muniName(p.municipality))}</div></span><span class="chev">${ic('chev')}</span></button>`;
+  const block = (title, items) => !items.length ? '' : `${title ? `<div class="section" style="margin:16px 16px 8px">${title}</div>` : ''}
+      ${items.filter(photo).length ? `<div class="photo-list">${items.filter(photo).map(card).join('')}</div>` : ''}
+      ${items.filter(p => !photo(p)).length ? `<div class="group" style="margin:0 16px">${items.filter(p => !photo(p)).map(row).join('')}</div>` : ''}`;
+  // barangays: one row per town, opening that town's full list; a chosen town or a search lists them directly
+  const brgy = list.filter(p => p.category === 'Barangays');
+  const towns = !brgy.length ? '' : `<div class="section" style="margin:16px 16px 8px">Barangays</div><div class="group" style="margin:0 16px">
+      ${NET.municipalities.map(m => ({ m, n: brgy.filter(p => p.municipality === m.id).length })).filter(x => x.n).map(({ m, n }) => `<button class="list-row" data-brgy-town="${m.id}">
+        <span class="ic">${ic('home')}</span><span class="grow"><div class="t">${esc(m.name)}</div><div class="s">${n} barangay${n > 1 ? 's' : ''}</div></span><span class="chev">${ic('chev')}</span></button>`).join('')}</div>`;
+  const grouped = !q && E.muni === 'all';
+  const html = grouped
+    ? block('', list.filter(p => p.category !== 'Barangays')) + towns
+    : block('', list.filter(p => p.category !== 'Barangays')) + block(brgy.length < list.length ? 'Barangays' : '', brgy);
+  g.innerHTML = list.length ? html + '<div style="height:16px"></div>'
+    : '<div class="empty"><b>No places found</b>Try another word, category or town.</div>';
+};
+/* every barangay of one town, official names (PSA list via PhilAtlas) */
+Pp.page_brgy = function (muni) {
+  const P = this, term = termRuleFor(muni);
+  const list = PLACES.filter(p => p.category === 'Barangays' && p.municipality === muni)
+    .map(p => ({ p, r: route(NET, term.nodeId, p.nodeId) })).sort((a, b) => (a.p.barangay || a.p.name).localeCompare(b.p.barangay || b.p.name));
+  return [`Barangays of ${muniName(muni)}`, `<div class="pad">
+    <p class="hint" style="margin:0 0 12px">${list.length} barangays, official names from the PSA list (via PhilAtlas). Distances are by road from ${esc(short(term.name))}.</p>
+    <div class="group">${list.map(({ p, r }) => `<button class="list-row" data-place="${esc(p.id)}"><span class="ic">${ic('home')}</span>
+      <span class="grow"><div class="t">${esc(p.barangay || short(p.name))}</div>
+      <div class="s">${r.found ? (r.distanceKm ? `${r.distanceKm} km by road` : 'At the terminal') : 'No road route (island)'}${p.card ? ` · TODA card ${peso(p.card).replace('.00', '')}` : ''}</div></span>
+      <span class="chev">${ic('chev')}</span></button>`).join('')}</div></div>`];
+};
+
+/* ---------- pages (open over the current tab; the tab bar stays) ---------- */
+Pp.openPage = function (name, data) { this.pages.push({ name, data }); this.renderPage(); };
+Pp.renderPage = function () {
+  const P = this, host = P.content.querySelector('.pagehost'); if (!host) return;
+  const top = P.pages[P.pages.length - 1];
+  if (P.maps.page) { P.maps.page.map && P.maps.page.map.remove(); delete P.maps.page; }
+  if (!top) { host.innerHTML = ''; return; }
+  const [title, body, after] = P['page_' + top.name](top.data);
+  host.innerHTML = `<div class="page"><div class="page-head"><button class="icon-btn" data-back aria-label="Back">${ic('back')}</button><h2>${esc(title)}</h2></div><div class="scroll">${body}</div></div>`;
+  after && after();
+};
+Pp.page_place = function (id) {
+  const P = this, p = P.allPlaces().find(x => x.id === id);
+  const R = P.ride, snap = nearestNode(R.pickup);
+  const routable = !p.listing;
+  const q = routable ? quote(snap.n.id, [p.id], { pax: 1, hire: 'regular', disc: 'none', dpax: 0 }, termRuleFor(snap.n.municipality)) : null;
+  const near = p.listing ? nearestNode(p) : null;
+  const photos = p.photos || [], ix = Math.min(P._ph || 0, Math.max(0, photos.length - 1));
+  return [p.name, `
+    <div class="hero">${photos[ix] ? `<img src="${esc(photos[ix])}" alt="">` : ic(CAT_ICON[p.category] || 'pin')}
+      ${photos.length > 1 ? '<button class="nav l" data-ph="-1">‹</button><button class="nav r" data-ph="1">›</button>' : ''}</div>
+    <div class="pad stack">
+      <div><div style="font-size:21px; font-weight:800">${esc(p.name)}</div>
+        <div class="hint" style="margin-top:3px">${p.barangay ? `Barangay ${esc(p.barangay)}` : esc(p.category)} · ${esc(muniName(p.municipality))}, Guimaras</div>
+        <div style="margin-top:8px">${p.listing ? '<span class="tag demo">Listed by owner · not verified</span>' : p.source === 'osm' ? '<span class="tag info">Location: OpenStreetMap</span>' : p.source === 'existing' ? '<span class="tag ok">Project data</span>' : p.barangay ? '<span class="tag info">Location: PhilAtlas</span>' : '<span class="tag info">PhilAtlas town center</span>'}</div></div>
+      ${routable && q && q.error ? `<div class="banner warn">No tricycle route here. ${esc(p.note || q.error)}</div>` : ''}
+      ${routable && !(q && q.error) && !P.isDriver() && !P.isOperator() ? `<button class="btn primary" data-ride-here="${p.id}">${ic('trike')}Ride here${q && !q.error ? ' · ' + peso(q.total) : ''}</button>
+        <p class="hint" style="margin-top:-6px">${q && !q.error ? `From your pickup: ${q.km.toFixed(1)} km, about ${Math.round(q.min)} min, 1 passenger.` : ''}</p>
+        <button class="btn ghost" data-hire-group="${p.id}">${ic('van')}Group trip? Hire a jeepney or van</button>` : ''}
+      ${p.card ? `<div class="card"><div class="kv"><span class="k">TODA fare card, special trip from New Poblacion</span><span class="v">${peso(p.card)}</span></div>
+        <div class="kv"><span class="k">Regular fare, per passenger</span><span class="v">${peso(byId(NET.fareRules, 'npbtoda_card').rates.baseFare)}</span></div></div>` : ''}
+      ${p.listing ? `<div class="card"><div style="white-space:pre-line; font-size:14px; line-height:1.5">${esc(p.description || 'No description yet.')}</div>
+        ${p.contact ? `<div class="kv" style="margin-top:8px"><span class="k">Contact</span><span class="v">${esc(p.contact)}</span></div>` : ''}</div>
+        <div class="card"><div class="kv"><span class="k">Nearest stop</span><span class="v">${esc(short(near.n.name))}</span></div><div class="kv"><span class="k">Distance from stop</span><span class="v">${near.km.toFixed(1)} km</span></div></div>`
+      : `<div class="card"><div class="kv"><span class="k">Open hours</span><span class="v"><span class="tag todo">To verify</span></span></div>
+        <div class="kv"><span class="k">Entrance fee</span><span class="v"><span class="tag todo">To verify</span></span></div>
+        <div class="kv"><span class="k">Info from</span><span class="v">${esc(muniName(p.municipality))} Tourism Office</span></div></div>`}
+      <div class="minimap" data-minimap></div>
+    </div>`, () => {
+    const el = P.q('[data-minimap]'); const m = P.maps.page = P.map('page', el);
+    drawLayer(m, { places: [{ ...p }], fit: true });
+    P.q('.hero').onclick = e => { const b = e.target.closest('[data-ph]'); if (b) { P._ph = (ix + +b.dataset.ph + photos.length) % photos.length; P.renderPage(); } };
+  }];
+};
+Pp.page_list = function () {
+  const P = this, L0 = P.listing;
+  return ['List your place', `<div class="pad stack">
+      <div><label class="label">Name of the place</label><input class="field" name="lname" maxlength="80" placeholder="e.g. Raymen Beach Resort"></div>
+      <div><label class="label">Category</label><select class="field" name="lcat">${['Beach / resort', 'Food', 'Lodging', 'Attraction', 'Pasalubong / shop', 'Other'].map(c => `<option>${c}</option>`).join('')}</select></div>
+      <div><label class="label">Municipality</label><select class="field" name="lmuni">${NET.municipalities.map(m => `<option value="${m.id}">${esc(m.name)}</option>`).join('')}</select></div>
+      <div><label class="label">Description</label><textarea class="field" name="ldesc" maxlength="600" placeholder="What visitors will find, hours, prices"></textarea></div>
+      <div><label class="label">Business contact (optional)</label><input class="field" name="lcontact" maxlength="80"></div>
+      <div><label class="label">Location</label><div class="minimap" data-minimap style="height:200px"></div>
+        <p class="hint" data-lpin>${L0.pin ? `Pinned at ${L0.pin.lat.toFixed(5)}, ${L0.pin.lng.toFixed(5)}` : 'Tap the map where the place is.'}</p></div>
+      <div><label class="label">Photos (up to 3)</label><input type="file" accept="image/*" multiple data-photos><div class="thumbs" data-thumbs style="margin-top:8px"></div></div>
+      <label class="hint" style="display:flex; gap:8px"><input type="checkbox" name="lok"> I own or represent this place and may share these photos.</label>
+      <button class="btn primary" data-publish>Publish listing</button>
+      <p class="hint">Shown as "Listed by owner, not verified" until the tourism office checks it.</p></div>`, () => {
+    const m = P.maps.page = P.map('page', P.q('[data-minimap]'), pos => { L0.pin = pos; P.q('[data-lpin]').textContent = `Pinned at ${pos.lat.toFixed(5)}, ${pos.lng.toFixed(5)}`; drawLayer(m, { pickup: pos }); });
+    drawLayer(m, { pickup: L0.pin, fit: true, fitTo: L0.pin ? null : [[10.62, 122.55], [10.48, 122.72]] });
+    P.drawThumbs();
+  }];
+};
+Pp.drawThumbs = function () {
+  const t = this.q('[data-thumbs]'); if (t) t.innerHTML = this.listing.photos.map((p, i) => `<div><img src="${esc(p)}" alt=""><button data-rmph="${i}">×</button></div>`).join('');
+};
+Pp.publish = function () {
+  const P = this, v = P.formVals(), L0 = P.listing;
+  if (v.lname.length < 3) return P.toast('Enter the name of the place');
+  if (!L0.pin) return P.toast('Tap the map to set the location');
+  if (!P.q('[name="lok"]').checked) return P.toast('Please confirm you may post this place');
+  return P.act('publish', { name: v.lname, municipality: v.lmuni, lat: L0.pin.lat, lng: L0.pin.lng,
+    description: v.ldesc, contact: v.lcontact, photos: L0.photos.slice(), kind: v.lcat }).then(res => {
+    if (res.error) return P.toast(res.error);
+    P.listing = { photos: [], pin: null };
+    P.explore.cat = 'Owner listings'; P.showTab('explore');
+    P.toast('Listing published');
+  });
+};
+function shrink(file) {
+  return new Promise((ok, fail) => {
+    const img = new Image(), url = URL.createObjectURL(file);
+    img.onload = () => { URL.revokeObjectURL(url); const k = Math.min(1, 1024 / Math.max(img.width, img.height)); const c = document.createElement('canvas');
+      c.width = Math.round(img.width * k); c.height = Math.round(img.height * k); c.getContext('2d').drawImage(img, 0, 0, c.width, c.height); ok(c.toDataURL('image/jpeg', .72)); };
+    img.onerror = () => { URL.revokeObjectURL(url); fail(new Error('Not an image')); };
+    img.src = url;
+  });
+}
+
+/* =====================================================================
+   ACCOUNT (history, listings, info and settings live here)
+   ===================================================================== */
+Pp.renderAccount = function (el) {
+  const P = this, a = P.account;
+  if (P.guest) {
+    el.innerHTML = `<div class="head"><h1>Account</h1><p>You are exploring as a guest</p></div><div class="scroll"><div class="pad stack">
+      <button class="btn primary" data-to-auth="role">Create an account</button><button class="btn ghost" data-to-auth="login">Log in</button>
+      ${P.infoGroup()}</div></div>`;
+    return;
+  }
+  const row = (page, icon, t, s) => `<button class="list-row" data-page="${page}"><span class="ic">${ic(icon)}</span><span class="grow"><div class="t">${t}</div>${s ? `<div class="s">${s}</div>` : ''}</span><span class="chev">${ic('chev')}</span></button>`;
+  el.innerHTML = `<div class="head"><div class="profile"><div class="avatar">${esc(initials(a.name))}</div><div><b>${esc(a.name)}</b>
+      <span>${esc(a.mobile)} · ${P.isDriver() ? `Driver, unit ${esc(a.unit)}` : P.isOperator() ? 'Jeepney / van operator' : 'Passenger'}</span>
+      ${P.isDriver() ? `<div style="margin-top:4px">${a.verified ? '<span class="tag ok">TODA confirmed</span>' : '<span class="tag demo">Waiting for TODA confirmation</span>'}</div>` : ''}</div></div></div>
+    <div class="scroll"><div class="pad">
+      <div class="section" style="margin-top:4px">Activity</div>
+      <div class="group">${row('history', 'clock', P.isDriver() ? 'Trip history' : 'Ride history', `${(a.history || []).length} trip${(a.history || []).length === 1 ? '' : 's'}`)}
+        ${P.isDriver() ? row('vehicle', 'trike', 'Vehicle and TODA', `${esc(a.plate)} · ${esc(short((byId(NET.terminals, a.terminalId) || {}).name || ''))}`)
+          : row('mine', 'store', 'Your listings', `${Hub.listings.filter(l => l.owner === a.id).length} listed`) + row('list', 'plus', 'List your place', 'Advertise it with photos')}</div>
+      ${P.isDriver() ? '' : `<div class="section">Safety</div><div class="group">
+        ${row('contacts', 'shield', 'Emergency contacts', `${(a.contacts || []).length} contact${(a.contacts || []).length === 1 ? '' : 's'} · alerted if a trip goes wrong`)}
+        ${row('reports', 'doc', 'Your reports', `${Hub.reports.filter(r => r.by === a.id).length} sent`)}</div>`}
+      ${P.infoGroup()}
+      <div class="section">Account</div>
+      <div class="group"><button class="list-row" data-logout><span class="ic">${ic('logout')}</span><span class="grow"><div class="t">Log out</div></span></button></div>
+      <p class="hint" style="margin-top:16px">PANAW is a research prototype. DEMO and sample values are labelled where they appear.</p>
+    </div></div>`;
+};
+Pp.infoGroup = function () {
+  const row = (page, icon, t, s) => `<button class="list-row" data-page="${page}"><span class="ic">${ic(icon)}</span><span class="grow"><div class="t">${t}</div><div class="s">${s}</div></span><span class="chev">${ic('chev')}</span></button>`;
+  return `<div class="section">Fares and local information</div><div class="group">
+    ${row('fares', 'doc', 'Fare rules and ordinances', 'Where each fare comes from')}
+    ${row('assoc', 'people', 'Transport associations', 'TODAs per terminal')}
+    ${row('tourism', 'explore', 'Tourism offices', 'Information and photo partners')}
+    ${row('offline', 'box', 'Offline use', 'What works without signal')}
+    ${row('lang', 'msg', 'Language', LANGS[LANG])}
+    ${row('about', 'info', 'About PANAW', 'Compared with Google Maps and Waze')}</div>`;
+};
+Pp.page_history = function () {
+  const P = this, h = P.account.history || [];
+  return [P.isDriver() ? 'Trip history' : 'Ride history', h.length ? `<div class="pad"><div class="group">${h.map(x => `<div class="list-row" ${x.kind === 'ride' ? `data-receipt="${x.id}"` : 'style="cursor:default"'}>
+      <span class="ic">${ic(x.kind === 'ticket' ? 'terminal' : 'ride')}</span><span class="grow"><div class="t">${esc(x.to.join(' → '))}</div>
+      <div class="s">${new Date(x.at).toLocaleString([], { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })} · ${x.km.toFixed(1)} km · ${x.kind === 'ticket' ? 'Fare ticket' : esc(x.driver)}</div></span>
+      <b>${peso(x.fare)}</b></div>`).join('')}</div><p class="hint" style="margin-top:10px">Saved to your account. Report a fare problem from the trip within 24 hours.</p></div>`
+    : '<div class="empty"><b>No rides yet</b>Your completed rides and fare tickets appear here.</div>'];
+};
+Pp.page_receipt = function (id) {
+  const P = this, x = P.account.history.find(h => h.id === id);
+  return ['Trip receipt', `<div class="pad stack"><div class="card" style="text-align:center"><div class="hint">${new Date(x.at).toLocaleString()}</div>
+      <div class="big-eta" style="margin:6px 0">${peso(x.fare)}</div><div class="hint">${esc(x.from)} → ${esc(x.to.join(' → '))} · ${x.km.toFixed(1)} km</div>
+      <div class="hint" style="margin-top:6px">Ref ${esc(x.id)}</div></div>
+    <div class="card">${x.legs.length > 1 ? x.legs.map((l, i) => `<div class="kv"><span class="k">Leg ${i + 1} to ${esc(l.to)}</span><span class="v">${peso(l.fare.total)}</span></div>`).join('') : `
+      <div class="kv"><span class="k">Base fare, first ${x.legs[0].fare.baseKm} km</span><span class="v">${peso(x.legs[0].fare.baseFare)}</span></div>
+      <div class="kv"><span class="k">${x.legs[0].fare.extraKm} km × ${peso(x.legs[0].fare.perKmRate)}</span><span class="v">${peso(x.legs[0].fare.distanceFare)}</span></div>
+      <div class="kv"><span class="k">Passengers</span><span class="v">${x.legs[0].fare.passengers}</span></div>
+      ${x.legs[0].fare.discountTotal ? `<div class="kv"><span class="k">Discount</span><span class="v">−${peso(x.legs[0].fare.discountTotal)}</span></div>` : ''}`}
+      <div class="kv total"><span class="k">Total</span><span class="v">${peso(x.fare)}</span></div>
+      <p class="hint" style="margin-top:8px">${esc(x.ordinance || '')} · ${esc(x.fareStatus || '')}</p></div>
+    <div class="card"><div class="kv"><span class="k">${P.isDriver() ? 'Passenger' : 'Driver'}</span><span class="v">${esc(P.isDriver() ? x.passenger : x.driver)}</span></div>
+      <div class="kv"><span class="k">Unit · plate</span><span class="v">${esc(x.unit)} · ${esc(x.plate || '')}</span></div></div>
+    ${x.safety && x.safety.length ? `<div class="card"><b>Safety log</b><div class="log">${x.safety.map(e => `<div class="${e.type === 'safe_confirmed' ? 'ok' : e.type === 'alert_sent' || e.severity === 'major' ? 'bad' : 'warn'}">
+        ${new Date(e.at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} · ${e.type === 'alert_sent' ? 'Alert prepared for ' + esc(e.notified.join(', ')) : e.type === 'safe_confirmed' ? 'Passenger confirmed safe' : (e.severity === 'major' ? 'Major' : 'Minor') + ' deviation, ' + e.km.toFixed(2) + ' km off route'}</div>`).join('')}</div></div>` : ''}
+    ${P.isDriver() ? '' : `<button class="btn ghost" data-report="${x.id}">Report a problem with this trip</button>`}
+    <p class="hint">DEMO receipt. In the live app the server signs each receipt so it can be verified with a QR code.</p></div>`];
+};
+const RELATIONS = ['Parent', 'Spouse', 'Sibling', 'Friend', 'Guardian', 'Other'];
+Pp.page_contacts = function () {
+  const P = this, c = P.account.contacts || (P.account.contacts = []);
+  return ['Emergency contacts', `<div class="pad stack">
+    <p class="hint" style="margin:0">If your trike leaves the planned route and you do not confirm you are safe within ${CONFIRM_S} seconds, or you press Emergency, these people receive your trip and the trike's location.</p>
+    ${c.length ? `<div class="group">${c.map(x => `<div class="list-row" style="cursor:default"><span class="avatar" style="width:36px;height:36px;font-size:13px">${esc(initials(x.name))}</span>
+      <span class="grow"><div class="t">${esc(x.name)}</div><div class="s">${esc(x.relation)} · ${esc(x.mobile)}</div></span>
+      <button class="icon-btn" data-rm-contact="${x.id}" aria-label="Remove">×</button></div>`).join('')}</div>` : '<div class="banner bad">No contacts yet. Add at least one before your next ride.</div>'}
+    ${c.length < 5 ? `<div class="card stack"><b>Add a contact</b>
+      <div><label class="label">Full name</label><input class="field" name="cname" placeholder="e.g. Elena Cruz"></div>
+      <div><label class="label">Relationship</label><select class="field" name="crel">${RELATIONS.map(r => `<option>${r}</option>`).join('')}</select></div>
+      <div><label class="label">Mobile number</label><input class="field" name="cmobile" inputmode="tel" placeholder="09XXXXXXXXX"></div>
+      <button class="btn primary" data-add-contact>Add contact</button></div>` : ''}
+    <p class="hint">PANAW writes the alert for you; you send it from your phone's Messages app with one tap. Normal SMS rates apply.</p></div>`];
+};
+Pp.page_reports = function () {
+  const P = this, mine = Hub.reports.filter(r => r.by === P.account.id);
+  return ['Your reports', mine.length ? `<div class="pad"><div class="group">${mine.map(r => `<div class="list-row" style="cursor:default"><span class="ic">${ic('doc')}</span>
+    <span class="grow"><div class="t">${esc(r.ref)} · ${esc(r.type)}</div><div class="s">Trip ${esc(r.rideId)} · ${new Date(r.at).toLocaleString([], { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}</div></span>
+    <span class="tag info">Received</span></div>`).join('')}</div>
+    <p class="hint" style="margin-top:10px">Reports go to the transport monitor for the TODA and the LGU to review.</p></div>`
+    : '<div class="empty"><b>No reports</b>Report a fare or safety problem from a trip or its receipt.</div>'];
+};
+const REPORT_TYPES = ['Driver asked for more than the fare', 'Driver refused an authorized discount', 'Unauthorized night surcharge', 'Route deviation or unsafe driving', 'Other concern'];
+Pp.reportModal = function (rideId) {
+  const host = this.content.querySelector('.modalhost');
+  host.innerHTML = `<div class="modal" data-report-modal><div class="modal-box"><h3>Report an issue</h3><div class="stack">
+    <div><label class="label">What happened?</label><select class="field" name="rtype">${REPORT_TYPES.map(t => `<option>${t}</option>`).join('')}</select></div>
+    <div><label class="label">Details</label><textarea class="field" name="rdetails" maxlength="800" placeholder="Describe what happened"></textarea></div>
+    <div class="row-btns"><button class="btn ghost" data-close-modal>Cancel</button><button class="btn danger" data-send-report="${esc(rideId)}">Send report</button></div></div></div></div>`;
+};
+Pp.trackLink = function (req) { return REMOTE && req && req.share ? (API || location.origin) + '/t/' + req.share : null; };
+Pp.shareModal = function () {
+  const P = this, req = P.myRide(), d = req && Hub.drivers[req.driverId], host = P.content.querySelector('.modalhost');
+  if (!req || !d) return;
+  const link = P.trackLink(req);
+  const text = `${P.account.name} is on a PANAW tricycle: unit ${d.unit}, plate ${d.plate}, ${d.name}. From ${req.pickup.label} to ${req.stopIds.map(id => byId(PLACES, id).name).join(', ')}.`;
+  host.innerHTML = `<div class="modal"><div class="modal-box"><h3>Share trip</h3>
+    <div class="card" style="font-size:13.5px; line-height:1.5">${esc(text)}${link ? `<div class="hint" style="margin-top:6px">Live tracking: ${esc(link)}</div>` : ''}</div>
+    <p class="hint">${link ? 'Anyone with the link sees the trike on a map until 2 hours after the trip. No account needed.' : 'LOCAL DEMO MODE: the live tracking link works in the online app only.'}</p>
+    ${link ? `<a class="btn primary sm" style="margin-top:6px; width:100%" href="sms:${esc((P.account.contacts || []).map(c => c.mobile).join(','))}?body=${encodeURIComponent(text + ' Live tracking: ' + link)}">Text it to my emergency contacts</a>` : ''}
+    <div class="row-btns" style="margin-top:10px"><button class="btn ghost" data-close-modal>Close</button><button class="btn primary" data-copy-share>Copy</button></div></div></div>`;
+  P._shareText = text + (link ? ' Live tracking: ' + link : '');
+};
+
+Pp.page_mine = function () {
+  const P = this, mine = Hub.listings.filter(l => l.owner === P.account.id);
+  return ['Your listings', `<div class="pad stack">${mine.length ? `<div class="group">${mine.map(l => `<button class="list-row" data-place="${esc(l.id)}"><span class="ic">${ic('store')}</span>
+      <span class="grow"><div class="t">${esc(l.name)}</div><div class="s">${esc(muniName(l.municipality))} · ${l.photos.length} photo(s)</div></span><span class="chev">${ic('chev')}</span></button>`).join('')}</div>`
+    : '<div class="empty"><b>No listings yet</b>Places you publish appear here.</div>'}<button class="btn primary" data-page="list">List a place</button></div>`];
+};
+Pp.page_vehicle = function () {
+  const a = this.account, t = byId(NET.terminals, a.terminalId);
+  return ['Vehicle and TODA', `<div class="pad"><div class="card">
+    <div class="kv"><span class="k">Unit</span><span class="v">${esc(a.unit)}</span></div><div class="kv"><span class="k">Plate</span><span class="v">${esc(a.plate)}</span></div>
+    <div class="kv"><span class="k">Vehicle</span><span class="v">${esc(a.vehicle)}</span></div><div class="kv"><span class="k">Terminal</span><span class="v">${esc(t ? t.name : '')}</span></div>
+    <div class="kv"><span class="k">Association</span><span class="v">${esc((t && t.operator) || 'To verify')}</span></div>
+    <div class="kv"><span class="k">Status</span><span class="v">${a.verified ? '<span class="tag ok">Confirmed</span>' : '<span class="tag demo">Pending</span>'}</span></div></div></div>`];
+};
+Pp.page_fares = function () {
+  const card = byId(NET.fareRules, 'npbtoda_card'), cr = card.rates, cfr = { ...RULES, ...cr };
+  const rows = PLACES.filter(p => p.card).map(p => ({ p, km: route(NET, byId(NET.terminals, NET.defaultTerminalId).nodeId, p.nodeId).distanceKm }))
+    .sort((a, b) => a.km - b.km);
+  return ['Fare rules', `<div class="pad stack">
+    <div class="card"><b>New Poblacion TODA fare card</b> <span class="tag ok">TODA FARE CARD</span>
+      <div class="kv" style="margin-top:6px"><span class="k">Regular fare, flat per passenger</span><span class="v">${peso(cr.baseFare)}</span></div>
+      <div class="kv"><span class="k">Students, seniors, PWD</span><span class="v">${peso(cr.baseFare * (1 - cr.discountRate))}</span></div>
+      <div class="kv"><span class="k">Special trip, first ${cr.baseKm} km</span><span class="v">${peso(cr.specialBaseFare)}</span></div>
+      <div class="kv"><span class="k">Special trip, each km after</span><span class="v">${peso(cr.specialPerKmRate)}</span></div>
+      <p class="hint" style="margin-top:8px">${esc(card.lgu)}. The regular fare is printed on the card. The special-trip rate per km was worked out from the card's prices for ${rows.length} barangays and their road distances.</p></div>
+    <div class="card"><b>Card price vs PANAW special-trip fare</b>
+      <table class="t" style="margin-top:6px"><tr><th>Barangay</th><th>Road km</th><th>Card</th><th>PANAW</th></tr>
+      ${rows.map(({ p, km }) => `<tr><td>${esc(p.name.replace(/^Brgy\. /, '').replace(/, Buenavista$/, ''))}</td><td>${km.toFixed(1)}</td><td>${peso(p.card).replace('.00', '')}</td>
+        <td>${peso(F.computeFare({ distanceKm: km, passengers: 1, hireType: 'special' }, cfr).total).replace('.00', '')}</td></tr>`).join('')}</table>
+      <p class="hint" style="margin-top:8px">Big gaps (e.g. Sawang, Montpiller) usually mean a hilly or rough road that distance alone does not show. Confirm these with the TODA.</p></div>
+    <div class="card"><b>Other terminals (provisional matrix)</b>
+    <div class="kv" style="margin-top:6px"><span class="k">Base fare, first ${RULES.baseKm} km</span><span class="v">${peso(RULES.baseFare)}</span></div>
+    <div class="kv"><span class="k">Each succeeding km</span><span class="v">${peso(RULES.perKmRate)}</span></div>
+    <div class="kv"><span class="k">Special trip base</span><span class="v">${peso(RULES.specialBaseFare)}</span></div>
+    <div class="kv"><span class="k">Special trip per km</span><span class="v">${peso(RULES.specialPerKmRate)}</span></div>
+    <div class="kv"><span class="k">Student, senior, PWD</span><span class="v">${RULES.discountRate * 100}% off</span></div>
+    <div class="kv"><span class="k">Night surcharge</span><span class="v">${RULES.nightSurchargeEnabled ? RULES.nightSurchargeRate * 100 + '%' : 'Off'}</span></div>
+    <p class="hint" style="margin-top:8px">${esc(RULES.ordinance)} · ${esc(RULES.lgu)}</p></div>
+    <div class="card"><b>Per municipality</b><table class="t" style="margin-top:6px"><tr><th>Town</th><th>Tricycle</th><th>Jeepney</th><th>Van</th></tr>
+    ${NET.municipalities.map(m => { const t = termRuleFor(m.id), i = N.fareRuleInfo(RULES, NET, t);
+      const ops = type => Hub.operators.filter(o => o.type === type && o.municipality === m.id).length;
+      return `<tr><td>${esc(m.name)}</td><td><span class="tag ${fareTag(i)}">${i.status === 'TODA FARE CARD' ? 'TODA card' : i.isDemo ? 'Demo rate' : 'Matrix'}</span></td>
+        <td>${ops('jeepney') ? 'Operator rate' : '<span class="n">None listed</span>'}</td><td>${ops('van') ? 'Operator rate' : '<span class="n">None listed</span>'}</td></tr>`; }).join('')}</table>
+    <p class="hint" style="margin-top:8px">Jeepney and van hire is a private arrangement: each operator sets their own rate. It is not an ordinance fare.</p></div></div>`];
+};
+Pp.page_assoc = function () {
+  return ['Transport associations', `<div class="pad"><div class="group">${NET.terminals.map(t => `<div class="list-row" style="cursor:default"><span class="ic">${ic('people')}</span>
+    <span class="grow"><div class="t">${esc(t.operator || 'Association to verify')}</div><div class="s">${esc(t.name)} · ${esc(muniName(t.municipality))}</div></span>
+    ${t.operator ? '<span class="tag ok">On file</span>' : '<span class="tag todo">To verify</span>'}</div>`).join('')}</div>
+    <p class="hint" style="margin-top:10px">Names, officers and members come from the LGU and association inventory.</p></div>`];
+};
+Pp.page_tourism = function () {
+  return ['Tourism offices', `<div class="pad"><div class="group">${['Guimaras Provincial', ...NET.municipalities.map(m => m.name)].map(n => `<div class="list-row" style="cursor:default">
+    <span class="ic">${ic('explore')}</span><span class="grow"><div class="t">${esc(n)} Tourism Office</div><div class="s">Contact to verify</div></span><span class="tag todo">To verify</span></div>`).join('')}</div>
+    <p class="hint" style="margin-top:10px">Offices supply photos, opening hours, entrance fees, and check owner listings.</p></div>`];
+};
+Pp.page_lang = function () {
+  return ['Language', `<div class="pad stack"><div class="group">${Object.entries(LANGS).map(([k, v]) => `<button class="list-row" data-lang="${k}" aria-pressed="${LANG === k}">
+      <span class="grow"><div class="t">${v}</div></span>${LANG === k ? ic('check') : ''}</button>`).join('')}</div>
+    <p class="hint">Filipino and Hiligaynon cover the main buttons and screen titles. They are a first draft and still need checking by a native speaker. Fares, place names and longer notes stay in English.</p></div>`];
+};
+Pp.page_offline = function () {
+  return ['Offline use', `<div class="pad stack"><div class="card"><b>Works without signal</b>
+    <p class="hint">Fare check and breakdown · route suggestion · Explore places · fare tickets · GPS position (GPS does not use mobile data)</p></div>
+    <div class="card"><b>Needs internet</b><p class="hint">Booking a trike and live trike positions · street map tiles · publishing listings and photos</p></div>
+    <div class="card"><b>Stored on the phone</b><p class="hint">${NET.terminals.length} terminals · ${PLACES.length} places · ${NET.edges.length} road segments · fare rules</p></div></div>`];
+};
+Pp.page_about = function () {
+  const r = (f, a, b, c) => `<tr><td>${f}</td><td>${a}</td><td>${b}</td><td>${c}</td></tr>`;
+  return ['About PANAW', `<div class="pad stack"><div class="card"><table class="t"><tr><th>Feature</th><th>PANAW</th><th>Maps</th><th>Waze</th></tr>
+    ${r('Tricycle fare', '<span class="y">Yes</span>', '<span class="n">No</span>', '<span class="n">No</span>')}
+    ${r('Fare breakdown and discounts', '<span class="y">Yes</span>', '<span class="n">No</span>', '<span class="n">No</span>')}
+    ${r('Fare from LGU ordinance', '<span class="y">Yes</span>', '<span class="n">No</span>', '<span class="n">No</span>')}
+    ${r('Book a TODA trike', '<span class="y">Yes</span>', '<span class="n">No</span>', '<span class="n">No</span>')}
+    ${r('Local places by owners', '<span class="y">Yes</span>', '<span class="p">Profiles</span>', '<span class="n">No</span>')}
+    ${r('Works offline for fares', '<span class="y">Yes</span>', '<span class="p">Maps only</span>', '<span class="n">No</span>')}
+    ${r('Live traffic', '<span class="n">No</span>', '<span class="y">Yes</span>', '<span class="y">Yes</span>')}
+    ${r('Turn-by-turn navigation', '<span class="n">No</span>', '<span class="y">Yes</span>', '<span class="y">Yes</span>')}</table>
+    <p class="hint" style="margin-top:8px">Check against the current versions of each app before citing.</p></div>
+    <div class="card"><b>PANAW</b><p class="hint">Progressive Advanced Network for Automated Wayfinding. A research prototype for fair tricycle fares and rides in Guimaras. Places from OpenStreetMap and owners; fares from the project matrix, labelled DEMO where no ordinance is on file.</p></div></div>`];
+};
+
+/* =====================================================================
+   EVENTS
+   ===================================================================== */
+Pp.onClick = function (e) {
+  const P = this, t = e.target, c = s => t.closest(s);
+  let el;
+  // auth
+  if ((el = c('[data-auth]'))) { P.auth.step = el.dataset.auth; P.auth.error = ''; P.auth.vals = null; return P.renderAuth(); }
+  if ((el = c('[data-role]'))) { P.auth.role = el.dataset.role; return P.renderAuth(); }
+  if (c('[data-signup]')) return P.signup();
+  if (c('[data-login]')) return P.login();
+  if (c('[data-guest]')) { P.guest = true; P.tab = 'explore'; return P.render(); }
+  if ((el = c('[data-to-auth]'))) { P.guest = false; P.auth.step = el.dataset.toAuth; return P.render(); }
+  if (c('[data-logout]')) return P.logout();
+  // navigation
+  if ((el = c('[data-go-tab]'))) return P.showTab(el.dataset.goTab);
+  if (c('[data-back]')) { P.pages.pop(); return P.renderPage(); }
+  if ((el = c('[data-page]'))) return P.openPage(el.dataset.page);
+  if ((el = c('[data-place]'))) { P._ph = 0; return P.openPage('place', el.dataset.place); }
+  // explore
+  if ((el = c('[data-cat]'))) { P.explore.cat = el.dataset.cat; P.q('.tab[data-tab="explore"] .chips').querySelectorAll('.chip').forEach(b => b.classList.toggle('on', b === el)); return P.drawGrid(); }
+  if ((el = c('[data-muni]'))) { P.explore.muni = el.dataset.muni; el.parentNode.querySelectorAll('.chip').forEach(b => b.classList.toggle('on', b === el)); return P.drawGrid(); }
+  if ((el = c('[data-ride-here]'))) { Object.assign(P.ride, { stops: [el.dataset.rideHere], step: 'options', refit: true, ticket: null }); P.pages = []; return P.showTab('ride'); }
+  if (c('[data-publish]')) return P.publish();
+  if ((el = c('[data-rmph]'))) { P.listing.photos.splice(+el.dataset.rmph, 1); return P.drawThumbs(); }
+  // ride
+  const R = P.ride;
+  if ((el = c('[data-ride]'))) { const s = el.dataset.ride; if (s === 'search') { R.active = Math.max(0, R.stops.findIndex(x => !x)); if (R.active < 0) R.active = 0; R.query = ''; } R.step = s; R.refit = true; return P.drawRideSheet(); }
+  if (c('[data-gps]')) return P.useGps();
+  if ((el = c('[data-dest]'))) { Object.assign(R, { stops: [el.dataset.dest], step: 'options', refit: true }); return P.drawRideSheet(); }
+  if ((el = c('[data-pick]'))) {
+    R.stops[R.active] = el.dataset.pick; R.query = '';
+    const next = R.stops.findIndex(x => !x);
+    if (next >= 0) R.active = next; else { R.step = 'options'; R.refit = true; }
+    return P.drawRideSheet();
+  }
+  if ((el = c('[data-edit-stop]'))) { R.active = +el.dataset.editStop; R.query = ''; return P.drawRideSheet(); }
+  if ((el = c('[data-rm-stop]'))) { R.stops.splice(+el.dataset.rmStop, 1); R.active = Math.min(R.active, R.stops.length - 1); return P.drawRideSheet(); }
+  if (c('[data-add-stop]')) { R.stops.push(''); R.active = R.stops.length - 1; R.query = ''; return P.drawRideSheet(); }
+  if ((el = c('[data-option]'))) { if (el.disabled) return; R.option = el.dataset.option; return P.drawRideSheet(); }
+  if (c('[data-fare-opts]')) return P.fareModal();
+  if ((el = c('[data-mod]'))) return P.fareModalAct(el);
+  if (c('[data-book]')) return P.book();
+  const rideAct = (name, extra) => { const r = P.myRide(); return r ? P.act(name, { id: r.id, ...extra }).then(res => { if (res.error) P.toast(res.error); P.drawRideSheet(); return res; }) : Promise.resolve({}); };
+  if (c('[data-cancel-ride]')) { const r = P.myRide(); if (r) P.act('cancel', { id: r.id }); R.reqId = null; R.step = 'options'; P.toast('Ride cancelled'); return P.drawRideSheet(); }
+  if (c('[data-retry]')) return rideAct('retry');
+  if ((el = c('[data-rate]'))) { R.rating = +el.dataset.rate; P.drawRideSheet(); return rideAct('rate', { stars: R.rating }); }
+  if (c('[data-ride-new]')) { Object.assign(R, { reqId: null, stops: [], step: 'home', option: 'pickup', ticket: null, rating: 0, refit: true }); return P.drawRideSheet(); }
+  if (c('[data-share]')) return P.shareModal();
+  if (c('[data-copy-share]')) { (navigator.clipboard ? navigator.clipboard.writeText(P._shareText) : Promise.reject()).then(() => P.toast('Copied'), () => P.toast('Copy is not available here')); return; }
+  if (c('[data-close-modal]')) { P.content.querySelector('.modalhost').innerHTML = ''; return; }
+  if ((el = c('[data-report]'))) return P.reportModal(el.dataset.report);
+  if ((el = c('[data-send-report]'))) {
+    const v = P.formVals(), id = el.dataset.sendReport;
+    P.content.querySelector('.modalhost').innerHTML = '';
+    return P.act('report', { rideId: id, type: v.rtype, details: v.rdetails }).then(res => P.toast(res.error || `Report ${res.ref} received`));
+  }
+  if (c('[data-sos]')) {
+    const req = P.myRide(); if (!req) return;
+    if (!(P.account.contacts || []).length) { P.toast('Add an emergency contact first'); return P.openPage('contacts'); }
+    if (!confirm('Alert your emergency contacts now with this trip and the trike\'s location?')) return;
+    return rideAct('sos');
+  }
+  if (c('[data-safe]')) { P.toast('Thanks. The safety watch stays on.'); return rideAct('safe'); }
+  if (c('[data-alert-now]')) return rideAct('sos');
+  if ((el = c('[data-detour]'))) { P.toast('DEMO: trike pushed ' + el.dataset.detour + ' km off route'); const r = P.myRide(); if (r) P.act('detour', { id: r.id, km: +el.dataset.detour }); return; }
+  if ((el = c('[data-receipt]'))) return P.openPage('receipt', el.dataset.receipt);
+  if (c('[data-board]')) {
+    const v = P.formVals(), typed = v.bunit === '__other' || !v.bunit, unit = (typed ? v.bother : v.bunit).toUpperCase();
+    return P.act('board', { code: R.ticket.code, unit, typed }).then(res => {
+      if (res.error) return P.toast(res.error);
+      if (!(P.account.contacts || []).length) P.toast('Tip: add an emergency contact in Account > Safety');
+      Object.assign(R, { reqId: res.id, ticket: null, step: 'active', refit: true }); P._rideKey = null;
+      P.drawRideSheet();
+    });
+  }
+  if (c('[data-pstart]')) return rideAct('pstart');
+  if (c('[data-pend]')) return rideAct('pend');
+  if ((el = c('[data-rm-contact]'))) return P.act('rmContact', { id: el.dataset.rmContact }).then(() => P.renderPage());
+  if (c('[data-add-contact]')) {
+    const v = P.formVals();
+    return P.act('addContact', { name: v.cname, relation: v.crel, mobile: v.cmobile }).then(res => { P.toast(res.error || 'Contact added'); if (!res.error) P.renderPage(); });
+  }
+  // drive
+  if ((el = c('[data-contact]'))) return P.contactOp(Hub.operators.find(o => o.id === el.dataset.op), el.dataset.contact);
+  if ((el = c('[data-hire-group]'))) { P.hireDest = el.dataset.hireGroup; return P.openPage('hire', 'van'); }
+  if ((el = c('[data-hire]'))) { P.hireDest = null; return P.openPage('hire', el.dataset.hire); }
+  if ((el = c('[data-brgy-town]'))) return P.openPage('brgy', el.dataset.brgyTown);
+  if ((el = c('[data-lang]'))) { LANG = el.dataset.lang; store.set('panaw-lang', LANG); phones.forEach(x => x.render()); return P.openPage('lang'); }
+  if ((el = c('[data-hire-type]'))) { P.pages[P.pages.length - 1].data = el.dataset.hireType; return P.renderPage(); }
+  if (c('[data-hire-clear]')) { P.hireDest = null; return P.renderPage(); }
+  const vehicleTab = () => P.renderVehicle(P.q('.tab[data-tab="vehicle"]'));
+  if ((el = c('[data-op-toggle]'))) return P.act('opToggle', { id: el.dataset.opToggle }).then(vehicleTab);
+  if ((el = c('[data-op-save]'))) {
+    const v = P.formVals();
+    return P.act('opSave', { id: el.dataset.opSave, rate: v.erate, seats: v.eseats, notes: v.enotes }).then(res => { P.toast(res.error || 'Listing saved'); if (!res.error) vehicleTab(); });
+  }
+  if (c('[data-verify]')) return P.act('verify').then(() => { P.toast('Unit confirmed by TODA (demo)'); P.drawDriveSheet(); });
+  if ((el = c('[data-online]'))) {
+    const on = el.dataset.online === '1';
+    return P.act('online', { on }).then(res => {
+      if (res.error) return P.toast(res.error);
+      P.toast(on ? 'You are online' : 'You are offline'); on ? P.startGps() : P.stopGps();
+      P.drive.refit = true; P.drawDriveSheet();
+    });
+  }
+  if ((el = c('[data-job]'))) {
+    const j = P.myJob(), move = el.dataset.job; if (!j) return;
+    return P.act('job', { id: j.id, move }).then(res => {
+      if (res.error) P.toast(res.error); else if (move === 'complete') P.toast('Trip completed · ' + peso(res.fare));
+      P.drawDriveSheet();
+    });
+  }
+};
+Pp.onInput = function (e) {
+  const P = this;
+  if (e.target.matches('[data-q]')) { P.ride.query = e.target.value; const r = P.q('[data-results]'); if (r) r.innerHTML = P.results(); }
+  if (e.target.matches('[data-explore-q]')) { P.explore.q = e.target.value; P.drawGrid(); }
+};
+Pp.onChange = async function (e) {
+  const P = this;
+  if (e.target.matches('[data-photos]')) {
+    for (const f of [...e.target.files]) { if (P.listing.photos.length >= 3) break; try { P.listing.photos.push(await shrink(f)); } catch { P.toast('That file is not an image'); } }
+    e.target.value = ''; P.drawThumbs();
+  }
+  if (e.target.matches('[name="bunit"]')) { const o = P.q('[data-other]'); if (o) o.style.display = e.target.value === '__other' ? '' : 'none'; }
+  if (e.target.matches('[data-mod-disc]')) { P.ride.opts.disc = e.target.value; if (P.ride.opts.disc === 'none') P.ride.opts.dpax = 0; else P.ride.opts.dpax = Math.max(1, P.ride.opts.dpax); P.fareModal(); }
+};
+Pp.useGps = function () {
+  const P = this;
+  if (!navigator.geolocation) return P.toast('This device has no location service');
+  navigator.geolocation.getCurrentPosition(p => {
+    const pos = { lat: p.coords.latitude, lng: p.coords.longitude };
+    if (nearestNode(pos).km > 25) return P.toast('You are outside Guimaras. Tap the map to set a pickup instead.');
+    P.ride.pickup = { ...pos, label: 'Your current location', src: 'gps' }; P.ride.refit = true; P.drawRideSheet();
+  }, () => P.toast('Location unavailable. Tap the map to set your pickup.'), { timeout: 10000 });
+};
+Pp.fareModal = function () {
+  const P = this, o = P.ride.opts, host = P.content.querySelector('.modalhost');
+  host.innerHTML = `<div class="modal"><div class="modal-box"><h3>Fare options</h3><div class="stack">
+    <div><span class="label">Passengers</span><div class="stepper"><button data-mod="pax-">−</button><b>${o.pax}</b><button data-mod="pax+">+</button></div></div>
+    <div><span class="label">Hire type</span><div class="seg"><button class="${o.hire === 'regular' ? 'on' : ''}" data-mod="regular">Regular (shared)</button><button class="${o.hire === 'special' ? 'on' : ''}" data-mod="special">Special trip</button></div></div>
+    <div><span class="label">Discount (RA 9994, RA 10754)</span><select class="field" data-mod-disc><option value="none">None</option>${['student', 'senior', 'pwd'].map(d => `<option value="${d}" ${o.disc === d ? 'selected' : ''}>${d === 'pwd' ? 'PWD' : d[0].toUpperCase() + d.slice(1)}</option>`).join('')}</select></div>
+    ${o.disc !== 'none' ? `<div><span class="label">Discounted passengers</span><div class="stepper"><button data-mod="dp-">−</button><b>${o.dpax}</b><button data-mod="dp+">+</button></div></div>` : ''}
+    <button class="btn primary" data-mod="done">Done</button></div></div></div>`;
+};
+Pp.fareModalAct = function (el) {
+  const P = this, o = P.ride.opts, a = el.dataset.mod;
+  if (a === 'pax-') o.pax = Math.max(1, o.pax - 1); if (a === 'pax+') o.pax = Math.min(4, o.pax + 1);
+  if (a === 'dp-') o.dpax = Math.max(1, o.dpax - 1); if (a === 'dp+') o.dpax = Math.min(o.pax, o.dpax + 1);
+  o.dpax = Math.min(o.dpax, o.pax);
+  if (a === 'regular' || a === 'special') o.hire = a;
+  if (a === 'done') { P.content.querySelector('.modalhost').innerHTML = ''; return P.drawRideSheet(); }
+  P.fareModal();
+};
+Pp.book = function () {
+  const P = this, R = P.ride, trip = { pickup: { ...R.pickup }, stops: R.stops.slice(), opts: { ...R.opts } };
+  if (R.option === 'terminal') return P.act('ticket', trip).then(res => {
+    if (res.error) return P.toast(res.error);
+    R.ticket = res.ticket; R.step = 'done'; P.drawRideSheet();
+  });
+  if (!(P.account.contacts || []).length) P.toast('Tip: add an emergency contact in Account > Safety');
+  return P.act('book', trip).then(res => {
+    if (res.error) return P.toast(res.error);
+    R.reqId = res.id; R.step = 'active'; R.refit = true; P._rideKey = null;
+    P.drawRideSheet();
+  });
+};
+
+/* =====================================================================
+   START: passenger + driver side by side on a laptop; one phone on a phone
+   ===================================================================== */
+let phones = [];
+function start() {
+  // connected: one phone per device, signed in with the token this phone keeps
+  const wide = !REMOTE && window.matchMedia('(min-width: 861px)').matches;
+  Hub.listeners.clear();
+  // fresh elements, so phones from before a reset stop receiving taps
+  const fresh = id => { const old = document.getElementById(id), el = old.cloneNode(false); old.replaceWith(el); return el; };
+  phones = [new Phone(fresh('phone-a'), wide ? 'u-ana' : REMOTE ? null : store.get('panaw-local-me'))];
+  if (wide) phones.push(new Phone(fresh('phone-b'), 'u-bobong'));
+}
+if (REMOTE) {
+  document.body.classList.add('connected');
+  document.querySelector('.stage-bar').style.display = 'none';
+  start();
+  Remote.phone = phones[0];
+  Remote.token = store.get('panaw-token');
+  if (Remote.token) Remote.poll().then(() => { const P = phones[0]; if (P.account) { P.tab = null; P.render(); if (P.isDriver() && P.me().online) P.startGps(); } });
+  setInterval(() => Remote.poll(), 1500);
+} else {
+  loadLocal();
+  start();
+  setInterval(() => H.tick(), 700);
+  setInterval(saveLocal, 10000);
+}
+document.getElementById('reset-demo').onclick = () => { store.set(LOCAL_KEY, null); seedHub(); start(); };
+</script>
+</body>
+</html>

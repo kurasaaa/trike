@@ -53,6 +53,40 @@ const adminOk = req => !AUTH.adminKey || same(req.headers['x-admin-key'], ADMIN_
 const DENIED_DRIVER = { error: 'Driver PIN missing or wrong.' };
 const DENIED_ADMIN = { error: 'Admin key missing or wrong.' };
 
+/* The PANAW app's hub, the same code the phone runs offline (src/hub.js).
+   Passwords are kept as scrypt hashes, never as typed. */
+const hashPw = pw => { const salt = crypto.randomBytes(16).toString('hex'); return 'scrypt:' + salt + ':' + crypto.scryptSync(pw, salt, 32).toString('hex'); };
+const verifyPw = (pw, stored) => {
+  const [kind, salt, h] = String(stored || '').split(':');
+  return kind === 'scrypt' && !!h && same(crypto.scryptSync(pw, salt, 32).toString('hex'), h);
+};
+const readData = f => JSON.parse(fs.readFileSync(path.join(__dirname, 'data', f), 'utf8'));
+const H = require('./src/hub').create({ N: network, F: fare, hash: hashPw, verify: verifyPw, RAW: {
+  rules: db.rules(), municipalities: readData('municipalities.json'), terminals: readData('terminals.json'),
+  destinations: readData('destinations.json'), routes: readData('routes.json'), fareRules: readData('fare_rules.json'),
+  demoVehicles: readData('demo_vehicles.json'), transportModes: readData('transport_modes.json') } });
+const hubSessions = () => db.load().hubSessions || (db.load().hubSessions = {});
+/* listings from the app and from the older pages are one board: store.places */
+function linkHub() {
+  H.Hub.listings = db.load().places;
+  H.ACTIONS.checkListing = item => {
+    if (!item.owner) return 'Log in to list a place.';
+    const ownerKey = ('account:' + item.owner).padEnd(16, '_');
+    const r = places.cleanPlace({ ...item, category: item.kind, ownerKey }, net().network.municipalities);
+    if (r.error) return r.error;
+    const full = places.limitError(db.load().places, ownerKey); if (full) return full;
+    Object.assign(item, { category: item.kind, ownerKey, status: 'unverified', createdAt: new Date().toISOString(), locationSource: 'map' });
+    return null;
+  };
+}
+function saveHub() {
+  const store = db.load();
+  store.hub = H.dump();
+  // sessions older than 30 days end
+  for (const [t, s] of Object.entries(hubSessions())) if (Date.now() - s.at > 30 * 86400e3) delete store.hubSessions[t];
+  db.save();
+}
+
 /* ---------------------------------------------------------------- helpers */
 const MIME = {
   '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8',
@@ -401,6 +435,55 @@ route('POST', /^\/api\/vehicles\/([\w-]+)\/offline$/, (req, res, m) => {
   json(res, 200, v);
 });
 
+/* --- PANAW app: accounts, rides, safety watch (src/hub.js) ------------- */
+// The phone sends "Authorization: Bearer <token>"; the token comes from signup or login.
+const sessionOf = req => {
+  const t = String(req.headers.authorization || '').replace(/^Bearer\s+/i, '');
+  const s = t && hubSessions()[t];
+  return s ? { token: t, me: H.byId(H.Hub.accounts, s.id) } : null;
+};
+const failedLogins = new Map();   // ip -> [times], so a password cannot be guessed endlessly
+const clientIp = req => String(req.headers['x-forwarded-for'] || req.socket.remoteAddress || '').split(',')[0].trim();
+
+// Phones ask every 1.5 s. Listings carry photos, so they are sent only when the board changed (lrev).
+route('GET', /^\/api\/hub\/view$/, (req, res, _m, query) => {
+  const s = sessionOf(req);
+  if (!s || !s.me) return json(res, 401, { error: 'Please log in again.' });
+  const v = H.view(s.me);
+  v.listingsRev = crypto.createHash('sha1').update(v.listings.map(l => l.id).join()).digest('hex').slice(0, 12);
+  if (query.lrev === v.listingsRev) delete v.listings;
+  json(res, 200, { view: v });
+});
+
+route('POST', /^\/api\/hub\/(\w+)$/, async (req, res, m) => {
+  const body = await readBody(req), name = m[1], s = sessionOf(req);
+  if (name === 'login') {
+    const ip = clientIp(req), recent = (failedLogins.get(ip) || []).filter(t => Date.now() - t < 10 * 60e3);
+    if (recent.length >= 10) return json(res, 429, { error: 'Too many wrong passwords. Wait 10 minutes and try again.' });
+    failedLogins.set(ip, recent);
+  }
+  const result = H.run(name, s && s.me, body);
+  let token;
+  if (!result.error && result.account && (name === 'login' || name === 'signup')) {
+    token = crypto.randomBytes(24).toString('hex');
+    hubSessions()[token] = { id: result.account.id, at: Date.now() };
+  }
+  if (result.error && name === 'login') failedLogins.get(clientIp(req)).push(Date.now());
+  if (name === 'logout' && s) delete hubSessions()[s.token];
+  const me = token ? result.account : name === 'logout' ? null : s && s.me;
+  saveHub();
+  const { account, ...rest } = result;   // the account goes back as the view's "me", never with its password hash
+  const view = H.view(me);
+  if (!['login', 'signup', 'publish'].includes(name)) delete view.listings;   // photos travel only when needed; the next poll brings changes
+  json(res, result.error ? 400 : 200, { result: rest, view, token });
+});
+
+/* the page and data behind the link a passenger sends to an emergency contact */
+route('GET', /^\/api\/track\/(\w+)$/, (req, res, m) => {
+  const v = H.trackView(m[1]);
+  return v ? json(res, 200, v) : json(res, 404, { error: 'This trip link has expired or does not exist.' });
+});
+
 /* --- demo controls ------------------------------------------------------ */
 route('POST', /^\/api\/admin\/rules$/, async (req, res) => {
   if (!adminOk(req)) return json(res, 401, DENIED_ADMIN);
@@ -437,6 +520,7 @@ route('POST', /^\/api\/admin\/places\/([\w-]+)\/remove$/, (req, res, m) => {
 route('POST', /^\/api\/admin\/reset$/, (req, res) => {
   if (!adminOk(req)) return json(res, 401, DENIED_ADMIN);
   db.reset();
+  H.seedHub(); linkHub(); saveHub();
   json(res, 200, { ok: true, message: 'Database cleared.' });
 });
 
@@ -460,7 +544,9 @@ function serveStatic(req, res, pathname) {
       res.end(data);
     });
   }
-  const clean = pathname === '/' ? '/index.html'
+  const clean = pathname === '/' || pathname === '/app' ? '/app.html'
+              : pathname === '/classic' ? '/index.html'
+              : pathname.startsWith('/t/') ? '/track.html'
               : pathname === '/driver' ? '/driver.html'
               : pathname === '/monitor' ? '/monitor.html'
               : pathname.startsWith('/r/') ? '/receipt.html'
@@ -484,7 +570,7 @@ const server = http.createServer(async (req, res) => {
     res.writeHead(204, {
       'Access-Control-Allow-Origin': '*',
       'Access-Control-Allow-Methods': 'GET,POST,OPTIONS',
-      'Access-Control-Allow-Headers': 'Content-Type, X-Driver-Pin, X-Admin-Key'
+      'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-Driver-Pin, X-Admin-Key'
     });
     return res.end();
   }
@@ -505,7 +591,14 @@ const server = http.createServer(async (req, res) => {
   serveStatic(req, res, url.pathname);
 });
 
-db.init().then(storage => server.listen(PORT, '0.0.0.0', () => {
+db.init().then(storage => {
+  if (!H.restore(db.load().hub)) H.seedHub();
+  linkHub();
+  setInterval(() => H.tick(), 700);
+  // rides move between actions too (demo trikes, the 60 s answer window): keep the database close behind
+  setInterval(() => { if (H.Hub.requests.some(r => ['requested', 'accepted', 'arrived', 'ontrip'].includes(r.status))) saveHub(); }, 15000);
+  return storage;
+}).then(storage => server.listen(PORT, '0.0.0.0', () => {
   const r = db.rules();
   console.log('');
   console.log('  PANAW server running');
