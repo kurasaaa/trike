@@ -28,3 +28,6 @@ Thumbs.db
 desktop.ini
 .vscode/
 *.log
+
+# handover pack holds the admin key: never commit
+PANAW-Handover/
